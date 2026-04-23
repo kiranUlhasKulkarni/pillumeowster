@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meow-sweeper 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ffb6c1; /* Light pink */
+            --dark-pink: #ff69b4;    /* Hot pink */
+            --bg-color: #fff0f5;     /* Lavender blush / very light pink */
+            --cell-bg: #ffe4e1;      /* Misty rose */
+            --cell-revealed: #ffffff;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-pink);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2);
+        }
+
+        p {
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background-color: white;
+            color: var(--dark-pink);
+            border: 2px solid var(--primary-pink);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 0 var(--primary-pink);
+        }
+
+        .level-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .level-btn.active {
+            background-color: var(--dark-pink);
+            color: white;
+            border-color: var(--dark-pink);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+            border: 3px solid var(--primary-pink);
+            max-width: 90vw; /* Allows it to fit on mobile */
+            width: fit-content;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        .board-wrapper {
+            max-width: 100%;
+            overflow-x: auto; /* Allows horizontal scrolling for Meowster level */
+            padding-bottom: 10px;
+        }
+
+        .board {
+            display: grid;
+            gap: 4px;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .cell {
+            width: 35px;
+            height: 35px;
+            background-color: var(--primary-pink);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 0 var(--dark-pink);
+            transition: transform 0.1s, box-shadow 0.1s;
+            user-select: none;
+        }
+
+        .cell:active:not(.revealed) {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 var(--dark-pink);
+        }
+
+        .cell.revealed {
+            background-color: var(--cell-revealed);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            cursor: default;
+            transform: none;
+        }
+
+        /* Number colors for extra cuteness */
+        .cell[data-value="1"] { color: #ff69b4; }
+        .cell[data-value="2"] { color: #ba55d3; }
+        .cell[data-value="3"] { color: #ff1493; }
+        .cell[data-value="4"] { color: #8a2be2; }
+        .cell[data-value="5"] { color: #ff4500; }
+        .cell[data-value="6"] { color: #db7093; }
+
+        .message-box {
+            margin: 20px 0;
+            font-size: 1.1rem;
+            min-height: 1.5em;
+            color: var(--dark-pink);
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background-color: var(--dark-pink);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #c71585;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            background-color: #ff1493;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #c71585;
+        }
+
+        .reset-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #c71585;
+        }
+        
+        /* Custom scrollbar for cuteness */
+        ::-webkit-scrollbar {
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-pink); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-pink); 
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Meow-sweeper 😻</h1>
+    <p>Find the safe cuddles, avoid the spicy hisses!</p>
+
+    <div class="level-selector">
+        <button id="btn-beginner" class="level-btn active" onclick="setLevel('beginner')">Beginner 🍼</button>
+        <button id="btn-medium" class="level-btn" onclick="setLevel('medium')">Medium 🐈</button>
+        <button id="btn-meowster" class="level-btn" onclick="setLevel('meowster')">Meowster 🦁</button>
+    </div>
+
+    <div class="game-container">
+        <div class="stats">
+            <span id="mines-count">🙀 Hisses: 10</span>
+            <span id="timer">💖 000</span>
+        </div>
+
+        <div class="board-wrapper">
+            <div id="board" class="board" oncontextmenu="return false;"></div>
+        </div>
+
+        <div class="message-box" id="message">Purr-lease start clicking! 🐾</div>
+
+        <button class="reset-btn" onclick="initGame()">Restart Meu 💘</button>
+    </div>
+
+    <script>
+        let ROWS = 10;
+        let COLS = 10;
+        let MINES = 10;
+        
+        let board = [];
+        let revealedCount = 0;
+        let isGameOver = false;
+        let firstClick = true;
+        let flagsPlaced = 0;
+
+        const MINE_SYMBOL = '🙀';
+        const FLAG_SYMBOL = '💖';
+
+        const winMessages = [
+            "Purr-fectly done! You found all the sweet spots! 😻",
+            "You're the cat's meow! True love prevails! 💕",
+            "Aww, look at you! Completely hiss-free! 🐾✨"
+        ];
+
+        const loseMessages = [
+            "Curiosity killed the cat! 😿",
+            "Me-ouch! You stepped on a spicy kitten! 💔",
+            "Hiss! Romance ruined by a hairball! 🙀",
+            "Oops! That was NOT a belly-rub spot! 🚫"
+        ];
+
+        const clickMessages = [
+            "Purring softly...",
+            "Sniffing around...",
+            "Making biscuits...",
+            "Looking for treats..."
+        ];
+
+        function getRandomMsg(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function setLevel(level) {
+            // Update button styles
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${level}`).classList.add('active');
+
+            if (level === 'beginner') {
+                ROWS = 10; COLS = 10; MINES = 10;
+            } else if (level === 'medium') {
+                ROWS = 14; COLS = 14; MINES = 35;
+            } else if (level === 'meowster') {
+                ROWS = 18; COLS = 20; MINES = 75;
+            }
+            initGame();
+        }
+
+        function initGame() {
+            board = [];
+            revealedCount = 0;
+            flagsPlaced = 0;
+            isGameOver = false;
+            firstClick = true;
+            
+            document.getElementById('message').innerText = "Ready for some cuddles? 🐾";
+            updateMinesDisplay();
+            
+            const boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+            boardEl.style.gridTemplateColumns = `repeat(${COLS}, 35px)`;
+            
+            // Create grid
+            for (let r = 0; r < ROWS; r++) {
+                let row = [];
+                for (let c = 0; c < COLS; c++) {
+                    row.push({ isMine: false, isRevealed: false, isFlagged: false, neighborMines: 0 });
+                    
+                    const cellEl = document.createElement('div');
+                    cellEl.classList.add('cell');
+                    cellEl.dataset.r = r;
+                    cellEl.dataset.c = c;
+                    
+                    cellEl.addEventListener('click', () => handleLeftClick(r, c));
+                    cellEl.addEventListener('contextmenu', (e) => handleRightClick(e, r, c));
+                    
+                    boardEl.appendChild(cellEl);
+                }
+                board.push(row);
+            }
+        }
+
+        function updateMinesDisplay() {
+            const remaining = MINES - flagsPlaced;
+            document.getElementById('mines-count').innerText = `🙀 Hisses: ${remaining}`;
+        }
+
+        function placeMines(firstR, firstC) {
+            let minesPlaced = 0;
+            while (minesPlaced < MINES) {
+                const r = Math.floor(Math.random() * ROWS);
+                const c = Math.floor(Math.random() * COLS);
+                
+                // Avoid placing mine on first click or where one already exists
+                if (!board[r][c].isMine && (Math.abs(r - firstR) > 1 || Math.abs(c - firstC) > 1)) {
+                    board[r][c].isMine = true;
+                    minesPlaced++;
+                }
+            }
+            calculateNeighbors();
+        }
+
+        function calculateNeighbors() {
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c].isMine) continue;
+                    let count = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = r + dr, nc = c + dc;
+                            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc].isMine) {
+                                count++;
+                            }
+                        }
+                    }
+                    board[r][c].neighborMines = count;
+                }
+            }
+        }
+
+        function handleLeftClick(r, c) {
+            if (isGameOver || board[r][c].isRevealed || board[r][c].isFlagged) return;
+
+            if (firstClick) {
+                placeMines(r, c);
+                firstClick = false;
+            }
+
+            if (board[r][c].isMine) {
+                gameOver(false);
+            } else {
+                reveal(r, c);
+                if (!isGameOver) {
+                    document.getElementById('message').innerText = getRandomMsg(clickMessages);
+                }
+                checkWin();
+            }
+        }
+
+        function handleRightClick(e, r, c) {
+            e.preventDefault();
+            if (isGameOver || board[r][c].isRevealed) return;
+
+            const cell = board[r][c];
+            const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+
+            if (!cell.isFlagged && flagsPlaced < MINES) {
+                cell.isFlagged = true;
+                flagsPlaced++;
+                cellEl.innerText = FLAG_SYMBOL;
+            } else if (cell.isFlagged) {
+                cell.isFlagged = false;
+                flagsPlaced--;
+                cellEl.innerText = '';
+            }
+            updateMinesDisplay();
+        }
+
+        function reveal(r, c) {
+            if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c].isRevealed || board[r][c].isFlagged) return;
+
+            board[r][c].isRevealed = true;
+            revealedCount++;
+            
+            const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+            cellEl.classList.add('revealed');
+
+            if (board[r][c].neighborMines > 0) {
+                cellEl.innerText = board[r][c].neighborMines;
+                cellEl.dataset.value = board[r][c].neighborMines;
+            } else {
+                // Flood fill for empty cells
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        reveal(r + dr, c + dc);
+                    }
+                }
+            }
+        }
+
+        function checkWin() {
+            if (revealedCount === (ROWS * COLS) - MINES) {
+                gameOver(true);
+            }
+        }
+
+        function gameOver(won) {
+            isGameOver = true;
+            document.getElementById('message').innerText = won ? getRandomMsg(winMessages) : getRandomMsg(loseMessages);
+
+            // Reveal all mines
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c].isMine) {
+                        const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                        cellEl.classList.add('revealed');
+                        
+                        // If they won, turn mines to safe cats. If they lost, show the angry hiss.
+                        cellEl.innerText = won ? '😻' : MINE_SYMBOL;
+                        cellEl.style.backgroundColor = won ? '#ffb6c1' : '#ff4757';
+                        
+                        // Keep flags visible if they were placed correctly
+                        if (won && board[r][c].isFlagged) {
+                            cellEl.innerText = FLAG_SYMBOL;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Start the game on load
+        initGame();
+    </script>
+</body>
+</html>
