@@ -7,34 +7,82 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-pink: #ffb6c1; /* Light pink */
-            --dark-pink: #ff69b4;    /* Hot pink */
-            --bg-color: #fff0f5;     /* Lavender blush / very light pink */
-            --cell-bg: #ffe4e1;      /* Misty rose */
+            /* Light Mode Variables */
+            --primary-pink: #ffb6c1; 
+            --dark-pink: #ff69b4;    
+            --bg-color: #fff0f5;     
             --cell-revealed: #ffffff;
+            --container-bg: #ffffff;
+            --text-color: #ff69b4;
+            --shadow-color: rgba(255, 182, 193, 0.4);
+        }
+
+        body.dark-mode {
+            /* Dark Mode Variables - Fuchsia & Black Theme */
+            --primary-pink: #8b005d;  
+            --dark-pink: #ff00ff;     
+            --bg-color: #0a0005;      
+            --cell-revealed: #14000a; 
+            --container-bg: #1a000d;  
+            --text-color: #ff66ff;    
+            --shadow-color: rgba(255, 0, 255, 0.2);
         }
 
         body {
             font-family: 'Nunito', sans-serif;
             background-color: var(--bg-color);
-            color: var(--dark-pink);
+            color: var(--text-color);
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden; 
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            border: 2px solid var(--dark-pink);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--dark-pink);
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 var(--dark-pink);
         }
 
         h1 {
             font-size: 2.5rem;
+            margin-top: 40px;
             margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2);
+            text-shadow: 2px 2px 4px var(--shadow-color);
+            position: relative;
+            z-index: 10;
         }
 
         p {
             margin-top: 0;
             font-weight: 600;
+            position: relative;
+            z-index: 10;
         }
 
         .level-selector {
@@ -43,11 +91,13 @@
             margin-bottom: 20px;
             justify-content: center;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
         }
 
         .level-btn {
-            background-color: white;
-            color: var(--dark-pink);
+            background-color: var(--container-bg);
+            color: var(--text-color);
             border: 2px solid var(--primary-pink);
             padding: 8px 16px;
             border-radius: 20px;
@@ -71,14 +121,21 @@
             transform: translateY(2px);
         }
 
+        body.dark-mode .level-btn.active {
+            color: #fff;
+        }
+
         .game-container {
-            background: white;
+            background: var(--container-bg);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+            box-shadow: 0 10px 30px var(--shadow-color);
             border: 3px solid var(--primary-pink);
-            max-width: 90vw; /* Allows it to fit on mobile */
+            max-width: 90vw;
             width: fit-content;
+            transition: background-color 0.3s, border-color 0.3s;
+            position: relative;
+            z-index: 10;
         }
 
         .stats {
@@ -90,11 +147,12 @@
             background: var(--bg-color);
             padding: 10px 20px;
             border-radius: 15px;
+            transition: background-color 0.3s;
         }
 
         .board-wrapper {
             max-width: 100%;
-            overflow-x: auto; /* Allows horizontal scrolling for Meowster level */
+            overflow-x: auto;
             padding-bottom: 10px;
         }
 
@@ -116,8 +174,9 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 3px 0 var(--dark-pink);
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s, box-shadow 0.1s, background-color 0.3s;
             user-select: none;
+            color: var(--text-color);
         }
 
         .cell:active:not(.revealed) {
@@ -127,71 +186,128 @@
 
         .cell.revealed {
             background-color: var(--cell-revealed);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
             cursor: default;
             transform: none;
         }
 
-        /* Number colors for extra cuteness */
         .cell[data-value="1"] { color: #ff69b4; }
         .cell[data-value="2"] { color: #ba55d3; }
         .cell[data-value="3"] { color: #ff1493; }
         .cell[data-value="4"] { color: #8a2be2; }
         .cell[data-value="5"] { color: #ff4500; }
         .cell[data-value="6"] { color: #db7093; }
+        
+        body.dark-mode .cell[data-value="1"] { color: #ff80df; }
+        body.dark-mode .cell[data-value="4"] { color: #b075ff; }
 
         .message-box {
             margin: 20px 0;
             font-size: 1.1rem;
             min-height: 1.5em;
-            color: var(--dark-pink);
+            color: var(--text-color);
             font-weight: bold;
         }
 
-        .reset-btn {
+        /* --- Controls (Undo & Restart) --- */
+        .controls-wrapper {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .action-btn {
             background-color: var(--dark-pink);
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 15px;
             border-radius: 25px;
             font-size: 1.1rem;
             font-family: inherit;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 0 #c71585;
+            box-shadow: 0 4px 0 #8b005d;
             transition: all 0.2s;
-            width: 100%;
+            flex: 1;
         }
 
-        .reset-btn:hover {
-            background-color: #ff1493;
+        .action-btn:hover {
+            filter: brightness(1.1);
             transform: translateY(-2px);
-            box-shadow: 0 6px 0 #c71585;
+            box-shadow: 0 6px 0 #8b005d;
         }
 
-        .reset-btn:active {
+        .action-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 0 0 #c71585;
+            box-shadow: 0 0 0 #8b005d;
         }
-        
-        /* Custom scrollbar for cuteness */
-        ::-webkit-scrollbar {
-            height: 10px;
+
+        /* Distinct styling for the Undo button */
+        .undo-btn {
+            background-color: var(--primary-pink);
+            color: #8b005d;
+            box-shadow: 0 4px 0 #c71585; 
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color); 
-            border-radius: 10px;
+
+        body.dark-mode .undo-btn {
+            background-color: #4a0031;
+            color: var(--text-color);
+            box-shadow: 0 4px 0 #2a001c;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-pink); 
-            border-radius: 10px;
+
+        ::-webkit-scrollbar { height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dark-pink); }
+
+        /* --- VISUAL EFFECTS CSS --- */
+        .effect-element {
+            position: fixed;
+            pointer-events: none; 
+            z-index: 9999;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--dark-pink); 
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            width: 10px;
+            height: 20px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+        .bubble {
+            border-radius: 50%;
+            background: rgba(255, 105, 180, 0.3);
+            border: 2px solid rgba(255, 182, 193, 0.6);
+            animation: floatUp ease-in forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+        .angry-emoji {
+            font-size: 40px;
+            left: 50vw;
+            top: 50vh;
+            animation: explode cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @media (max-width: 500px) {
+            .theme-toggle { position: relative; top: 0; right: 0; margin-bottom: 15px; }
+            h1 { margin-top: 0; }
         }
     </style>
 </head>
 <body>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark Mode</button>
 
     <h1>Meow-sweeper 😻</h1>
     <p>Find the safe cuddles, avoid the spicy hisses!</p>
@@ -214,7 +330,10 @@
 
         <div class="message-box" id="message">Purr-lease start clicking! 🐾</div>
 
-        <button class="reset-btn" onclick="initGame()">Restart Meu 💘</button>
+        <div class="controls-wrapper">
+            <button class="action-btn undo-btn" onclick="undoMove()">Undo ↩️</button>
+            <button class="action-btn" onclick="initGame()">Restart Meu 💘</button>
+        </div>
     </div>
 
     <script>
@@ -223,10 +342,12 @@
         let MINES = 10;
         
         let board = [];
+        let history = []; // Stores the past moves for the Undo feature
         let revealedCount = 0;
         let isGameOver = false;
         let firstClick = true;
         let flagsPlaced = 0;
+        let effectIntervals = [];
 
         const MINE_SYMBOL = '🙀';
         const FLAG_SYMBOL = '💖';
@@ -251,12 +372,73 @@
             "Looking for treats..."
         ];
 
+        // --- Visual Effects Functions ---
+        function clearEffects() {
+            effectIntervals.forEach(clearInterval);
+            effectIntervals = [];
+            document.querySelectorAll('.effect-element').forEach(el => el.remove());
+        }
+
+        function createConfetti() {
+            const colors = ['#ff69b4', '#ffb6c1', '#ffffff', '#ff1493', '#ba55d3', '#ff00ff'];
+            const el = document.createElement('div');
+            el.className = 'effect-element confetti';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 4000); 
+        }
+
+        function createBubble() {
+            const el = document.createElement('div');
+            el.className = 'effect-element bubble';
+            const size = Math.random() * 30 + 10;
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (Math.random() * 4 + 3) + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 7000); 
+        }
+
+        function createAngryEmoji() {
+            const emojis = ['🙀', '😿', '😾', '💥'];
+            const el = document.createElement('div');
+            el.className = 'effect-element angry-emoji';
+            el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            const tx = (Math.random() - 0.5) * 150 + 'vw';
+            const ty = (Math.random() - 0.5) * 150 + 'vh';
+            const rot = (Math.random() - 0.5) * 1080 + 'deg';
+            
+            el.style.setProperty('--tx', tx);
+            el.style.setProperty('--ty', ty);
+            el.style.setProperty('--rot', rot);
+            el.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+            
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2500); 
+        }
+        // --------------------------------
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                btn.innerText = '☀️ Light Mode';
+            } else {
+                btn.innerText = '🌙 Dark Mode';
+            }
+        }
+
         function getRandomMsg(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
         function setLevel(level) {
-            // Update button styles
             document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${level}`).classList.add('active');
 
@@ -270,12 +452,70 @@
             initGame();
         }
 
+        // --- State Management for Undo ---
+        function saveState() {
+            const state = {
+                revealedCount,
+                flagsPlaced,
+                isGameOver,
+                firstClick,
+                cells: board.map(row => row.map(cell => ({
+                    isRevealed: cell.isRevealed,
+                    isFlagged: cell.isFlagged
+                })))
+            };
+            history.push(state);
+        }
+
+        function undoMove() {
+            if (history.length === 0) return; // Nothing to undo
+            
+            const state = history.pop();
+            revealedCount = state.revealedCount;
+            flagsPlaced = state.flagsPlaced;
+            isGameOver = state.isGameOver;
+            firstClick = state.firstClick;
+            
+            clearEffects(); // Stop explosions/confetti if undoing a game over
+            document.getElementById('message').innerText = "Rewound time! ⏳";
+            
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    board[r][c].isRevealed = state.cells[r][c].isRevealed;
+                    board[r][c].isFlagged = state.cells[r][c].isFlagged;
+                    
+                    const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                    
+                    // Reset visual completely
+                    cellEl.className = 'cell'; 
+                    cellEl.style.backgroundColor = '';
+                    cellEl.innerText = '';
+                    
+                    // Re-apply states based on history
+                    if (board[r][c].isRevealed) {
+                        cellEl.classList.add('revealed');
+                        if (board[r][c].neighborMines > 0) {
+                            cellEl.innerText = board[r][c].neighborMines;
+                            cellEl.dataset.value = board[r][c].neighborMines;
+                        }
+                    } else if (board[r][c].isFlagged) {
+                        cellEl.innerText = FLAG_SYMBOL;
+                    }
+                }
+            }
+            updateMinesDisplay();
+        }
+        // ---------------------------------
+
         function initGame() {
             board = [];
+            history = []; // Clear undo history
             revealedCount = 0;
             flagsPlaced = 0;
             isGameOver = false;
             firstClick = true;
+            
+            clearEffects(); 
             
             document.getElementById('message').innerText = "Ready for some cuddles? 🐾";
             updateMinesDisplay();
@@ -284,7 +524,6 @@
             boardEl.innerHTML = '';
             boardEl.style.gridTemplateColumns = `repeat(${COLS}, 35px)`;
             
-            // Create grid
             for (let r = 0; r < ROWS; r++) {
                 let row = [];
                 for (let c = 0; c < COLS; c++) {
@@ -315,7 +554,6 @@
                 const r = Math.floor(Math.random() * ROWS);
                 const c = Math.floor(Math.random() * COLS);
                 
-                // Avoid placing mine on first click or where one already exists
                 if (!board[r][c].isMine && (Math.abs(r - firstR) > 1 || Math.abs(c - firstC) > 1)) {
                     board[r][c].isMine = true;
                     minesPlaced++;
@@ -345,6 +583,8 @@
         function handleLeftClick(r, c) {
             if (isGameOver || board[r][c].isRevealed || board[r][c].isFlagged) return;
 
+            saveState(); // Record history before move
+
             if (firstClick) {
                 placeMines(r, c);
                 firstClick = false;
@@ -364,6 +604,8 @@
         function handleRightClick(e, r, c) {
             e.preventDefault();
             if (isGameOver || board[r][c].isRevealed) return;
+
+            saveState(); // Record history before move
 
             const cell = board[r][c];
             const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
@@ -393,7 +635,6 @@
                 cellEl.innerText = board[r][c].neighborMines;
                 cellEl.dataset.value = board[r][c].neighborMines;
             } else {
-                // Flood fill for empty cells
                 for (let dr = -1; dr <= 1; dr++) {
                     for (let dc = -1; dc <= 1; dc++) {
                         reveal(r + dr, c + dc);
@@ -412,18 +653,25 @@
             isGameOver = true;
             document.getElementById('message').innerText = won ? getRandomMsg(winMessages) : getRandomMsg(loseMessages);
 
-            // Reveal all mines
+            if (won) {
+                effectIntervals.push(setInterval(createConfetti, 100));
+                effectIntervals.push(setInterval(createBubble, 250));
+            } else {
+                for(let i = 0; i < 40; i++) {
+                    setTimeout(createAngryEmoji, i * 30);
+                }
+                effectIntervals.push(setInterval(createAngryEmoji, 300));
+            }
+
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     if (board[r][c].isMine) {
                         const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
                         cellEl.classList.add('revealed');
                         
-                        // If they won, turn mines to safe cats. If they lost, show the angry hiss.
                         cellEl.innerText = won ? '😻' : MINE_SYMBOL;
-                        cellEl.style.backgroundColor = won ? '#ffb6c1' : '#ff4757';
+                        cellEl.style.backgroundColor = won ? 'var(--primary-pink)' : '#ff4757';
                         
-                        // Keep flags visible if they were placed correctly
                         if (won && board[r][c].isFlagged) {
                             cellEl.innerText = FLAG_SYMBOL;
                         }
@@ -432,7 +680,6 @@
             }
         }
 
-        // Start the game on load
         initGame();
     </script>
 </body>
