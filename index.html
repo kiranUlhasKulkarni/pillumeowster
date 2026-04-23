@@ -1215,7 +1215,8 @@
         // ==========================================
         // 9. WAFF-MEOW (WAFFLE)
         // ==========================================
-        const wfTarget = [ 'S','W','E','E','T', 'H',' ','X',' ','R', 'A','U','D','I','O', 'R',' ','E',' ','O', 'E','V','E','N','T' ];
+        // Fixed intersecting words: SWEET, AUDIO, EVENT (Horizontal) & SHARE, ENDUE, TROUT (Vertical)
+        const wfTarget = [ 'S','W','E','E','T', 'H',' ','N',' ','R', 'A','U','D','I','O', 'R',' ','U',' ','U', 'E','V','E','N','T' ];
         let wfCurrent = [], wfSelected = null, wfOver = false, wfSwaps = 15;
 
         function initWaffle() {
@@ -1233,16 +1234,30 @@
             const b = document.getElementById('wf-board'); b.innerHTML = '';
             for(let i=0; i<25; i++) {
                 let cell = document.createElement('div'); cell.className = 'cell wf-cell';
+                
+                // Keep the holes transparent and unclickable
                 if(wfTarget[i] === ' ') { 
-                    cell.classList.add('revealed'); cell.style.background = 'transparent'; cell.style.boxShadow = 'none'; border = 'none'; 
+                    cell.classList.add('revealed'); 
+                    cell.style.background = 'transparent'; 
+                    cell.style.boxShadow = 'none'; 
+                    cell.style.border = 'none'; 
                 } else {
                     cell.innerText = wfCurrent[i];
                     
                     let rowStart = Math.floor(i / 5) * 5;
                     let colStart = i % 5;
                     
-                    let targetRowStr = wfTarget.slice(rowStart, rowStart+5).join('');
-                    let targetColStr = [wfTarget[colStart], wfTarget[colStart+5], wfTarget[colStart+10], wfTarget[colStart+15], wfTarget[colStart+20]].join('');
+                    let targetRowStr = "";
+                    let targetColStr = "";
+                    
+                    // Only pull row strings for the actual horizontal word rows (0, 2, 4)
+                    if (Math.floor(i / 5) % 2 === 0) {
+                        targetRowStr = wfTarget.slice(rowStart, rowStart+5).join('');
+                    }
+                    // Only pull col strings for the actual vertical word cols (0, 2, 4)
+                    if (i % 2 === 0) {
+                        targetColStr = [wfTarget[colStart], wfTarget[colStart+5], wfTarget[colStart+10], wfTarget[colStart+15], wfTarget[colStart+20]].join('');
+                    }
                     
                     if(wfCurrent[i] === wfTarget[i]) {
                         cell.style.background = '#32cd32'; 
@@ -1274,7 +1289,7 @@
         function checkWaffle() {
             if(wfCurrent.join('') === wfTarget.join('')) { 
                 wfOver=true; celebrateWin(); 
-                document.getElementById('wf-msg').innerHTML = "Yummy Waffle! 🧇💛<br><span style='font-size:0.9rem; font-weight:normal;'>SWEET, AUDIO, EVENT, SHARE, EXTRA</span>"; 
+                document.getElementById('wf-msg').innerHTML = "Yummy Waffle! 🧇💛<br><span style='font-size:0.9rem; font-weight:normal;'>SWEET, AUDIO, EVENT, SHARE, ENDUE, TROUT</span>"; 
             } else if (wfSwaps <= 0) {
                 wfOver = true;
                 wfCurrent = [...wfTarget]; 
