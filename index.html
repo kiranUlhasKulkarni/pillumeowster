@@ -78,17 +78,27 @@
             text-shadow: 2px 2px 4px var(--shadow-color);
         }
 
-        /* --- MOBILE MENU --- */
+        /* --- MOBILE MENU & HEADER --- */
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .menu-toggle {
             display: none;
-            font-size: 2rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            margin-bottom: 15px;
             background: var(--container-bg);
-            padding: 5px 20px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             border: 2px solid var(--primary-pink);
             box-shadow: 0 4px 0 var(--primary-pink);
+            font-weight: bold;
+            color: var(--text-color);
         }
 
         .nav-tabs {
@@ -100,7 +110,7 @@
             align-items: center;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .menu-toggle { display: block; }
             .nav-tabs { display: none; flex-direction: column; width: 100%; max-width: 300px; }
             .nav-tabs.show { display: flex; }
@@ -145,6 +155,7 @@
         .nav-btn:hover { transform: translateY(-2px); }
         body.dark-mode .nav-btn.active { color: #fff; }
 
+        /* --- MODAL (INSTRUCTIONS) --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -167,6 +178,8 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             position: relative;
             animation: popUp 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         @keyframes popUp {
@@ -183,13 +196,13 @@
         }
         .close-btn:hover { transform: scale(1.2); }
 
+        /* --- GAME CONTAINERS --- */
         .game-section {
             display: none;
             flex-direction: column;
             align-items: center;
             width: 100%;
         }
-
         .game-section.active { display: flex; }
 
         .game-container {
@@ -198,7 +211,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px var(--shadow-color);
             border: 3px solid var(--primary-pink);
-            max-width: 90vw;
+            max-width: 95vw;
             width: fit-content;
         }
 
@@ -237,6 +250,7 @@
             margin: 0 auto;
         }
 
+        /* Shared Cell Styles */
         .cell {
             background-color: var(--primary-pink);
             border-radius: 8px;
@@ -250,10 +264,7 @@
             color: var(--text-color);
             font-size: 20px;
         }
-        .cell:active:not(.revealed) {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 var(--dark-pink);
-        }
+        .cell:active:not(.revealed) { transform: translateY(3px); box-shadow: 0 0 0 var(--dark-pink); }
         .cell.revealed {
             background-color: var(--cell-revealed);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
@@ -263,57 +274,118 @@
 
         /* Game Specific Cells */
         .ms-cell { width: 35px; height: 35px; }
+        .cell[data-value="1"] { color: #ff69b4; font-weight: 900;}
+        .cell[data-value="2"] { color: #ba55d3; font-weight: 900;}
+        .cell[data-value="3"] { color: #ff1493; font-weight: 900;}
+        .cell[data-value="4"] { color: #8a2be2; font-weight: 900;}
+
         .ttt-cell { width: 80px; height: 80px; background-color: var(--cell-revealed); }
         .c4-cell { width: 45px; height: 45px; border-radius: 50%; }
-        .rev-cell { width: 40px; height: 40px; }
-        .wd-cell { width: 45px; height: 45px; font-size: 25px; font-weight: bold; text-transform: uppercase; background-color: var(--cell-revealed); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); cursor: default;}
-        .su-cell { width: 35px; height: 35px; font-weight: bold; font-size: 18px; }
-        .wf-cell { width: 45px; height: 45px; font-size: 24px; font-weight: bold; text-transform: uppercase; }
-
-        /* Block formatting for Sudoku */
-        #su-board { gap: 2px; background: var(--dark-pink); border: 3px solid var(--dark-pink); padding: 2px; border-radius: 5px; }
-        .su-cell:nth-child(3n) { margin-right: 2px; }
-        .su-cell:nth-child(n+19):nth-child(-n+27), .su-cell:nth-child(n+46):nth-child(-n+54) { margin-bottom: 2px; }
         
-        .message-box {
-            margin: 20px 0;
-            font-size: 1.1rem;
-            min-height: 1.5em;
-            font-weight: bold;
+        #rev-board { background-color: var(--dark-pink); gap: 2px; padding: 4px; border-radius: 8px; border: 3px solid var(--primary-pink); box-shadow: none; }
+        .rev-cell { width: 40px; height: 40px; border-radius: 0 !important; background-color: var(--cell-revealed) !important; box-shadow: none !important; transform: none !important; }
+
+        /* Dark mode borders for Wordle/Waffle so they don't blend in */
+        .wd-cell, .wf-cell { 
+            width: 45px; height: 45px; font-size: 25px; font-weight: bold; text-transform: uppercase; 
+            background-color: var(--cell-revealed); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); 
+            border: 2px solid var(--primary-pink);
+        }
+        .wd-cell { cursor: default; }
+
+        /* --- NEW SUDOKU GRID --- */
+        #su-board {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            gap: 1px;
+            background-color: var(--dark-pink);
+            border: 3px solid var(--dark-pink);
+            padding: 2px;
+            border-radius: 5px;
+            margin: 0 auto 15px auto;
+        }
+        .su-cell {
+            width: 35px; height: 35px;
+            background-color: var(--cell-revealed);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: none; border-radius: 0; color: var(--text-color);
+            position: relative;
+        }
+        /* Thick borders for 3x3 grids */
+        .su-cell { box-sizing: border-box; } 
+
+        .su-cell:nth-child(9n+3), 
+        .su-cell:nth-child(9n+6) { 
+            border-right: 3px solid var(--dark-pink); 
+        }
+        
+        .su-cell:nth-child(n+19):nth-child(-n+27),
+        .su-cell:nth-child(n+46):nth-child(-n+54) { 
+            border-bottom: 3px solid var(--dark-pink); 
+        }
+        
+        .su-cell.selected { background-color: #ffebf0; }
+        body.dark-mode .su-cell.selected { background-color: #3a0021; }
+        .su-cell.fixed { color: var(--text-color); opacity: 0.6; cursor: default; }
+        .su-cell.user-input { color: #32cd32; }
+        .su-pencil-grid {
+            position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
+            display: flex; flex-wrap: wrap; align-content: flex-start;
+            font-size: 9px; line-height: 10px; color: #888; pointer-events: none;
         }
 
+        .su-numpad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .num-btn {
+            background: var(--bg-color); border: 2px solid var(--primary-pink);
+            color: var(--text-color); font-weight: bold; font-size: 1.2rem;
+            padding: 10px 0; border-radius: 10px; cursor: pointer;
+        }
+        .num-btn:active { transform: translateY(2px); }
+        .pencil-btn { grid-column: span 2; background: var(--primary-pink); }
+        .pencil-btn.active { background: #32cd32; color: white; border-color: #228b22; }
+
+        .message-box { margin: 20px 0; font-size: 1.1rem; min-height: 1.5em; font-weight: bold; }
+
         .action-btn {
-            background-color: var(--dark-pink);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #8b005d;
-            width: 100%;
-            margin-top: 5px;
+            background-color: var(--dark-pink); color: white; border: none;
+            padding: 12px 25px; border-radius: 25px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 0 #8b005d; width: 100%; margin-top: 5px;
         }
         .action-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #8b005d; }
         
+        .secondary-btn {
+            background-color: var(--primary-pink);
+            color: #8b005d;
+            box-shadow: 0 4px 0 #c71585;
+        }
+        body.dark-mode .secondary-btn {
+            background-color: #4a0031;
+            color: var(--text-color);
+            box-shadow: 0 4px 0 #2a001c;
+        }
+
         .input-box {
-            padding: 10px;
-            border: 2px solid var(--primary-pink);
-            border-radius: 15px;
-            font-size: 1.1rem;
-            width: 80%;
-            margin-bottom: 10px;
-            text-align: center;
-            font-family: inherit;
+            padding: 10px; border: 2px solid var(--primary-pink); border-radius: 15px;
+            font-size: 1.1rem; width: 80%; margin-bottom: 10px; text-align: center; font-family: inherit;
         }
 
         .p1-text { color: var(--p1-color); }
         .p2-text { color: var(--p2-color); }
 
         /* Coin flip */
-        .coin-wrapper { perspective: 1000px; margin: 20px auto; width: 100px; height: 100px; }
-        .coin-inner { width: 100%; height: 100%; transition: transform 1s cubic-bezier(0.4, 2, 0.2, 1); transform-style: preserve-3d; border-radius: 50%; background: var(--primary-pink); border: 5px solid var(--dark-pink); display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        .coin-wrapper { perspective: 1000px; margin: 20px auto; width: 120px; height: 120px; }
+        .coin-inner { 
+            width: 100%; height: 100%; transition: transform 1s cubic-bezier(0.4, 2, 0.2, 1); 
+            transform-style: preserve-3d; border-radius: 50%; background-color: var(--bg-color); 
+            border: 6px solid var(--dark-pink); display: flex; align-items: center; justify-content: center; 
+        }
+        .coin-inner.img-piece { background-size: 60%; }
 
         /* Effects */
         .effect-element { position: fixed; pointer-events: none; z-index: 9999; }
@@ -332,7 +404,10 @@
 
     <h1>Pillu & Crow's Hub 💛🐦‍⬛</h1>
 
-    <div class="menu-toggle" onclick="document.getElementById('nav-menu').classList.toggle('show')">☰ Games</div>
+    <div class="header-controls">
+        <div class="menu-toggle" onclick="document.getElementById('nav-menu').classList.toggle('show')">☰ Games List</div>
+        <button class="nav-btn info-btn" onclick="showInfo()">ℹ️ How to Play</button>
+    </div>
 
     <div class="nav-tabs" id="nav-menu">
         <button class="nav-btn active" onclick="switchTab('meowsweeper')">Meow-sweeper 😻</button>
@@ -344,7 +419,6 @@
         <button class="nav-btn" onclick="switchTab('wordle')">Pika-dle 🔤</button>
         <button class="nav-btn" onclick="switchTab('sudoku')">Su-meow-ku 🧩</button>
         <button class="nav-btn" onclick="switchTab('waffle')">Waff-meow 🧇</button>
-        <button class="nav-btn info-btn" onclick="showInfo()">ℹ️ How to Play</button>
     </div>
 
     <div id="info-modal" class="modal-overlay" onclick="closeInfo(event)">
@@ -373,7 +447,7 @@
             </div>
             <div class="message-box" id="ms-message">Purr-lease start clicking! 🐾</div>
             <div style="display:flex; gap:10px;">
-                <button class="action-btn" style="background:var(--primary-pink); color:#8b005d; box-shadow:0 4px 0 #c71585;" onclick="msUndo()">Undo ↩️</button>
+                <button class="action-btn secondary-btn" onclick="msUndo()">Undo ↩️</button>
                 <button class="action-btn" onclick="initMS()">Restart Meu 💘</button>
             </div>
         </div>
@@ -422,7 +496,7 @@
                 <span class="p1-text">⚡ Pillu: <span id="rev-p1-score">2</span></span>
                 <span class="p2-text">🐾 Crow: <span id="rev-p2-score">2</span></span>
             </div>
-            <div id="rev-board" class="board" style="grid-template-columns: repeat(8, 40px); background:var(--primary-pink); padding:10px; border-radius:15px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);"></div>
+            <div id="rev-board" class="board" style="grid-template-columns: repeat(8, 40px);"></div>
             <div class="message-box" id="rev-message">Pillu (⚡) - Make a move!</div>
             <button class="action-btn" onclick="initRev()">Restart Game 🔄</button>
         </div>
@@ -435,8 +509,8 @@
             </div>
             <div class="message-box" id="cf-msg">Call it in the air!</div>
             <div style="display:flex; gap:10px;">
-                <button class="action-btn" onclick="flipCoin('Pillu')">Pillu (⚡)</button>
-                <button class="action-btn" style="background:#555;" onclick="flipCoin('Crow')">Crow (🐦‍⬛)</button>
+                <button class="action-btn" onclick="flipCoin('Pillu')">Pillu</button>
+                <button class="action-btn" style="background:#555;" onclick="flipCoin('Crow')">Crow</button>
             </div>
         </div>
     </div>
@@ -448,7 +522,7 @@
             <div class="message-box" id="gn-msg">I'm thinking of a number!</div>
             <div style="display:flex; gap:10px;">
                 <button class="action-btn" onclick="guessNum()">Guess! 🎯</button>
-                <button class="action-btn" style="background:var(--primary-pink); color:#8b005d;" onclick="initGN()">Reset</button>
+                <button class="action-btn secondary-btn" onclick="initGN()">Reset</button>
             </div>
         </div>
     </div>
@@ -460,24 +534,51 @@
             <div class="message-box" id="wd-msg">Guess the secret word!</div>
             <div style="display:flex; gap:10px;">
                 <button class="action-btn" onclick="guessWordle()">Submit 📝</button>
-                <button class="action-btn" style="background:var(--primary-pink); color:#8b005d;" onclick="initWordle()">Reset</button>
+                <button class="action-btn secondary-btn" onclick="initWordle()">Reset</button>
             </div>
         </div>
     </div>
 
     <div id="sudoku" class="game-section">
         <div class="game-container">
-            <div id="su-board" class="board" style="grid-template-columns: repeat(9, 35px);"></div>
-            <div class="message-box" id="su-msg">Click blanks to cycle 1-9!</div>
-            <button class="action-btn" onclick="initSudoku()">New Puzzle 🧩</button>
+            <div class="mode-toggle" style="justify-content: center; gap: 5px;">
+                <button id="su-btn-beginner" class="toggle-btn active" onclick="setSuLevel('beginner')"> Baby Pika 🍼</button>
+                <button id="su-btn-pikium" class="toggle-btn" onclick="setSuLevel('pikium')"> Pikium ⚡</button>
+                <button id="su-btn-crowmaster" class="toggle-btn" onclick="setSuLevel('crowmaster')"> Crowmaster 🐦‍⬛</button>
+            </div>
+            <div class="stats" style="justify-content: center; margin-bottom: 10px;">
+                <span id="su-lives-display">Lives: 💖💖💖</span>
+            </div>
+            
+            <div id="su-board"></div>
+            
+            <div class="su-numpad">
+                <button class="num-btn" onclick="suNumClick(1)">1</button>
+                <button class="num-btn" onclick="suNumClick(2)">2</button>
+                <button class="num-btn" onclick="suNumClick(3)">3</button>
+                <button class="num-btn" onclick="suNumClick(4)">4</button>
+                <button class="num-btn" onclick="suNumClick(5)">5</button>
+                <button class="num-btn" onclick="suNumClick(6)">6</button>
+                <button class="num-btn" onclick="suNumClick(7)">7</button>
+                <button class="num-btn" onclick="suNumClick(8)">8</button>
+                <button class="num-btn" onclick="suNumClick(9)">9</button>
+                <button class="num-btn" onclick="suNumClick(0)">X</button>
+                <button id="su-pencil-btn" class="num-btn pencil-btn" onclick="togglePencil()">Pencil Off ✏️</button>
+            </div>
+
+            <div class="message-box" id="su-msg" style="margin-top: 5px;">Select a square!</div>
+            <button class="action-btn secondary-btn" onclick="initSudoku()">New Puzzle 🧩</button>
         </div>
     </div>
 
     <div id="waffle" class="game-section">
         <div class="game-container">
+            <div class="stats" style="justify-content: center;">
+                <span id="wf-swaps-display">Swaps left: 15</span>
+            </div>
             <div id="wf-board" class="board" style="grid-template-columns: repeat(5, 45px);"></div>
-            <div class="message-box" id="wf-msg">Click two letters to swap them!</div>
-            <button class="action-btn" onclick="initWaffle()">Shuffle 🧇</button>
+            <div class="message-box" id="wf-msg">Click two letters to swap!</div>
+            <button class="action-btn secondary-btn" onclick="initWaffle()">Shuffle 🧇</button>
         </div>
     </div>
 
@@ -490,11 +591,9 @@
             document.querySelectorAll('.nav-btn:not(.info-btn)').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            // Highlight the clicked tab (handles mobile menu clicks gracefully)
             const eventTarget = event.target;
             if(eventTarget.classList.contains('nav-btn')) eventTarget.classList.add('active');
             
-            // Hide mobile menu on selection
             document.getElementById('nav-menu').classList.remove('show');
             clearEffects();
         }
@@ -556,6 +655,22 @@
             }
         }
 
+        // --- WORD DICTIONARY (For Wordle & Waffle Meanings) ---
+        const wordDict = {
+            'PIKAS': 'Small mountain-dwelling mammals related to rabbits.',
+            'CROWS': 'Highly intelligent black birds known for problem-solving.',
+            'HEART': 'A hollow muscular organ that pumps the blood; a symbol of love.',
+            'SWEET': 'Having the pleasant taste characteristic of sugar.',
+            'MEOWS': 'The characteristic crying sound of a cat.',
+            'KITTY': 'An affectionate term for a cat or kitten.',
+            'MAGIC': 'The power of apparently influencing the course of events.',
+            'SMILE': 'A pleased, kind, or amused facial expression.',
+            'AUDIO': 'Sound, especially when recorded, transmitted, or reproduced.',
+            'EVENT': 'A thing that happens, especially one of importance.',
+            'SHARE': 'To have a portion of something with another or others.',
+            'ELITE': 'A select part of a group that is superior to the rest.'
+        };
+
         // --- INSTRUCTIONS LOGIC ---
         const gameInstructions = {
             'meowsweeper': { title: 'Meow-sweeper 😻', text: 'Click squares to find safe spots! Numbers tell you how many hisses (bombs) are touching that square. Right-Click to flag!' },
@@ -564,9 +679,9 @@
             'reversi': { title: 'O-pika-llo ☯️', text: 'Trap opponent\'s pieces between two of yours to flip them! Game ends when the board is full.' },
             'coinflip': { title: 'Coin Toss 🪙', text: 'Call it in the air! Choose Pillu or Crow and see if fortune favors you.' },
             'guessnum': { title: 'Guess Number 🔢', text: 'I am thinking of a number between 1 and 100. Use the Higher/Lower hints to find it!' },
-            'wordle': { title: 'Pika-dle 🔤', text: 'Guess the 5-letter word in 6 tries. \nGreen = Correct letter & spot. \nYellow = Right letter, wrong spot. \nGrey = Letter not in word.' },
-            'sudoku': { title: 'Su-meow-ku 🧩', text: 'Fill the grid so every row, column, and 3x3 box contains digits 1-9. Click a blank square repeatedly to cycle through numbers.' },
-            'waffle': { title: 'Waff-meow 🧇', text: 'Click two letters to swap their positions. Arrange them to form 3 horizontal words and 3 vertical words that share the intersecting letters. Green = Correct spot!' }
+            'wordle': { title: 'Pika-dle 🔤', text: 'Guess the 5-letter word in 6 tries. \n🟩 = Correct letter & spot. \n🟨 = Right letter, wrong spot. \n⬛ = Letter not in word.' },
+            'sudoku': { title: 'Su-meow-ku 🧩', text: 'Fill the 9x9 grid so every row, col, and 3x3 box has digits 1-9. \nUse PENCIL mode to take notes. \nSolid guesses use up 💖 Lives if wrong!' },
+            'waffle': { title: 'Waff-meow 🧇', text: 'Swap letters to match the target words (horizontally & vertically). \n🟩 = Correct spot. \n🟨 = In the correct word, but wrong spot.\nYou have 15 swaps!' }
         };
 
         function showInfo() {
@@ -711,7 +826,7 @@
         function makeTttMove(i, player) {
             tttBoard[i] = player;
             let el = document.querySelectorAll('.ttt-cell')[i];
-            el.innerText = player === 'P1' ? '⚡' : '🐦‍⬛';
+            el.innerText = '';
             el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
             let playerName = player === 'P1' ? 'Pillu' : 'Crow';
             if (player === 'P2' && tttVsBot) playerName = 'Bot';
@@ -767,7 +882,7 @@
         function makeC4Move(r, c, player) {
             c4Board[r][c] = player;
             let el = document.querySelectorAll('.c4-cell')[r*C4C + c];
-            el.innerText = player === 'P1' ? '⚡' : '🐦‍⬛';
+            el.innerText = '';
             el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
             let playerName = player === 'P1' ? 'Pillu' : 'Crow';
             if (player === 'P2' && c4VsBot) playerName = 'Bot';
@@ -814,7 +929,7 @@
             revBoard[3][3] = 'P1'; revBoard[3][4] = 'P2'; revBoard[4][3] = 'P2'; revBoard[4][4] = 'P1';
             const b = document.getElementById('rev-board'); b.innerHTML = '';
             for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
-                let el = document.createElement('div'); el.className = 'cell rev-cell'; 
+                let el = document.createElement('div'); el.className = 'cell rev-cell revealed'; 
                 el.onclick = () => revClick(r,c); b.appendChild(el);
             }
             updateRevDisplay();
@@ -885,13 +1000,19 @@
             cfFlipping = true; clearEffects();
             document.getElementById('cf-msg').innerText = "Flipping... 🪙";
             const coin = document.getElementById('coin-inner');
+            
+            coin.classList.remove('img-piece', 'p1-img', 'p2-img');
+            coin.innerText = "✨";
             coin.style.transform = 'rotateY(1080deg)';
             
             setTimeout(() => {
                 const isPillu = Math.random() > 0.5;
                 coin.style.transition = 'none';
                 coin.style.transform = 'rotateY(0deg)';
-                coin.innerText = isPillu ? '⚡' : '🐦‍⬛';
+                
+                coin.innerText = '';
+                coin.classList.add('img-piece', isPillu ? 'p1-img' : 'p2-img');
+
                 setTimeout(() => coin.style.transition = 'transform 1s cubic-bezier(0.4, 2, 0.2, 1)', 50);
                 
                 if((isPillu && guess==='Pillu') || (!isPillu && guess==='Crow')) {
@@ -956,13 +1077,16 @@
             for(let i=0; i<5; i++) {
                 let cell = document.getElementById(`wd-${wdRow}-${i}`);
                 cell.innerText = val[i];
-                if(val[i] === wdTarget[i]) { cell.style.background = '#32cd32'; cell.style.color = '#fff'; }
-                else if(wdTarget.includes(val[i])) { cell.style.background = '#ffd700'; cell.style.color = '#fff'; }
-                else { cell.style.background = '#a9a9a9'; cell.style.color = '#fff'; }
+                if(val[i] === wdTarget[i]) { cell.style.background = '#32cd32'; cell.style.color = '#fff'; cell.style.borderColor = '#228b22'; }
+                else if(wdTarget.includes(val[i])) { cell.style.background = '#ffd700'; cell.style.color = '#fff'; cell.style.borderColor = '#cca700'; }
+                else { cell.style.background = '#a9a9a9'; cell.style.color = '#fff'; cell.style.borderColor = '#808080'; }
             }
             
             if(val === wdTarget) {
-                wdOver = true; document.getElementById('wd-msg').innerText = "Genius! ⚡💛"; celebrateWin();
+                wdOver = true; 
+                let meaning = wordDict[wdTarget] || "You got it!";
+                document.getElementById('wd-msg').innerHTML = `Genius! ⚡<br><span style="font-size:0.9rem; font-weight:normal;">${meaning}</span>`; 
+                celebrateWin();
             } else {
                 wdRow++;
                 if(wdRow >= 6) {
@@ -976,70 +1100,188 @@
         // 8. SU-MEOW-KU
         // ==========================================
         const suSolution = "534678912672195348198342567859761423426853791713924856961537284287419635345286179";
-        let suBoard = [], suEditable = [], suOver=false;
+        let suBoard = [], suEditable = [], suPencils = [], suOver=false, suSelected=null, suPencilMode=false, suLives=3, suHidden=30;
+        
+        function setSuLevel(level) {
+            document.querySelectorAll('#sudoku .toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`su-btn-${level}`).classList.add('active');
+            if(level==='beginner') suHidden = 30;
+            else if(level==='pikium') suHidden = 45;
+            else suHidden = 55;
+            initSudoku();
+        }
+
+        function togglePencil() {
+            suPencilMode = !suPencilMode;
+            const btn = document.getElementById('su-pencil-btn');
+            if(suPencilMode) { btn.classList.add('active'); btn.innerText = "Pencil On ✏️"; }
+            else { btn.classList.remove('active'); btn.innerText = "Pencil Off ✏️"; }
+        }
+
         function initSudoku() {
-            clearEffects(); suOver=false; document.getElementById('su-msg').innerText = "Click pink cells to change numbers!";
-            suBoard = suSolution.split(''); suEditable = [];
-            for(let i=0; i<35; i++) { let idx = Math.floor(Math.random()*81); suBoard[idx] = ''; suEditable.push(idx); }
+            clearEffects(); suOver=false; suSelected=null; suLives=3;
+            document.getElementById('su-lives-display').innerText = "Lives: 💖💖💖";
+            document.getElementById('su-msg').innerText = "Select a blank square!";
+            
+            suBoard = suSolution.split(''); suEditable = []; suPencils = Array(81).fill().map(()=>[]);
+            
+            let hidden = 0;
+            while(hidden < suHidden) {
+                let idx = Math.floor(Math.random()*81); 
+                if(suBoard[idx] !== '') {
+                    suBoard[idx] = ''; 
+                    suEditable.push(idx); 
+                    hidden++;
+                }
+            }
             drawSudoku();
         }
+
         function drawSudoku() {
             const b = document.getElementById('su-board'); b.innerHTML = '';
             for(let i=0; i<81; i++) {
                 let cell = document.createElement('div');
-                cell.className = 'cell su-cell revealed'; cell.innerText = suBoard[i];
-                if(suEditable.includes(i)) {
-                    cell.style.color = 'var(--dark-pink)';
+                cell.className = 'su-cell';
+                if(i === suSelected) cell.classList.add('selected');
+
+                if(!suEditable.includes(i)) {
+                    cell.classList.add('fixed');
+                    cell.innerText = suBoard[i];
+                } else {
+                    if(suBoard[i] !== '') {
+                        cell.classList.add('user-input');
+                        cell.innerText = suBoard[i];
+                    } else {
+                        let pGrid = document.createElement('div');
+                        pGrid.className = 'su-pencil-grid';
+                        suPencils[i].sort().forEach(num => {
+                            let pNode = document.createElement('div');
+                            pNode.style.width = '33%'; pNode.style.textAlign = 'center';
+                            pNode.innerText = num;
+                            pGrid.appendChild(pNode);
+                        });
+                        cell.appendChild(pGrid);
+                    }
+                    
                     cell.onclick = () => {
                         if(suOver) return;
-                        let val = parseInt(suBoard[i]) || 0;
-                        suBoard[i] = val === 9 ? '' : val + 1;
-                        cell.innerText = suBoard[i];
-                        checkSudoku();
+                        suSelected = i;
+                        drawSudoku();
                     };
-                } else cell.style.color = '#333';
+                }
                 b.appendChild(cell);
             }
         }
+
+        function suNumClick(num) {
+            if(suOver || suSelected === null || !suEditable.includes(suSelected) || suBoard[suSelected] !== '') return;
+            
+            let msg = document.getElementById('su-msg');
+
+            if(num === 0) { 
+                suBoard[suSelected] = '';
+                suPencils[suSelected] = [];
+            } else if(suPencilMode) {
+                let pArr = suPencils[suSelected];
+                if(pArr.includes(num)) pArr.splice(pArr.indexOf(num), 1);
+                else pArr.push(num);
+            } else {
+                if(num.toString() === suSolution[suSelected]) {
+                    suBoard[suSelected] = num.toString();
+                    msg.innerText = "Correct! 😻";
+                    checkSudoku();
+                } else {
+                    suLives--;
+                    let hearts = "💖".repeat(suLives) + "💔".repeat(3 - suLives);
+                    document.getElementById('su-lives-display').innerText = `Lives: ${hearts}`;
+                    msg.innerText = "Wrong! Lost a life! 🙀";
+                    if(suLives <= 0) {
+                        suOver = true;
+                        msg.innerText = "Game Over! No more lives! 😿";
+                        triggerLoss(['🙀', '💔']);
+                    }
+                }
+            }
+            drawSudoku();
+        }
+
         function checkSudoku() {
-            if(suBoard.join('') === suSolution) { suOver=true; celebrateWin(); document.getElementById('su-msg').innerText = "Puzzle Solved! 🧩⚡"; }
+            if(suBoard.join('') === suSolution) { 
+                suOver=true; celebrateWin(); 
+                document.getElementById('su-msg').innerText = "Puzzle Solved! 🧩⚡"; 
+            }
         }
 
         // ==========================================
         // 9. WAFF-MEOW (WAFFLE)
         // ==========================================
         const wfTarget = [ 'S','W','E','E','T', 'H',' ','X',' ','R', 'A','U','D','I','O', 'R',' ','E',' ','O', 'E','V','E','N','T' ];
-        let wfCurrent = [], wfSelected = null, wfOver = false;
+        let wfCurrent = [], wfSelected = null, wfOver = false, wfSwaps = 15;
+
         function initWaffle() {
-            clearEffects(); wfOver = false; wfSelected = null; document.getElementById('wf-msg').innerText = "Swap letters to match the words!";
+            clearEffects(); wfOver = false; wfSelected = null; wfSwaps = 15;
+            document.getElementById('wf-swaps-display').innerText = `Swaps left: ${wfSwaps}`;
+            document.getElementById('wf-msg').innerText = "Swap letters to match the words!";
             wfCurrent = [...wfTarget];
+            
             let letters = wfCurrent.filter(c => c !== ' ').sort(() => Math.random() - 0.5);
             let lIdx = 0; for(let i=0; i<25; i++) if(wfCurrent[i] !== ' ') wfCurrent[i] = letters[lIdx++];
             drawWaffle();
         }
+
         function drawWaffle() {
             const b = document.getElementById('wf-board'); b.innerHTML = '';
             for(let i=0; i<25; i++) {
                 let cell = document.createElement('div'); cell.className = 'cell wf-cell';
-                if(wfTarget[i] === ' ') { cell.classList.add('revealed'); cell.style.background = 'transparent'; cell.style.boxShadow = 'none'; }
-                else {
+                if(wfTarget[i] === ' ') { 
+                    cell.classList.add('revealed'); cell.style.background = 'transparent'; cell.style.boxShadow = 'none'; border = 'none'; 
+                } else {
                     cell.innerText = wfCurrent[i];
-                    if(wfCurrent[i] === wfTarget[i]) cell.style.background = '#32cd32'; 
+                    
+                    let rowStart = Math.floor(i / 5) * 5;
+                    let colStart = i % 5;
+                    
+                    let targetRowStr = wfTarget.slice(rowStart, rowStart+5).join('');
+                    let targetColStr = [wfTarget[colStart], wfTarget[colStart+5], wfTarget[colStart+10], wfTarget[colStart+15], wfTarget[colStart+20]].join('');
+                    
+                    if(wfCurrent[i] === wfTarget[i]) {
+                        cell.style.background = '#32cd32'; 
+                        cell.style.color = '#fff';
+                        cell.style.borderColor = '#228b22';
+                    } else if (targetRowStr.includes(wfCurrent[i]) || targetColStr.includes(wfCurrent[i])) {
+                        cell.style.background = '#ffd700'; 
+                        cell.style.color = '#fff';
+                        cell.style.borderColor = '#cca700';
+                    }
+
                     if(wfSelected === i) cell.style.border = '4px solid var(--dark-pink)';
+                    
                     cell.onclick = () => {
                         if(wfOver || wfTarget[i] === ' ') return;
                         if(wfSelected === null) { wfSelected = i; drawWaffle(); }
                         else {
                             let temp = wfCurrent[wfSelected]; wfCurrent[wfSelected] = wfCurrent[i]; wfCurrent[i] = temp;
-                            wfSelected = null; drawWaffle(); checkWaffle();
+                            wfSelected = null; wfSwaps--; 
+                            document.getElementById('wf-swaps-display').innerText = `Swaps left: ${wfSwaps}`;
+                            drawWaffle(); checkWaffle();
                         }
                     };
                 }
                 b.appendChild(cell);
             }
         }
+
         function checkWaffle() {
-            if(wfCurrent.join('') === wfTarget.join('')) { wfOver=true; celebrateWin(); document.getElementById('wf-msg').innerText = "Yummy Waffle! 🧇💛"; }
+            if(wfCurrent.join('') === wfTarget.join('')) { 
+                wfOver=true; celebrateWin(); 
+                document.getElementById('wf-msg').innerHTML = "Yummy Waffle! 🧇💛<br><span style='font-size:0.9rem; font-weight:normal;'>SWEET, AUDIO, EVENT, SHARE, EXTRA</span>"; 
+            } else if (wfSwaps <= 0) {
+                wfOver = true;
+                wfCurrent = [...wfTarget]; 
+                drawWaffle();
+                document.getElementById('wf-msg').innerText = "Out of swaps! Here is the solution 🙀";
+                triggerLoss(['🐦‍⬛']);
+            }
         }
 
         // Init everything
