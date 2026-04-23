@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meow-sweeper 💖</title>
+    <title>Pillu & Crow's Hub 💛🐦‍⬛</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Light Mode Variables */
             --primary-pink: #ffb6c1; 
             --dark-pink: #ff69b4;    
             --bg-color: #fff0f5;     
@@ -15,10 +14,11 @@
             --container-bg: #ffffff;
             --text-color: #ff69b4;
             --shadow-color: rgba(255, 182, 193, 0.4);
+            --p1-color: #ff1493; 
+            --p2-color: #555555; 
         }
 
         body.dark-mode {
-            /* Dark Mode Variables - Fuchsia & Black Theme */
             --primary-pink: #8b005d;  
             --dark-pink: #ff00ff;     
             --bg-color: #0a0005;      
@@ -26,7 +26,21 @@
             --container-bg: #1a000d;  
             --text-color: #ff66ff;    
             --shadow-color: rgba(255, 0, 255, 0.2);
+            --p1-color: #ff66ff;
+            --p2-color: #cccccc;
         }
+
+        /* --- CUSTOM IMAGE CSS FOR PIKA/CROW GAMES --- */
+        .img-piece {
+            background-size: 80%; 
+            background-repeat: no-repeat;
+            background-position: center;
+            color: transparent !important; 
+        }
+        
+        .p1-img { background-image: url('pikachu.png'); }
+        .p2-img { background-image: url('crow.png'); }
+        /* -------------------------------------------- */
 
         body {
             font-family: 'Nunito', sans-serif;
@@ -51,69 +65,45 @@
             border: 2px solid var(--dark-pink);
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.9rem;
-            font-family: inherit;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 3px 0 var(--dark-pink);
-            transition: all 0.2s;
             z-index: 100;
         }
 
-        .theme-toggle:hover {
-            transform: translateY(-2px);
-        }
-
-        .theme-toggle:active {
-            transform: translateY(2px);
-            box-shadow: 0 0 0 var(--dark-pink);
-        }
+        .theme-toggle:active { transform: translateY(2px); box-shadow: 0 0 0 var(--dark-pink); }
 
         h1 {
             font-size: 2.5rem;
             margin-top: 40px;
             margin-bottom: 5px;
             text-shadow: 2px 2px 4px var(--shadow-color);
-            position: relative;
-            z-index: 10;
         }
 
-        p {
-            margin-top: 0;
-            font-weight: 600;
-            position: relative;
-            z-index: 10;
-        }
-
-        .level-selector {
+        /* --- HUB NAVIGATION --- */
+        .nav-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            justify-content: center;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 10;
+            justify-content: center;
+            align-items: center;
         }
 
-        .level-btn {
+        .nav-btn {
             background-color: var(--container-bg);
             color: var(--text-color);
             border: 2px solid var(--primary-pink);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1rem;
-            font-family: inherit;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 4px 0 var(--primary-pink);
             transition: all 0.2s;
-            box-shadow: 0 3px 0 var(--primary-pink);
         }
 
-        .level-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .level-btn.active {
+        .nav-btn.active {
             background-color: var(--dark-pink);
             color: white;
             border-color: var(--dark-pink);
@@ -121,8 +111,78 @@
             transform: translateY(2px);
         }
 
-        body.dark-mode .level-btn.active {
-            color: #fff;
+        .info-btn {
+            background-color: var(--primary-pink);
+            color: #8b005d;
+            border-color: var(--primary-pink);
+            box-shadow: 0 4px 0 #c71585;
+        }
+        
+        body.dark-mode .info-btn {
+            background-color: #4a0031;
+            color: var(--text-color);
+            border-color: #4a0031;
+            box-shadow: 0 4px 0 #2a001c;
+        }
+
+        .nav-btn:hover { transform: translateY(-2px); }
+        body.dark-mode .nav-btn.active { color: #fff; }
+
+        /* --- MODAL (INSTRUCTIONS) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--container-bg);
+            color: var(--text-color);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid var(--primary-pink);
+            max-width: 400px;
+            width: 80%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            position: relative;
+            animation: popUp 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .close-btn:hover { transform: scale(1.2); }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        /* --- GAME CONTAINERS --- */
+        .game-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .game-section.active {
+            display: flex;
         }
 
         .game-container {
@@ -133,27 +193,34 @@
             border: 3px solid var(--primary-pink);
             max-width: 90vw;
             width: fit-content;
-            transition: background-color 0.3s, border-color 0.3s;
-            position: relative;
-            z-index: 10;
         }
 
-        .stats {
+        .stats, .mode-toggle {
             display: flex;
             justify-content: space-between;
-            font-size: 1.2rem;
+            align-items: center;
+            font-size: 1.1rem;
             font-weight: 800;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: var(--bg-color);
             padding: 10px 20px;
             border-radius: 15px;
-            transition: background-color 0.3s;
+            gap: 15px;
         }
 
-        .board-wrapper {
-            max-width: 100%;
-            overflow-x: auto;
-            padding-bottom: 10px;
+        .toggle-btn {
+            background: var(--container-bg);
+            border: 2px solid var(--primary-pink);
+            color: var(--text-color);
+            border-radius: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .toggle-btn.active {
+            background: var(--dark-pink);
+            color: white;
+            border-color: var(--dark-pink);
         }
 
         .board {
@@ -163,27 +230,24 @@
             margin: 0 auto;
         }
 
+        /* Shared Cell Styles */
         .cell {
-            width: 35px;
-            height: 35px;
             background-color: var(--primary-pink);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 3px 0 var(--dark-pink);
-            transition: transform 0.1s, box-shadow 0.1s, background-color 0.3s;
+            transition: transform 0.1s, box-shadow 0.1s;
             user-select: none;
             color: var(--text-color);
+            font-size: 20px;
         }
-
         .cell:active:not(.revealed) {
             transform: translateY(3px);
             box-shadow: 0 0 0 var(--dark-pink);
         }
-
         .cell.revealed {
             background-color: var(--cell-revealed);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
@@ -191,496 +255,658 @@
             transform: none;
         }
 
-        .cell[data-value="1"] { color: #ff69b4; }
-        .cell[data-value="2"] { color: #ba55d3; }
-        .cell[data-value="3"] { color: #ff1493; }
-        .cell[data-value="4"] { color: #8a2be2; }
-        .cell[data-value="5"] { color: #ff4500; }
-        .cell[data-value="6"] { color: #db7093; }
+        /* Number colors for Meow-sweeper */
+        .cell[data-value="1"] { color: #ff69b4; font-weight: 900;}
+        .cell[data-value="2"] { color: #ba55d3; font-weight: 900;}
+        .cell[data-value="3"] { color: #ff1493; font-weight: 900;}
+        .cell[data-value="4"] { color: #8a2be2; font-weight: 900;}
+
+        /* Specific Game Grids */
+        .ms-cell { width: 35px; height: 35px; }
+        .ttt-cell { width: 80px; height: 80px; background-color: var(--cell-revealed); }
+        .c4-cell { width: 45px; height: 45px; border-radius: 50%; }
         
-        body.dark-mode .cell[data-value="1"] { color: #ff80df; }
-        body.dark-mode .cell[data-value="4"] { color: #b075ff; }
+        /* CLASSIC GRID LOOK FOR REVERSI */
+        #rev-board {
+            background-color: var(--dark-pink);
+            gap: 2px; /* Creates the dark grid lines */
+            padding: 4px;
+            border-radius: 8px;
+            border: 3px solid var(--primary-pink);
+            box-shadow: none;
+        }
+        
+        .rev-cell { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 0 !important; /* Square corners for a classic grid */
+            background-color: var(--cell-revealed) !important; 
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        .rev-cell:hover {
+            filter: brightness(0.95);
+        }
 
         .message-box {
             margin: 20px 0;
             font-size: 1.1rem;
             min-height: 1.5em;
-            color: var(--text-color);
             font-weight: bold;
-        }
-
-        /* --- Controls (Undo & Restart) --- */
-        .controls-wrapper {
-            display: flex;
-            gap: 10px;
-            width: 100%;
         }
 
         .action-btn {
             background-color: var(--dark-pink);
             color: white;
             border: none;
-            padding: 12px 15px;
+            padding: 12px 25px;
             border-radius: 25px;
             font-size: 1.1rem;
-            font-family: inherit;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 0 #8b005d;
-            transition: all 0.2s;
-            flex: 1;
+            width: 100%;
+            margin-top: 5px;
         }
+        .action-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #8b005d; }
 
-        .action-btn:hover {
-            filter: brightness(1.1);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #8b005d;
-        }
+        .p1-text { color: var(--p1-color); }
+        .p2-text { color: var(--p2-color); }
 
-        .action-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #8b005d;
-        }
+        /* Effects */
+        .effect-element { position: fixed; pointer-events: none; z-index: 9999; }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+        .confetti { width: 10px; height: 20px; animation: fall linear forwards; }
+        @keyframes floatUp { 0% { transform: translateY(110vh) scale(0.5); opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
+        .bubble { border-radius: 50%; background: rgba(255, 105, 180, 0.3); border: 2px solid rgba(255, 182, 193, 0.6); animation: floatUp ease-in forwards; }
+        @keyframes explode { 0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; } }
+        .angry-emoji { font-size: 40px; left: 50vw; top: 50vh; animation: explode cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
 
-        /* Distinct styling for the Undo button */
-        .undo-btn {
-            background-color: var(--primary-pink);
-            color: #8b005d;
-            box-shadow: 0 4px 0 #c71585; 
-        }
-
-        body.dark-mode .undo-btn {
-            background-color: #4a0031;
-            color: var(--text-color);
-            box-shadow: 0 4px 0 #2a001c;
-        }
-
-        ::-webkit-scrollbar { height: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--dark-pink); }
-
-        /* --- VISUAL EFFECTS CSS --- */
-        .effect-element {
-            position: fixed;
-            pointer-events: none; 
-            z-index: 9999;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-        .confetti {
-            width: 10px;
-            height: 20px;
-            animation: fall linear forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(110vh) scale(0.5); opacity: 0.8; }
-            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-        }
-        .bubble {
-            border-radius: 50%;
-            background: rgba(255, 105, 180, 0.3);
-            border: 2px solid rgba(255, 182, 193, 0.6);
-            animation: floatUp ease-in forwards;
-        }
-
-        @keyframes explode {
-            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
-        }
-        .angry-emoji {
-            font-size: 40px;
-            left: 50vw;
-            top: 50vh;
-            animation: explode cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-        }
-
-        @media (max-width: 500px) {
-            .theme-toggle { position: relative; top: 0; right: 0; margin-bottom: 15px; }
-            h1 { margin-top: 0; }
-        }
     </style>
 </head>
 <body>
 
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark Mode</button>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
 
-    <h1>Meow-sweeper 😻</h1>
-    <p>Find the safe cuddles, avoid the spicy hisses!</p>
+    <h1>Pillu & Crow's Hub 💛🐦‍⬛</h1>
 
-    <div class="level-selector">
-        <button id="btn-beginner" class="level-btn active" onclick="setLevel('beginner')">Beginner 🍼</button>
-        <button id="btn-medium" class="level-btn" onclick="setLevel('medium')">Medium 🐈</button>
-        <button id="btn-meowster" class="level-btn" onclick="setLevel('meowster')">Meowster 🦁</button>
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('meowsweeper')">Meow-sweeper 😻</button>
+        <button class="nav-btn" onclick="switchTab('tictactoe')">Tic-Tac-Pika ❌⭕</button>
+        <button class="nav-btn" onclick="switchTab('connect4')">Connect Crows 🧶</button>
+        <button class="nav-btn" onclick="switchTab('reversi')">O-pika-llo ☯️</button>
+        <button class="nav-btn info-btn" onclick="showInfo()">ℹ️ How to Play</button>
     </div>
 
-    <div class="game-container">
-        <div class="stats">
-            <span id="mines-count">🙀 Hisses: 10</span>
-            <span id="timer">💖 000</span>
+    <div id="info-modal" class="modal-overlay" onclick="closeInfo(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeInfo()">✖️</span>
+            <h2 id="info-title" style="margin-top: 0;"></h2>
+            <hr style="border: 1px solid var(--primary-pink); border-radius: 2px;">
+            <p id="info-text"></p>
+            <button class="action-btn" onclick="closeInfo()" style="margin-top: 15px;">Got it! 🐾</button>
         </div>
+    </div>
 
-        <div class="board-wrapper">
-            <div id="board" class="board" oncontextmenu="return false;"></div>
+    <div id="meowsweeper" class="game-section active">
+        <p>Find the safe cuddles, avoid the spicy hisses!</p>
+        <div class="game-container">
+            <div class="mode-toggle" style="justify-content: center; gap: 5px;">
+                <button id="ms-btn-beginner" class="toggle-btn active" onclick="setMsLevel('beginner')"> Beginner 🍼</button>
+                <button id="ms-btn-medium" class="toggle-btn" onclick="setMsLevel('medium')"> Medium 🐈</button>
+                <button id="ms-btn-meowster" class="toggle-btn" onclick="setMsLevel('meowster')"> Meowster 🦁</button>
+            </div>
+            <div class="stats">
+                <span id="ms-mines-count">🙀 Hisses: 10</span>
+                <span>💖</span>
+            </div>
+            <div style="overflow-x: auto; padding-bottom: 10px; max-width: 100%;">
+                <div id="ms-board" class="board" oncontextmenu="return false;"></div>
+            </div>
+            <div class="message-box" id="ms-message">Purr-lease start clicking! 🐾</div>
+            <div style="display:flex; gap:10px;">
+                <button class="action-btn" style="background:var(--primary-pink); color:#8b005d; box-shadow:0 4px 0 #c71585;" onclick="msUndo()">Undo ↩️</button>
+                <button class="action-btn" onclick="initMS()">Restart Meu 💘</button>
+            </div>
         </div>
+    </div>
 
-        <div class="message-box" id="message">Purr-lease start clicking! 🐾</div>
+    <div id="tictactoe" class="game-section">
+        <div class="game-container">
+            <div class="mode-toggle">
+                <span>Opponent:</span>
+                <div>
+                    <button id="ttt-bot-btn" class="toggle-btn active" onclick="setTttMode(true)">Bot 🤖</button>
+                    <button id="ttt-pass-btn" class="toggle-btn" onclick="setTttMode(false)">Pass 🤝</button>
+                </div>
+            </div>
+            <div id="ttt-board" class="board" style="grid-template-columns: repeat(3, 80px);"></div>
+            <div class="message-box" id="ttt-message">Pillu (⚡) - Your turn!</div>
+            <button class="action-btn" onclick="initTTT()">Restart Game 🔄</button>
+        </div>
+    </div>
 
-        <div class="controls-wrapper">
-            <button class="action-btn undo-btn" onclick="undoMove()">Undo ↩️</button>
-            <button class="action-btn" onclick="initGame()">Restart Meu 💘</button>
+    <div id="connect4" class="game-section">
+        <div class="game-container">
+            <div class="mode-toggle">
+                <span>Opponent:</span>
+                <div>
+                    <button id="c4-bot-btn" class="toggle-btn active" onclick="setC4Mode(true)">Bot 🤖</button>
+                    <button id="c4-pass-btn" class="toggle-btn" onclick="setC4Mode(false)">Pass 🤝</button>
+                </div>
+            </div>
+            <div id="c4-board" class="board" style="grid-template-columns: repeat(7, 45px); background:var(--primary-pink); padding:10px; border-radius:15px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);"></div>
+            <div class="message-box" id="c4-message">Pillu (⚡) - Drop a piece!</div>
+            <button class="action-btn" onclick="initC4()">Restart Game 🔄</button>
+        </div>
+    </div>
+
+    <div id="reversi" class="game-section">
+        <div class="game-container">
+            <div class="mode-toggle">
+                <span>Opponent:</span>
+                <div>
+                    <button id="rev-bot-btn" class="toggle-btn active" onclick="setRevMode(true)">Bot 🤖</button>
+                    <button id="rev-pass-btn" class="toggle-btn" onclick="setRevMode(false)">Pass 🤝</button>
+                </div>
+            </div>
+            <div class="stats" style="justify-content: space-around;">
+                <span class="p1-text">⚡ Pillu: <span id="rev-p1-score">2</span></span>
+                <span class="p2-text">🐾 Crow: <span id="rev-p2-score">2</span></span>
+            </div>
+            <div id="rev-board" class="board" style="grid-template-columns: repeat(8, 40px);"></div>
+            <div class="message-box" id="rev-message">Pillu (⚡) - Make a move!</div>
+            <button class="action-btn" onclick="initRev()">Restart Game 🔄</button>
         </div>
     </div>
 
     <script>
-        let ROWS = 10;
-        let COLS = 10;
-        let MINES = 10;
-        
-        let board = [];
-        let history = []; // Stores the past moves for the Undo feature
-        let revealedCount = 0;
-        let isGameOver = false;
-        let firstClick = true;
-        let flagsPlaced = 0;
+        // --- GLOBAL LOGIC & EFFECTS ---
         let effectIntervals = [];
 
-        const MINE_SYMBOL = '🙀';
-        const FLAG_SYMBOL = '💖';
+        function switchTab(tabId) {
+            document.querySelectorAll('.game-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn:not(.info-btn)').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            clearEffects();
+        }
 
-        const winMessages = [
-            "Purr-fectly done! You found all the sweet spots! 😻",
-            "You're the cat's meow! True love prevails! 💕",
-            "Aww, look at you! Completely hiss-free! 🐾✨"
-        ];
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('theme-btn');
+            btn.innerText = document.body.classList.contains('dark-mode') ? '☀️ Light' : '🌙 Dark';
+        }
 
-        const loseMessages = [
-            "Curiosity killed the cat! 😿",
-            "Me-ouch! You stepped on a spicy kitten! 💔",
-            "Hiss! Romance ruined by a hairball! 🙀",
-            "Oops! That was NOT a belly-rub spot! 🚫"
-        ];
-
-        const clickMessages = [
-            "Purring softly...",
-            "Sniffing around...",
-            "Making biscuits...",
-            "Looking for treats..."
-        ];
-
-        // --- Visual Effects Functions ---
         function clearEffects() {
             effectIntervals.forEach(clearInterval);
             effectIntervals = [];
             document.querySelectorAll('.effect-element').forEach(el => el.remove());
         }
 
-        function createConfetti() {
-            const colors = ['#ff69b4', '#ffb6c1', '#ffffff', '#ff1493', '#ba55d3', '#ff00ff'];
-            const el = document.createElement('div');
-            el.className = 'effect-element confetti';
-            el.style.left = Math.random() * 100 + 'vw';
-            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            el.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 4000); 
+        function celebrateWin() {
+            clearEffects();
+            effectIntervals.push(setInterval(() => {
+                const colors = ['#ff69b4', '#ffb6c1', '#ffffff', '#ffd700', '#ffff00', '#ff00ff'];
+                const el = document.createElement('div');
+                el.className = 'effect-element confetti';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 4000); 
+            }, 100));
         }
 
-        function createBubble() {
-            const el = document.createElement('div');
-            el.className = 'effect-element bubble';
-            const size = Math.random() * 30 + 10;
-            el.style.width = size + 'px';
-            el.style.height = size + 'px';
-            el.style.left = Math.random() * 100 + 'vw';
-            el.style.animationDuration = (Math.random() * 4 + 3) + 's';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 7000); 
+        function celebrateTie() {
+            clearEffects();
+            effectIntervals.push(setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'effect-element bubble';
+                const size = Math.random() * 30 + 10;
+                el.style.width = size + 'px'; el.style.height = size + 'px';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 7000); 
+            }, 250));
         }
 
-        function createAngryEmoji() {
-            const emojis = ['🙀', '😿', '😾', '💥'];
-            const el = document.createElement('div');
-            el.className = 'effect-element angry-emoji';
-            el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            
-            const tx = (Math.random() - 0.5) * 150 + 'vw';
-            const ty = (Math.random() - 0.5) * 150 + 'vh';
-            const rot = (Math.random() - 0.5) * 1080 + 'deg';
-            
-            el.style.setProperty('--tx', tx);
-            el.style.setProperty('--ty', ty);
-            el.style.setProperty('--rot', rot);
-            el.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-            
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 2500); 
-        }
-        // --------------------------------
-
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('theme-btn');
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                btn.innerText = '☀️ Light Mode';
-            } else {
-                btn.innerText = '🌙 Dark Mode';
+        function triggerLoss(emojis) {
+            clearEffects();
+            for(let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'effect-element angry-emoji';
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.setProperty('--tx', (Math.random() - 0.5) * 150 + 'vw');
+                    el.style.setProperty('--ty', (Math.random() - 0.5) * 150 + 'vh');
+                    el.style.setProperty('--rot', (Math.random() - 0.5) * 1080 + 'deg');
+                    el.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2500); 
+                }, i * 30);
             }
         }
 
-        function getRandomMsg(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
-        }
-
-        function setLevel(level) {
-            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${level}`).classList.add('active');
-
-            if (level === 'beginner') {
-                ROWS = 10; COLS = 10; MINES = 10;
-            } else if (level === 'medium') {
-                ROWS = 14; COLS = 14; MINES = 35;
-            } else if (level === 'meowster') {
-                ROWS = 18; COLS = 20; MINES = 75;
+        // --- INSTRUCTIONS LOGIC ---
+        const gameInstructions = {
+            'meowsweeper': {
+                title: 'Meow-sweeper 😻',
+                text: 'Click squares to find safe spots! The numbers tell you how many spicy hisses (bombs) are touching that specific square. \n\nIf you think a square hides a hiss, Right-Click (or long-press on mobile) to place a 💖 flag there. Reveal all the safe cuddles to win!'
+            },
+            'tictactoe': {
+                title: 'Tic-Tac-Pika ❌⭕',
+                text: 'Pillu vs Crow! Take turns placing your picture on the 3x3 grid. The first player to get 3 in a row (horizontally, vertically, or diagonally) wins the game!'
+            },
+            'connect4': {
+                title: 'Connect Crows 🧶',
+                text: 'Pillu vs Crow! Take turns dropping your pieces into the columns. The pieces will fall to the lowest available space. Connect 4 in a row to win!'
+            },
+            'reversi': {
+                title: 'O-pika-llo ☯️',
+                text: 'Pillu vs Crow! Trap your opponent\'s pieces between two of yours to flip them to your emoji! \n\nYou MUST make a move that flips at least one piece. The game ends when the board is full!'
             }
-            initGame();
+        };
+
+        function showInfo() {
+            const activeTab = document.querySelector('.game-section.active').id;
+            const info = gameInstructions[activeTab];
+            document.getElementById('info-title').innerText = info.title;
+            document.getElementById('info-text').innerText = info.text;
+            document.getElementById('info-modal').style.display = 'flex';
         }
 
-        // --- State Management for Undo ---
-        function saveState() {
-            const state = {
-                revealedCount,
-                flagsPlaced,
-                isGameOver,
-                firstClick,
-                cells: board.map(row => row.map(cell => ({
-                    isRevealed: cell.isRevealed,
-                    isFlagged: cell.isFlagged
-                })))
-            };
-            history.push(state);
-        }
-
-        function undoMove() {
-            if (history.length === 0) return; // Nothing to undo
-            
-            const state = history.pop();
-            revealedCount = state.revealedCount;
-            flagsPlaced = state.flagsPlaced;
-            isGameOver = state.isGameOver;
-            firstClick = state.firstClick;
-            
-            clearEffects(); // Stop explosions/confetti if undoing a game over
-            document.getElementById('message').innerText = "Rewound time! ⏳";
-            
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    board[r][c].isRevealed = state.cells[r][c].isRevealed;
-                    board[r][c].isFlagged = state.cells[r][c].isFlagged;
-                    
-                    const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-                    
-                    // Reset visual completely
-                    cellEl.className = 'cell'; 
-                    cellEl.style.backgroundColor = '';
-                    cellEl.innerText = '';
-                    
-                    // Re-apply states based on history
-                    if (board[r][c].isRevealed) {
-                        cellEl.classList.add('revealed');
-                        if (board[r][c].neighborMines > 0) {
-                            cellEl.innerText = board[r][c].neighborMines;
-                            cellEl.dataset.value = board[r][c].neighborMines;
-                        }
-                    } else if (board[r][c].isFlagged) {
-                        cellEl.innerText = FLAG_SYMBOL;
-                    }
-                }
+        function closeInfo(e) {
+            if (!e || e.target.id === 'info-modal') {
+                document.getElementById('info-modal').style.display = 'none';
             }
-            updateMinesDisplay();
         }
-        // ---------------------------------
 
-        function initGame() {
-            board = [];
-            history = []; // Clear undo history
-            revealedCount = 0;
-            flagsPlaced = 0;
-            isGameOver = false;
-            firstClick = true;
+        // ==========================================
+        // 1. MEOW-SWEEPER LOGIC 
+        // ==========================================
+        let msRows=10, msCols=10, msMines=10, msBoard=[], msHistory=[], msRevealed=0, msFlags=0, msOver=false, msFirst=true;
+        
+        function setMsLevel(level) {
+            document.querySelectorAll('#meowsweeper .toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`ms-btn-${level}`).classList.add('active');
+            if(level==='beginner'){ msRows=10; msCols=10; msMines=10; }
+            else if(level==='medium'){ msRows=14; msCols=14; msMines=35; }
+            else { msRows=18; msCols=20; msMines=75; }
+            initMS();
+        }
+
+        function initMS() {
+            clearEffects();
+            msBoard = []; msHistory = []; msRevealed = 0; msFlags = 0; msOver = false; msFirst = true;
+            document.getElementById('ms-message').innerText = "Ready for some cuddles? 🐾";
+            document.getElementById('ms-mines-count').innerText = `🙀 Hisses: ${msMines}`;
+            const b = document.getElementById('ms-board');
+            b.innerHTML = ''; b.style.gridTemplateColumns = `repeat(${msCols}, 35px)`;
             
-            clearEffects(); 
-            
-            document.getElementById('message').innerText = "Ready for some cuddles? 🐾";
-            updateMinesDisplay();
-            
-            const boardEl = document.getElementById('board');
-            boardEl.innerHTML = '';
-            boardEl.style.gridTemplateColumns = `repeat(${COLS}, 35px)`;
-            
-            for (let r = 0; r < ROWS; r++) {
+            for (let r=0; r<msRows; r++) {
                 let row = [];
-                for (let c = 0; c < COLS; c++) {
-                    row.push({ isMine: false, isRevealed: false, isFlagged: false, neighborMines: 0 });
-                    
-                    const cellEl = document.createElement('div');
-                    cellEl.classList.add('cell');
-                    cellEl.dataset.r = r;
-                    cellEl.dataset.c = c;
-                    
-                    cellEl.addEventListener('click', () => handleLeftClick(r, c));
-                    cellEl.addEventListener('contextmenu', (e) => handleRightClick(e, r, c));
-                    
-                    boardEl.appendChild(cellEl);
+                for (let c=0; c<msCols; c++) {
+                    row.push({ m:false, r:false, f:false, n:0 });
+                    let el = document.createElement('div');
+                    el.className = 'cell ms-cell';
+                    el.onclick = () => msLeftClick(r,c);
+                    el.oncontextmenu = (e) => { e.preventDefault(); msRightClick(r,c); };
+                    b.appendChild(el);
                 }
-                board.push(row);
+                msBoard.push(row);
             }
         }
 
-        function updateMinesDisplay() {
-            const remaining = MINES - flagsPlaced;
-            document.getElementById('mines-count').innerText = `🙀 Hisses: ${remaining}`;
+        function msSave() {
+            msHistory.push({ r:msRevealed, f:msFlags, o:msOver, fi:msFirst, cells: msBoard.map(row => row.map(c => ({...c}))) });
         }
 
-        function placeMines(firstR, firstC) {
-            let minesPlaced = 0;
-            while (minesPlaced < MINES) {
-                const r = Math.floor(Math.random() * ROWS);
-                const c = Math.floor(Math.random() * COLS);
-                
-                if (!board[r][c].isMine && (Math.abs(r - firstR) > 1 || Math.abs(c - firstC) > 1)) {
-                    board[r][c].isMine = true;
-                    minesPlaced++;
+        function msUndo() {
+            if(msHistory.length===0) return;
+            let s = msHistory.pop();
+            msRevealed=s.r; msFlags=s.f; msOver=s.o; msFirst=s.fi; clearEffects();
+            document.getElementById('ms-message').innerText = "Rewound time! ⏳";
+            document.getElementById('ms-mines-count').innerText = `🙀 Hisses: ${msMines - msFlags}`;
+            let cells = document.querySelectorAll('.ms-cell');
+            for(let r=0; r<msRows; r++) for(let c=0; c<msCols; c++){
+                msBoard[r][c] = {...s.cells[r][c]};
+                let el = cells[r*msCols + c];
+                el.className = 'cell ms-cell'; 
+                el.style.backgroundColor=''; 
+                el.innerText='';
+                if(msBoard[r][c].r) {
+                    el.classList.add('revealed');
+                    if(msBoard[r][c].n > 0) { el.innerText = msBoard[r][c].n; el.dataset.value = msBoard[r][c].n; }
+                } else if (msBoard[r][c].f) {
+                    el.innerText = '💖'; 
                 }
             }
-            calculateNeighbors();
         }
 
-        function calculateNeighbors() {
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    if (board[r][c].isMine) continue;
-                    let count = 0;
-                    for (let dr = -1; dr <= 1; dr++) {
-                        for (let dc = -1; dc <= 1; dc++) {
-                            const nr = r + dr, nc = c + dc;
-                            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc].isMine) {
-                                count++;
-                            }
-                        }
+        function msLeftClick(r,c) {
+            if(msOver || msBoard[r][c].r || msBoard[r][c].f) return;
+            msSave();
+            if(msFirst) {
+                let placed=0;
+                while(placed<msMines){
+                    let rr=Math.floor(Math.random()*msRows), cc=Math.floor(Math.random()*msCols);
+                    if(!msBoard[rr][cc].m && (Math.abs(rr-r)>1 || Math.abs(cc-c)>1)) { msBoard[rr][cc].m=true; placed++; }
+                }
+                for(let rr=0; rr<msRows; rr++) for(let cc=0; cc<msCols; cc++){
+                    if(msBoard[rr][cc].m) continue;
+                    let count=0;
+                    for(let dr=-1; dr<=1; dr++) for(let dc=-1; dc<=1; dc++) {
+                        let nr=rr+dr, nc=cc+dc;
+                        if(nr>=0 && nr<msRows && nc>=0 && nc<msCols && msBoard[nr][nc].m) count++;
                     }
-                    board[r][c].neighborMines = count;
+                    msBoard[rr][cc].n = count;
+                }
+                msFirst=false;
+            }
+            if(msBoard[r][c].m) msGameOver(false);
+            else { msReveal(r,c); if(!msOver) document.getElementById('ms-message').innerText = "Purring softly..."; msCheckWin(); }
+        }
+
+        function msRightClick(r,c) {
+            if(msOver || msBoard[r][c].r) return;
+            msSave();
+            let el = document.querySelectorAll('.ms-cell')[r*msCols + c];
+            if(!msBoard[r][c].f && msFlags<msMines) { 
+                msBoard[r][c].f=true; msFlags++; 
+                el.innerText='💖'; 
+            }
+            else if(msBoard[r][c].f) { 
+                msBoard[r][c].f=false; msFlags--; 
+                el.innerText=''; 
+            }
+            document.getElementById('ms-mines-count').innerText = `🙀 Hisses: ${msMines - msFlags}`;
+        }
+
+        function msReveal(r,c) {
+            if(r<0||r>=msRows||c<0||c>=msCols||msBoard[r][c].r||msBoard[r][c].f) return;
+            msBoard[r][c].r=true; msRevealed++;
+            let el = document.querySelectorAll('.ms-cell')[r*msCols + c];
+            el.classList.add('revealed');
+            if(msBoard[r][c].n>0) { el.innerText = msBoard[r][c].n; el.dataset.value = msBoard[r][c].n; }
+            else { for(let dr=-1; dr<=1; dr++) for(let dc=-1; dc<=1; dc++) msReveal(r+dr, c+dc); }
+        }
+
+        function msCheckWin() { if(msRevealed === msRows*msCols - msMines) msGameOver(true); }
+
+        function msGameOver(won) {
+            msOver = true;
+            document.getElementById('ms-message').innerText = won ? "Purr-fectly done! 😻" : "Me-ouch! 😿";
+            won ? celebrateWin() : triggerLoss(['🙀', '😿', '😾', '💥']);
+            let cells = document.querySelectorAll('.ms-cell');
+            for(let r=0; r<msRows; r++) for(let c=0; c<msCols; c++) {
+                if(msBoard[r][c].m) {
+                    let el = cells[r*msCols + c];
+                    el.classList.add('revealed');
+                    el.innerText = won ? '😻' : '🙀';
+                    el.style.backgroundColor = won ? 'var(--primary-pink)' : '#ff4757';
                 }
             }
         }
 
-        function handleLeftClick(r, c) {
-            if (isGameOver || board[r][c].isRevealed || board[r][c].isFlagged) return;
+        // ==========================================
+        // 2. TIC-TAC-PIKA
+        // ==========================================
+        let tttBoard = [], tttTurn = 'P1', tttVsBot = true, tttOver = false;
+        
+        function setTttMode(isBot) {
+            tttVsBot = isBot;
+            document.getElementById('ttt-bot-btn').classList.toggle('active', isBot);
+            document.getElementById('ttt-pass-btn').classList.toggle('active', !isBot);
+            initTTT();
+        }
 
-            saveState(); // Record history before move
-
-            if (firstClick) {
-                placeMines(r, c);
-                firstClick = false;
-            }
-
-            if (board[r][c].isMine) {
-                gameOver(false);
-            } else {
-                reveal(r, c);
-                if (!isGameOver) {
-                    document.getElementById('message').innerText = getRandomMsg(clickMessages);
-                }
-                checkWin();
+        function initTTT() {
+            clearEffects(); tttBoard = Array(9).fill(null); tttTurn = 'P1'; tttOver = false;
+            document.getElementById('ttt-message').innerHTML = `<span class="p1-text">Pillu (⚡) - Your turn!</span>`;
+            const b = document.getElementById('ttt-board'); b.innerHTML = '';
+            for(let i=0; i<9; i++) {
+                let el = document.createElement('div');
+                el.className = 'cell ttt-cell';
+                el.onclick = () => tttClick(i);
+                b.appendChild(el);
             }
         }
 
-        function handleRightClick(e, r, c) {
-            e.preventDefault();
-            if (isGameOver || board[r][c].isRevealed) return;
-
-            saveState(); // Record history before move
-
-            const cell = board[r][c];
-            const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-
-            if (!cell.isFlagged && flagsPlaced < MINES) {
-                cell.isFlagged = true;
-                flagsPlaced++;
-                cellEl.innerText = FLAG_SYMBOL;
-            } else if (cell.isFlagged) {
-                cell.isFlagged = false;
-                flagsPlaced--;
-                cellEl.innerText = '';
-            }
-            updateMinesDisplay();
+        function tttClick(i) {
+            if(tttOver || tttBoard[i]) return;
+            makeTttMove(i, tttTurn);
+            if(!tttOver && tttVsBot && tttTurn === 'P2') setTimeout(tttBotMove, 400);
         }
 
-        function reveal(r, c) {
-            if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c].isRevealed || board[r][c].isFlagged) return;
-
-            board[r][c].isRevealed = true;
-            revealedCount++;
+        function makeTttMove(i, player) {
+            tttBoard[i] = player;
+            let el = document.querySelectorAll('.ttt-cell')[i];
+            el.innerText = player === 'P1' ? '⚡' : '🐦‍⬛';
+            el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
             
-            const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-            cellEl.classList.add('revealed');
+            let playerName = player === 'P1' ? 'Pillu' : 'Crow';
+            if (player === 'P2' && tttVsBot) playerName = 'Bot';
 
-            if (board[r][c].neighborMines > 0) {
-                cellEl.innerText = board[r][c].neighborMines;
-                cellEl.dataset.value = board[r][c].neighborMines;
+            if(checkTttWin(player)) {
+                tttOver = true;
+                document.getElementById('ttt-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`;
+                (player === 'P2' && tttVsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
+            } else if (!tttBoard.includes(null)) {
+                tttOver = true; document.getElementById('ttt-message').innerText = "It's a tie! 🐾"; celebrateTie();
             } else {
-                for (let dr = -1; dr <= 1; dr++) {
-                    for (let dc = -1; dc <= 1; dc++) {
-                        reveal(r + dr, c + dc);
-                    }
-                }
+                tttTurn = player === 'P1' ? 'P2' : 'P1';
+                let sym = tttTurn === 'P1' ? '⚡' : '🐦‍⬛';
+                let nextName = (tttTurn === 'P2' && tttVsBot) ? 'Bot' : (tttTurn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('ttt-message').innerHTML = `<span class="${tttTurn.toLowerCase()}-text">${nextName} (${sym}) - Thinking...</span>`;
             }
         }
 
-        function checkWin() {
-            if (revealedCount === (ROWS * COLS) - MINES) {
-                gameOver(true);
+        function checkTttWin(p) {
+            const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return lines.some(l => l.every(i => tttBoard[i] === p));
+        }
+
+        function tttBotMove() {
+            if(tttOver) return;
+            let empty = tttBoard.map((v,i) => v===null ? i : null).filter(v => v!==null);
+            let move = empty[Math.floor(Math.random() * empty.length)];
+            makeTttMove(move, 'P2');
+        }
+
+        // ==========================================
+        // 3. CONNECT CROWS
+        // ==========================================
+        let c4Board = [], c4Turn = 'P1', c4VsBot = true, c4Over = false;
+        const C4R=6, C4C=7;
+
+        function setC4Mode(isBot) {
+            c4VsBot = isBot;
+            document.getElementById('c4-bot-btn').classList.toggle('active', isBot);
+            document.getElementById('c4-pass-btn').classList.toggle('active', !isBot);
+            initC4();
+        }
+
+        function initC4() {
+            clearEffects(); c4Board = Array.from({length: C4R}, () => Array(C4C).fill(null)); 
+            c4Turn = 'P1'; c4Over = false;
+            document.getElementById('c4-message').innerHTML = `<span class="p1-text">Pillu (⚡) - Drop a piece!</span>`;
+            const b = document.getElementById('c4-board'); b.innerHTML = '';
+            for(let r=0; r<C4R; r++) for(let c=0; c<C4C; c++) {
+                let el = document.createElement('div');
+                el.className = 'cell c4-cell revealed'; 
+                el.onclick = () => c4Click(c);
+                b.appendChild(el);
             }
         }
 
-        function gameOver(won) {
-            isGameOver = true;
-            document.getElementById('message').innerText = won ? getRandomMsg(winMessages) : getRandomMsg(loseMessages);
+        function c4Click(c) {
+            if(c4Over) return;
+            let r = C4R - 1;
+            while(r >= 0 && c4Board[r][c] !== null) r--;
+            if(r < 0) return; 
+            
+            makeC4Move(r, c, c4Turn);
+            if(!c4Over && c4VsBot && c4Turn === 'P2') setTimeout(c4BotMove, 500);
+        }
 
-            if (won) {
-                effectIntervals.push(setInterval(createConfetti, 100));
-                effectIntervals.push(setInterval(createBubble, 250));
+        function makeC4Move(r, c, player) {
+            c4Board[r][c] = player;
+            let el = document.querySelectorAll('.c4-cell')[r*C4C + c];
+            el.innerText = player === 'P1' ? '⚡' : '🐦‍⬛';
+            el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
+            
+            let playerName = player === 'P1' ? 'Pillu' : 'Crow';
+            if (player === 'P2' && c4VsBot) playerName = 'Bot';
+
+            if(checkC4Win(r, c, player)) {
+                c4Over = true;
+                document.getElementById('c4-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`;
+                (player === 'P2' && c4VsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
+            } else if (c4Board[0].every(cell => cell !== null)) {
+                c4Over = true; document.getElementById('c4-message').innerText = "Board full! Tie! 🐾"; celebrateTie();
             } else {
-                for(let i = 0; i < 40; i++) {
-                    setTimeout(createAngryEmoji, i * 30);
-                }
-                effectIntervals.push(setInterval(createAngryEmoji, 300));
-            }
-
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    if (board[r][c].isMine) {
-                        const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-                        cellEl.classList.add('revealed');
-                        
-                        cellEl.innerText = won ? '😻' : MINE_SYMBOL;
-                        cellEl.style.backgroundColor = won ? 'var(--primary-pink)' : '#ff4757';
-                        
-                        if (won && board[r][c].isFlagged) {
-                            cellEl.innerText = FLAG_SYMBOL;
-                        }
-                    }
-                }
+                c4Turn = player === 'P1' ? 'P2' : 'P1';
+                let sym = c4Turn === 'P1' ? '⚡' : '🐦‍⬛';
+                let nextName = (c4Turn === 'P2' && c4VsBot) ? 'Bot' : (c4Turn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('c4-message').innerHTML = `<span class="${c4Turn.toLowerCase()}-text">${nextName} (${sym})'s turn!</span>`;
             }
         }
 
-        initGame();
+        function checkC4Win(r, c, p) {
+            const dirs = [[0,1],[1,0],[1,1],[1,-1]]; 
+            for(let [dr, dc] of dirs) {
+                let count = 1;
+                for(let i=1; i<=3; i++) {
+                    let nr = r+dr*i, nc = c+dc*i;
+                    if(nr>=0 && nr<C4R && nc>=0 && nc<C4C && c4Board[nr][nc]===p) count++; else break;
+                }
+                for(let i=1; i<=3; i++) {
+                    let nr = r-dr*i, nc = c-dc*i;
+                    if(nr>=0 && nr<C4R && nc>=0 && nc<C4C && c4Board[nr][nc]===p) count++; else break;
+                }
+                if(count >= 4) return true;
+            }
+            return false;
+        }
+
+        function c4BotMove() {
+            if(c4Over) return;
+            let validCols = [];
+            for(let c=0; c<C4C; c++) if(c4Board[0][c] === null) validCols.push(c);
+            let move = validCols[Math.floor(Math.random() * validCols.length)];
+            c4Click(move);
+        }
+
+        // ==========================================
+        // 4. O-PIKA-LLO (REVERSI) - GRID STYLE
+        // ==========================================
+        let revBoard=[], revTurn='P1', revVsBot=true, revOver=false;
+        
+        function setRevMode(isBot) {
+            revVsBot = isBot;
+            document.getElementById('rev-bot-btn').classList.toggle('active', isBot);
+            document.getElementById('rev-pass-btn').classList.toggle('active', !isBot);
+            initRev();
+        }
+
+        function initRev() {
+            clearEffects(); revBoard = Array.from({length: 8}, () => Array(8).fill(null));
+            revTurn = 'P1'; revOver = false;
+            revBoard[3][3] = 'P1'; revBoard[3][4] = 'P2';
+            revBoard[4][3] = 'P2'; revBoard[4][4] = 'P1';
+            
+            const b = document.getElementById('rev-board'); b.innerHTML = '';
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
+                let el = document.createElement('div');
+                el.className = 'cell rev-cell'; 
+                el.onclick = () => revClick(r,c);
+                b.appendChild(el);
+            }
+            updateRevDisplay();
+        }
+
+        function updateRevDisplay() {
+            let p1=0, p2=0;
+            let cells = document.querySelectorAll('.rev-cell');
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
+                let v = revBoard[r][c];
+                let el = cells[r*8+c];
+                
+                if(v==='P1') p1++; 
+                if(v==='P2') p2++;
+                
+                el.innerText = v === 'P1' ? '⚡' : v === 'P2' ? '🐾' : '';
+            }
+            document.getElementById('rev-p1-score').innerText = p1;
+            document.getElementById('rev-p2-score').innerText = p2;
+            
+            if(p1+p2 === 64 || (!hasValidMove('P1') && !hasValidMove('P2'))) {
+                revOver = true;
+                if(p1>p2) { document.getElementById('rev-message').innerText = "Pillu Wins! ⚡💛"; celebrateWin(); }
+                else if(p2>p1) { document.getElementById('rev-message').innerText = revVsBot ? "Bot Wins! 🙀" : "Crow Wins! 🐾"; revVsBot?triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']):celebrateWin(); }
+                else { document.getElementById('rev-message').innerText = "It's a tie! 🐾"; celebrateTie(); }
+            } else if (!hasValidMove(revTurn)) {
+                revTurn = revTurn==='P1'?'P2':'P1'; 
+                updateRevDisplay(); 
+            } else {
+                let sym = revTurn === 'P1' ? '⚡' : '🐾';
+                let name = (revTurn === 'P2' && revVsBot) ? 'Bot' : (revTurn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('rev-message').innerHTML = `<span class="${revTurn.toLowerCase()}-text">${name} (${sym}) - Your move!</span>`;
+                if(revVsBot && revTurn === 'P2') setTimeout(revBotMove, 800);
+            }
+        }
+
+        function getFlips(r, c, p) {
+            if(revBoard[r][c] !== null) return [];
+            let flips = [];
+            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            for(let [dr, dc] of dirs) {
+                let temp = [];
+                let nr=r+dr, nc=c+dc;
+                while(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] !== null && revBoard[nr][nc] !== p) {
+                    temp.push({r:nr, c:nc});
+                    nr+=dr; nc+=dc;
+                }
+                if(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] === p) flips.push(...temp);
+            }
+            return flips;
+        }
+
+        function hasValidMove(p) {
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) if(getFlips(r,c,p).length > 0) return true;
+            return false;
+        }
+
+        function revClick(r, c) {
+            if(revOver || (revVsBot && revTurn === 'P2')) return;
+            let flips = getFlips(r, c, revTurn);
+            if(flips.length === 0) return;
+            
+            revBoard[r][c] = revTurn;
+            flips.forEach(f => revBoard[f.r][f.c] = revTurn);
+            revTurn = revTurn === 'P1' ? 'P2' : 'P1';
+            updateRevDisplay();
+        }
+
+        function revBotMove() {
+            if(revOver) return;
+            let bestMove = null; let maxFlips = -1;
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
+                let flips = getFlips(r,c,'P2');
+                if(flips.length > maxFlips) { maxFlips = flips.length; bestMove = {r,c,flips}; }
+            }
+            if(bestMove) {
+                revBoard[bestMove.r][bestMove.c] = 'P2';
+                bestMove.flips.forEach(f => revBoard[f.r][f.c] = 'P2');
+                revTurn = 'P1';
+                updateRevDisplay();
+            }
+        }
+
+        // Init everything on load
+        initMS(); initTTT(); initC4(); initRev();
     </script>
 </body>
 </html>
