@@ -145,7 +145,8 @@
         .floating-dock {
             display: flex; gap: 15px; background: rgba(255, 240, 245, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 15px 20px; border-radius: 50px; border: 3px solid var(--primary-pink); box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5);
-            overflow-x: auto; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;  
+            overflow-x: auto; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
+            cursor: grab; user-select: none;
         }
         .floating-dock::-webkit-scrollbar { display: none; }
         body.dark-mode .floating-dock { background: rgba(26, 0, 13, 0.85); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); border-color: var(--dark-pink); }
@@ -571,6 +572,22 @@
             document.getElementById('dock-label-display').classList.remove('show');
         }
 
+        // --- AUDIO ENGINE (for Pillu Says) ---
+        const simonFreqs = [261.6, 329.6, 392.0, 523.2]; // C4, E4, G4, C5
+        function playSimonTone(freq) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+                oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+                oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.5);
+            } catch(e) { /* Audio not supported, silently ignore */ }
+        }
+
         function enterHub() {
             const splash = document.getElementById('splash-screen');
             splash.style.transform = 'translateY(-100vh)';
@@ -869,7 +886,7 @@
         }
 
         // ==========================================
-        // 6. PILLU SAYS (SIMON)
+        // 6. PILLU SAYS (SIMON) — WITH AUDIO
         // ==========================================
         let simonSeq = [], simonPlayerSeq = [], simonScore = 0, simonPlaying = false;
         const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -882,12 +899,12 @@
             simonPlayerSeq = []; simonSeq.push(Math.floor(Math.random() * 4)); document.getElementById('simon-msg').innerText = "Watch closely...";
             for(let i=0; i<simonSeq.length; i++) {
                 await sleep(500); let btn = document.getElementById(`simon-${simonSeq[i]}`);
-                btn.classList.add('active-glow'); await sleep(400); btn.classList.remove('active-glow');
+                btn.classList.add('active-glow'); playSimonTone(simonFreqs[simonSeq[i]]); await sleep(400); btn.classList.remove('active-glow');
             } document.getElementById('simon-msg').innerText = "Your turn! 🐾";
         }
         function simonClick(id) {
             if(!simonPlaying) return;
-            let btn = document.getElementById(`simon-${id}`); btn.classList.add('active-glow'); setTimeout(() => btn.classList.remove('active-glow'), 200);
+            let btn = document.getElementById(`simon-${id}`); btn.classList.add('active-glow'); playSimonTone(simonFreqs[id]); setTimeout(() => btn.classList.remove('active-glow'), 200);
             simonPlayerSeq.push(id);
             if(simonPlayerSeq[simonPlayerSeq.length-1] !== simonSeq[simonPlayerSeq.length-1]) {
                 simonPlaying = false; document.getElementById('simon-msg').innerText = "Oops! Game Over! 🙀"; shakeContainer('simon'); triggerLoss(['💥', '🙀']); return;
@@ -1001,7 +1018,7 @@
         }
 
         // ==========================================
-        // 11. COIN TOSS
+        // 11. COIN TOSS — FIXED
         // ==========================================
         let cfFlipping = false;
         function flipCoin(guess) {
@@ -1012,6 +1029,7 @@
                 const isPillu = Math.random() > 0.5; coin.style.transition = 'none'; coin.style.transform = 'rotateY(0deg)'; coin.innerText = ''; 
                 coin.classList.add('img-piece');
                 coin.style.backgroundImage = isPillu ? "url('pikachu.png')" : "url('crow.png')";
+                coin.style.backgroundSize = "60%"; coin.style.backgroundRepeat = "no-repeat"; coin.style.backgroundPosition = "center";
                 setTimeout(() => coin.style.transition = 'transform 1s cubic-bezier(0.4, 2, 0.2, 1)', 50);
                 if((isPillu && guess==='Pillu') || (!isPillu && guess==='Crow')) { document.getElementById('cf-msg').innerText = "You called it right! 💛"; celebrateWin(); } else { document.getElementById('cf-msg').innerText = "Oof, wrong call! 🙀"; triggerLoss(['🐦‍⬛','💥']); } cfFlipping = false;
             }, 1000);
@@ -1141,6 +1159,24 @@
         // INIT GAMES THAT DON'T AUTO START TIMERS
         drawWhackBoard();
         initGN(); initWordle(); initSudoku(); initWaffle(); initMS(); initTTT(); initC4(); initRev(); initRPS(); initHangman(); initSlider(); initMemory();
+
+        // ==========================================
+        // MOUSE DRAG SCROLL FOR NAVBAR
+        // ==========================================
+        const dock = document.querySelector('.floating-dock');
+        let isDockDown = false, dockStartX, dockScrollLeft, dockDragged = false;
+        dock.addEventListener('mousedown', (e) => {
+            isDockDown = true; dockDragged = false; dock.style.cursor = 'grabbing';
+            dockStartX = e.pageX - dock.offsetLeft; dockScrollLeft = dock.scrollLeft;
+        });
+        dock.addEventListener('mouseleave', () => { isDockDown = false; dock.style.cursor = 'grab'; });
+        dock.addEventListener('mouseup', () => { isDockDown = false; dock.style.cursor = 'grab'; });
+        dock.addEventListener('mousemove', (e) => {
+            if (!isDockDown) return; e.preventDefault();
+            dockDragged = true;
+            const x = e.pageX - dock.offsetLeft;
+            const walk = (x - dockStartX) * 2; dock.scrollLeft = dockScrollLeft - walk;
+        });
         
     </script>
 </body>
