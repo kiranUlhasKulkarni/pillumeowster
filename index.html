@@ -1288,9 +1288,17 @@
         // ==========================================
         // 9. SU-MEOW-KU
         // ==========================================
-        const suSolution = "534678912672195348198342567859761423426853791713924856961537284287419635345286179";
+        const suBaseSolution = "534678912672195348198342567859761423426853791713924856961537284287419635345286179";
+        let suSolution = ""; // This will hold our randomized puzzle
         let suBoard = [], suEditable = [], suPencils = [], suOver=false, suSelected=null, suPencilMode=false, suLives=3, suHidden=30;
-        
+
+        function generateSudoku() {
+            // Shuffle the digits 1-9 to create a brand new valid puzzle!
+            let nums = ['1','2','3','4','5','6','7','8','9'].sort(() => Math.random() - 0.5);
+            let map = {};
+            for(let i=1; i<=9; i++) map[i.toString()] = nums[i-1];
+            suSolution = suBaseSolution.split('').map(n => map[n]).join('');
+        }
         function setSuLevel(level) {
             document.querySelectorAll('#sudoku .toggle-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`su-btn-${level}`).classList.add('active');
@@ -1311,7 +1319,7 @@
             clearEffects(); suOver=false; suSelected=null; suLives=3;
             document.getElementById('su-lives-display').innerText = "Lives: 💖💖💖";
             document.getElementById('su-msg').innerText = "Select a blank square!";
-            
+            generateSudoku();
             suBoard = suSolution.split(''); suEditable = []; suPencils = Array(81).fill().map(()=>[]);
             
             let hidden = 0;
