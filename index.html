@@ -239,6 +239,7 @@
             border: 3px solid var(--primary-pink);
             max-width: 95vw;
             width: fit-content;
+            transition: all 0.3s ease;
         }
 
         .stats, .mode-toggle {
@@ -315,64 +316,59 @@
             background-color: var(--cell-revealed); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); 
             border: 2px solid var(--primary-pink);
         }
+        .wd-cell { cursor: default; }
 
-        /* --- NEW SUDOKU GRID --- */
+        /* --- SUDOKU GRID --- */
         #su-board {
-            display: grid;
-            grid-template-columns: repeat(9, 35px);
-            gap: 1px;
-            background-color: var(--dark-pink);
-            border: 3px solid var(--dark-pink);
-            padding: 2px;
-            border-radius: 5px;
-            margin: 0 auto 15px auto;
+            display: grid; grid-template-columns: repeat(9, 35px); gap: 1px; background-color: var(--dark-pink); border: 3px solid var(--dark-pink); padding: 2px; border-radius: 5px; margin: 0 auto 15px auto;
         }
         .su-cell {
-            width: 35px; height: 35px;
-            background-color: var(--cell-revealed);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: bold; cursor: pointer;
-            box-shadow: none; border-radius: 0; color: var(--text-color);
-            position: relative;
-            transition: all 0.1s;
+            width: 35px; height: 35px; background-color: var(--cell-revealed); display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: none; border-radius: 0; color: var(--text-color); position: relative; transition: all 0.1s;
+            box-sizing: border-box;
         }
         .su-cell:active:not(.fixed) { transform: scale(0.85); }
-        .su-cell { box-sizing: border-box; } 
-
-        .su-cell:nth-child(9n+3), 
-        .su-cell:nth-child(9n+6) { 
-            border-right: 3px solid var(--dark-pink); 
-        }
-        
-        .su-cell:nth-child(n+19):nth-child(-n+27),
-        .su-cell:nth-child(n+46):nth-child(-n+54) { 
-            border-bottom: 3px solid var(--dark-pink); 
-        }
-        
+        .su-cell:nth-child(9n+3), .su-cell:nth-child(9n+6) { border-right: 3px solid var(--dark-pink); }
+        .su-cell:nth-child(n+19):nth-child(-n+27), .su-cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 3px solid var(--dark-pink); }
         .su-cell.selected { background-color: #ffebf0; }
         body.dark-mode .su-cell.selected { background-color: #3a0021; }
         .su-cell.fixed { color: var(--text-color); opacity: 0.6; }
         .su-cell.user-input { color: #32cd32; }
-        .su-pencil-grid {
-            position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
-            display: flex; flex-wrap: wrap; align-content: flex-start;
-            font-size: 9px; line-height: 10px; color: #888; pointer-events: none;
-        }
+        .su-pencil-grid { position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; display: flex; flex-wrap: wrap; align-content: flex-start; font-size: 9px; line-height: 10px; color: #888; pointer-events: none; }
 
-        .su-numpad {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        .num-btn {
-            background: var(--bg-color); border: 2px solid var(--primary-pink);
-            color: var(--text-color); font-weight: bold; font-size: 1.2rem;
-            padding: 10px 0; border-radius: 10px; transition: all 0.15s;
-        }
+        .su-numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+        .num-btn { background: var(--bg-color); border: 2px solid var(--primary-pink); color: var(--text-color); font-weight: bold; font-size: 1.2rem; padding: 10px 0; border-radius: 10px; transition: all 0.15s; }
         .num-btn:active { transform: scale(0.9) translateY(2px); }
         .pencil-btn { grid-column: span 2; background: var(--primary-pink); }
         .pencil-btn.active { background: #32cd32; color: white; border-color: #228b22; }
+
+        /* --- HANGMAN (HANG-MEOW) CSS --- */
+        .hm-word {
+            display: flex; gap: 8px; justify-content: center; margin: 20px 0;
+            font-size: 2rem; font-weight: bold; letter-spacing: 5px;
+            color: var(--text-color);
+        }
+        .hm-part { display: none; } /* Hidden until wrong guess */
+        .hm-keyboard { margin-top: 15px; }
+        .hm-key {
+            padding: 8px 12px; margin: 2px; font-size: 1.1rem;
+            background: var(--container-bg); border: 2px solid var(--primary-pink);
+            color: var(--text-color); border-radius: 10px; font-weight: bold;
+        }
+        .hm-key:active:not(:disabled) { transform: scale(0.9); }
+        .hm-key:disabled { opacity: 0.5; transform: none; box-shadow: none; cursor: default !important; }
+        
+        /* Dramatic Shake Animation */
+        @keyframes shakeDrama {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) rotate(-2deg); }
+            20%, 40%, 60%, 80% { transform: translateX(10px) rotate(2deg); }
+        }
+        .shake-drama {
+            animation: shakeDrama 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: #ff4757 !important;
+            box-shadow: 0 0 30px rgba(255, 71, 87, 0.6) !important;
+        }
 
         .message-box { margin: 20px 0; font-size: 1.1rem; min-height: 1.5em; font-weight: bold; }
 
@@ -384,16 +380,8 @@
         }
         .action-btn:active { transform: scale(0.95) translateY(4px); box-shadow: 0 0 0 #8b005d; }
         
-        .secondary-btn {
-            background-color: var(--primary-pink);
-            color: #8b005d;
-            box-shadow: 0 4px 0 #c71585;
-        }
-        body.dark-mode .secondary-btn {
-            background-color: #4a0031;
-            color: var(--text-color);
-            box-shadow: 0 4px 0 #2a001c;
-        }
+        .secondary-btn { background-color: var(--primary-pink); color: #8b005d; box-shadow: 0 4px 0 #c71585; }
+        body.dark-mode .secondary-btn { background-color: #4a0031; color: var(--text-color); box-shadow: 0 4px 0 #2a001c; }
 
         .input-box {
             padding: 10px; border: 2px solid var(--primary-pink); border-radius: 15px;
@@ -439,6 +427,7 @@
         <button class="nav-btn" onclick="switchTab('tictactoe')">Tic-Tac-Pika ❌⭕</button>
         <button class="nav-btn" onclick="switchTab('connect4')">Connect Crows 🧶</button>
         <button class="nav-btn" onclick="switchTab('reversi')">O-pika-llo ☯️</button>
+        <button class="nav-btn" onclick="switchTab('hangman')">Hang-meow 🪢</button>
         <button class="nav-btn" onclick="switchTab('coinflip')">Coin Toss 🪙</button>
         <button class="nav-btn" onclick="switchTab('guessnum')">Guess Num 🔢</button>
         <button class="nav-btn" onclick="switchTab('wordle')">Pika-dle 🔤</button>
@@ -527,6 +516,35 @@
         </div>
     </div>
 
+    <div id="hangman" class="game-section">
+        <div class="game-container" id="hm-container">
+            <div class="stats" style="justify-content: center;">
+                <span id="hm-lives-display">Lives: 🎈🎈🎈🎈🎈🎈</span>
+            </div>
+            
+            <svg height="160" width="160" style="margin: 0 auto; display: block; border-bottom: 3px solid var(--primary-pink);">
+                <line x1="20" y1="150" x2="80" y2="150" stroke="var(--dark-pink)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="50" y1="150" x2="50" y2="20" stroke="var(--dark-pink)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="50" y1="20" x2="110" y2="20" stroke="var(--dark-pink)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="110" y1="20" x2="110" y2="40" stroke="var(--dark-pink)" stroke-width="5" stroke-linecap="round"/>
+                
+                <circle cx="110" cy="55" r="15" stroke="var(--text-color)" stroke-width="4" fill="var(--bg-color)" class="hm-part" id="hm-part-1"/>
+                <line x1="110" y1="70" x2="110" y2="110" stroke="var(--text-color)" stroke-width="4" stroke-linecap="round" class="hm-part" id="hm-part-2"/>
+                <line x1="110" y1="85" x2="85" y2="70" stroke="var(--text-color)" stroke-width="4" stroke-linecap="round" class="hm-part" id="hm-part-3"/>
+                <line x1="110" y1="85" x2="135" y2="70" stroke="var(--text-color)" stroke-width="4" stroke-linecap="round" class="hm-part" id="hm-part-4"/>
+                <line x1="110" y1="110" x2="90" y2="140" stroke="var(--text-color)" stroke-width="4" stroke-linecap="round" class="hm-part" id="hm-part-5"/>
+                <line x1="110" y1="110" x2="130" y2="140" stroke="var(--text-color)" stroke-width="4" stroke-linecap="round" class="hm-part" id="hm-part-6"/>
+            </svg>
+
+            <div class="hm-word" id="hm-word-display">_ _ _ _ _</div>
+            <div class="message-box" id="hm-msg">Guess a letter!</div>
+            
+            <div id="hm-keyboard" class="hm-keyboard"></div>
+
+            <button class="action-btn secondary-btn" onclick="initHangman()" style="margin-top: 15px;">New Word 🔤</button>
+        </div>
+    </div>
+
     <div id="coinflip" class="game-section">
         <div class="game-container">
             <div class="coin-wrapper">
@@ -611,7 +629,6 @@
         // --- GLOBAL LOGIC & EFFECTS ---
         let effectIntervals = [];
 
-        // Create Ambient Background Hearts
         function createAmbientHearts() {
             for (let i = 0; i < 20; i++) {
                 let shape = document.createElement('div');
@@ -626,9 +643,8 @@
         }
         createAmbientHearts();
 
-        // Juicy Button Sparkles on Click
         document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'BUTTON' || e.target.classList.contains('cell') || e.target.classList.contains('su-cell')) {
+            if (e.target.tagName === 'BUTTON' || e.target.classList.contains('cell') || e.target.classList.contains('su-cell') || e.target.classList.contains('hm-key')) {
                 for (let i = 0; i < 3; i++) {
                     let sparkle = document.createElement('div');
                     sparkle.className = 'effect-element';
@@ -720,7 +736,7 @@
             }
         }
 
-        // --- WORD DICTIONARY (For Wordle & Waffle Meanings) ---
+        // --- WORD DICTIONARY ---
         const wordDict = {
             'PIKAS': 'Small mountain-dwelling mammals related to rabbits.',
             'CROWS': 'Highly intelligent black birds known for problem-solving.',
@@ -743,6 +759,7 @@
             'tictactoe': { title: 'Tic-Tac-Pika ❌⭕', text: 'Pillu vs Crow! Take turns placing your picture. First to get 3 in a row wins!' },
             'connect4': { title: 'Connect Crows 🧶', text: 'Drop pieces into the columns. Connect 4 in a row to win!' },
             'reversi': { title: 'O-pika-llo ☯️', text: 'Trap opponent\'s pieces between two of yours to flip them! Game ends when the board is full.' },
+            'hangman': { title: 'Hang-meow 🪢', text: 'Guess the hidden word letter by letter. Every wrong guess draws a piece of the hangman. You have 6 lives!' },
             'coinflip': { title: 'Coin Toss 🪙', text: 'Call it in the air! Choose Pillu or Crow and see if fortune favors you.' },
             'guessnum': { title: 'Guess Number 🔢', text: 'I am thinking of a number between 1 and 100. Use the Higher/Lower hints to find it!' },
             'wordle': { title: 'Pika-dle 🔤', text: 'Guess the 5-letter word in 6 tries. \n🟩 = Correct letter & spot. \n🟨 = Right letter, wrong spot. \n⬛ = Letter not in word.' },
@@ -996,6 +1013,7 @@
             const b = document.getElementById('rev-board'); b.innerHTML = '';
             for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
                 let el = document.createElement('div'); el.className = 'cell rev-cell revealed'; 
+                el.style.backgroundColor = 'transparent'; el.style.boxShadow = 'none';
                 el.onclick = () => revClick(r,c); b.appendChild(el);
             }
             updateRevDisplay();
@@ -1058,7 +1076,114 @@
         }
 
         // ==========================================
-        // 5. COIN TOSS
+        // 5. HANG-MEOW
+        // ==========================================
+        const hmWords = Object.keys(wordDict);
+        let hmTarget = "", hmGuessed = [], hmWrong = 0, hmMax = 6, hmOver = false;
+
+        function initHangman() {
+            clearEffects();
+            hmTarget = hmWords[Math.floor(Math.random() * hmWords.length)];
+            hmGuessed = []; hmWrong = 0; hmOver = false;
+            
+            document.getElementById('hm-msg').innerText = "Guess a letter!";
+            document.getElementById('hm-lives-display').innerText = "Lives: 🎈🎈🎈🎈🎈🎈";
+            
+            // Hide all hangman parts
+            for(let i=1; i<=6; i++) {
+                document.getElementById(`hm-part-${i}`).style.display = 'none';
+            }
+            
+            drawHmWord();
+            drawHmKeyboard();
+        }
+
+        function drawHmWord() {
+            const container = document.getElementById('hm-word-display');
+            let displayStr = "";
+            for(let char of hmTarget) {
+                if(hmGuessed.includes(char) || hmOver) {
+                    displayStr += char + " ";
+                } else {
+                    displayStr += "_ ";
+                }
+            }
+            container.innerText = displayStr.trim();
+        }
+
+        function drawHmKeyboard() {
+            const kb = document.getElementById('hm-keyboard');
+            kb.innerHTML = '';
+            const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+            rows.forEach(row => {
+                let rDiv = document.createElement('div');
+                rDiv.style.display = 'flex';
+                rDiv.style.justifyContent = 'center';
+                rDiv.style.gap = '4px';
+                rDiv.style.marginBottom = '6px';
+                for(let char of row) {
+                    let btn = document.createElement('button');
+                    btn.className = 'hm-key';
+                    btn.innerText = char;
+                    if(hmGuessed.includes(char)) {
+                        btn.disabled = true;
+                        if(hmTarget.includes(char)) {
+                            btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22';
+                        } else {
+                            btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080';
+                        }
+                    }
+                    btn.onclick = () => hmGuess(char, btn);
+                    rDiv.appendChild(btn);
+                }
+                kb.appendChild(rDiv);
+            });
+        }
+
+        function hmShake() {
+            const container = document.getElementById('hm-container');
+            container.classList.remove('shake-drama');
+            void container.offsetWidth; // trigger reflow
+            container.classList.add('shake-drama');
+            setTimeout(() => container.classList.remove('shake-drama'), 500);
+        }
+
+        function hmGuess(char, btn) {
+            if(hmOver || hmGuessed.includes(char)) return;
+            hmGuessed.push(char);
+            
+            if(hmTarget.includes(char)) {
+                btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22';
+            } else {
+                btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080';
+                hmWrong++;
+                hmShake();
+                document.getElementById(`hm-part-${hmWrong}`).style.display = 'block';
+                
+                let balloons = "🎈".repeat(6 - hmWrong) + "💥".repeat(hmWrong);
+                document.getElementById('hm-lives-display').innerText = `Lives: ${balloons}`;
+            }
+            btn.disabled = true;
+            
+            drawHmWord();
+            
+            // Check Win/Loss
+            let won = hmTarget.split('').every(c => hmGuessed.includes(c));
+            if(won) {
+                hmOver = true;
+                let meaning = wordDict[hmTarget] || "You got it!";
+                document.getElementById('hm-msg').innerHTML = `Saved! 😻<br><span style="font-size:0.9rem; font-weight:normal;">${meaning}</span>`;
+                celebrateWin();
+            } else if(hmWrong >= hmMax) {
+                hmOver = true;
+                document.getElementById('hm-msg').innerText = "Oh no! 🙀";
+                drawHmWord(); // Reveals word
+                triggerLoss(['🙀', '💥']);
+            }
+        }
+
+        // ==========================================
+        // 6. COIN TOSS
         // ==========================================
         let cfFlipping = false;
         function flipCoin(guess) {
@@ -1093,7 +1218,7 @@
         }
 
         // ==========================================
-        // 6. GUESS NUMBER
+        // 7. GUESS NUMBER
         // ==========================================
         let gnTarget = 0, gnOver = false;
         function initGN() {
@@ -1118,12 +1243,10 @@
         }
 
         // ==========================================
-        // 7. PIKA-DLE (WORDLE)
+        // 8. PIKA-DLE (WORDLE)
         // ==========================================
-        const wdWords = ['PIKAS', 'CROWS', 'HEART', 'SWEET', 'MEOWS', 'KITTY', 'MAGIC', 'SMILE'];
-        let wdTarget = "", wdRow = 0, wdOver = false;
         function initWordle() {
-            wdTarget = wdWords[Math.floor(Math.random() * wdWords.length)];
+            wdTarget = hmWords[Math.floor(Math.random() * hmWords.length)];
             wdRow = 0; wdOver = false; clearEffects();
             const b = document.getElementById('wd-board'); b.innerHTML = '';
             for(let r=0; r<6; r++) for(let c=0; c<5; c++) {
@@ -1163,7 +1286,7 @@
         }
 
         // ==========================================
-        // 8. SU-MEOW-KU
+        // 9. SU-MEOW-KU
         // ==========================================
         const suSolution = "534678912672195348198342567859761423426853791713924856961537284287419635345286179";
         let suBoard = [], suEditable = [], suPencils = [], suOver=false, suSelected=null, suPencilMode=false, suLives=3, suHidden=30;
@@ -1261,6 +1384,13 @@
                     let hearts = "💖".repeat(suLives) + "💔".repeat(3 - suLives);
                     document.getElementById('su-lives-display').innerText = `Lives: ${hearts}`;
                     msg.innerText = "Wrong! Lost a life! 🙀";
+                    
+                    const container = document.querySelector('#sudoku .game-container');
+                    container.classList.remove('shake-drama');
+                    void container.offsetWidth;
+                    container.classList.add('shake-drama');
+                    setTimeout(() => container.classList.remove('shake-drama'), 500);
+
                     if(suLives <= 0) {
                         suOver = true;
                         msg.innerText = "Game Over! No more lives! 😿";
@@ -1279,7 +1409,7 @@
         }
 
         // ==========================================
-        // 9. WAFF-MEOW (WAFFLE)
+        // 10. WAFF-MEOW (WAFFLE)
         // ==========================================
         const wfTarget = [ 'S','W','E','E','T', 'H',' ','N',' ','R', 'A','U','D','I','O', 'R',' ','U',' ','U', 'E','V','E','N','T' ];
         let wfCurrent = [], wfSelected = null, wfOver = false, wfSwaps = 15;
@@ -1362,7 +1492,7 @@
         }
 
         // Init everything
-        initGN(); initWordle(); initSudoku(); initWaffle();
+        initHangman(); initGN(); initWordle(); initSudoku(); initWaffle();
         initMS(); initTTT(); initC4(); initRev();
     </script>
 </body>
