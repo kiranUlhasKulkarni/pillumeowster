@@ -114,6 +114,29 @@
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 95vw; max-width: 600px; z-index: 1000;
         }
+
+        /* Fixed Dock Label that pops up over the entire bar */
+        .dock-label {
+            text-align: center;
+            background: var(--text-color);
+            color: var(--container-bg);
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            border-radius: 15px;
+            width: fit-content;
+            margin: 0 auto 10px auto;
+            font-weight: 900;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .dock-label.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .floating-dock {
             display: flex; gap: 15px; background: rgba(255, 240, 245, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 15px 20px; border-radius: 50px; border: 3px solid var(--primary-pink); box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5);
@@ -129,13 +152,6 @@
         }
         .dock-item:hover { transform: translateY(-8px) scale(1.1); box-shadow: 0 8px 15px rgba(255, 105, 180, 0.4); z-index: 10; }
         .dock-item.active { background: var(--dark-pink); border-color: var(--dark-pink); transform: translateY(-12px) scale(1.15); box-shadow: 0 10px 20px rgba(255, 105, 180, 0.6); }
-
-        .dock-tooltip {
-            position: absolute; top: -45px; background: var(--text-color); color: var(--container-bg); font-size: 0.85rem; padding: 6px 12px;
-            border-radius: 15px; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; transform: translateY(10px); white-space: nowrap; font-weight: 900;
-        }
-        .dock-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: var(--text-color) transparent transparent transparent; }
-        .dock-item:hover .dock-tooltip, .dock-item.active .dock-tooltip { opacity: 1; transform: translateY(0); }
 
         /* --- MODAL --- */
         .modal-overlay {
@@ -253,7 +269,6 @@
         /* Coin flip */
         .coin-wrapper { perspective: 1000px; margin: 20px auto; width: 120px; height: 120px; }
         .coin-inner { width: 100%; height: 100%; transition: transform 1s cubic-bezier(0.4, 2, 0.2, 1); transform-style: preserve-3d; border-radius: 50%; background-color: var(--bg-color); border: 6px solid var(--dark-pink); display: flex; align-items: center; justify-content: center; }
-        .coin-inner.img-piece { background-size: 60%; }
 
         /* Global Effects */
         .effect-element { position: fixed; pointer-events: none; z-index: 9999; }
@@ -476,8 +491,8 @@
                 <span>High: <span id="pj-high">0</span></span>
             </div>
             <div id="pj-screen" style="width:100%; height:150px; background:var(--cell-revealed); position:relative; overflow:hidden; border: 3px solid var(--primary-pink); border-radius: 10px; cursor:pointer;" onclick="pjJump()">
-                <div id="pj-player" style="position:absolute; bottom:0; left:20px; font-size:40px; transition: bottom 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);">⚡</div>
-                <div id="pj-obs" style="position:absolute; bottom:0; right:-50px; font-size:40px;">🙀</div>
+                <div id="pj-player" class="img-piece p1-img" style="position:absolute; bottom:0; left:20px; width:45px; height:45px; transition: bottom 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);"></div>
+                <div id="pj-obs" class="img-piece p2-img" style="position:absolute; bottom:0; right:-50px; width:40px; height:40px;"></div>
             </div>
             <div class="message-box" id="pj-msg">Tap the screen to jump!</div>
             <button class="action-btn" onclick="initPJ()">Start Running 🏃</button>
@@ -485,23 +500,24 @@
     </div>
 
     <div class="dock-wrapper">
+        <div id="dock-label-display" class="dock-label">Game Name</div>
         <div class="floating-dock">
-            <div class="dock-item active" onclick="switchTab('meowsweeper', this)">😻<span class="dock-tooltip">Meow-sweeper</span></div>
-            <div class="dock-item" onclick="switchTab('tictactoe', this)">❌<span class="dock-tooltip">Tic-Tac-Pika</span></div>
-            <div class="dock-item" onclick="switchTab('connect4', this)">🧶<span class="dock-tooltip">Connect Crows</span></div>
-            <div class="dock-item" onclick="switchTab('reversi', this)">☯️<span class="dock-tooltip">O-pika-llo</span></div>
-            <div class="dock-item" onclick="switchTab('memory', this)">🃏<span class="dock-tooltip">Pika-Pairs</span></div>
-            <div class="dock-item" onclick="switchTab('simon', this)">🔴<span class="dock-tooltip">Pillu Says</span></div>
-            <div class="dock-item" onclick="switchTab('rps', this)">✌️<span class="dock-tooltip">R. P. Heart</span></div>
-            <div class="dock-item" onclick="switchTab('whack', this)">🔨<span class="dock-tooltip">Catch a Snack</span></div>
-            <div class="dock-item" onclick="switchTab('slider', this)">🖼️<span class="dock-tooltip">Slider Puzzle</span></div>
-            <div class="dock-item" onclick="switchTab('hangman', this)">🪢<span class="dock-tooltip">Hang-meow</span></div>
-            <div class="dock-item" onclick="switchTab('coinflip', this)">🪙<span class="dock-tooltip">Coin Toss</span></div>
-            <div class="dock-item" onclick="switchTab('guessnum', this)">🔢<span class="dock-tooltip">Guess Num</span></div>
-            <div class="dock-item" onclick="switchTab('wordle', this)">🔤<span class="dock-tooltip">Pika-dle</span></div>
-            <div class="dock-item" onclick="switchTab('sudoku', this)">🧩<span class="dock-tooltip">Su-meow-ku</span></div>
-            <div class="dock-item" onclick="switchTab('waffle', this)">🧇<span class="dock-tooltip">Waff-meow</span></div>
-            <div class="dock-item" onclick="switchTab('pikajump', this)">🏃<span class="dock-tooltip">Pillu Run</span></div>
+            <div class="dock-item active" onclick="switchTab('meowsweeper', this)" onmouseenter="showDockLabel('Meow-sweeper')" onmouseleave="hideDockLabel()">😻</div>
+            <div class="dock-item" onclick="switchTab('tictactoe', this)" onmouseenter="showDockLabel('Tic-Tac-Pika')" onmouseleave="hideDockLabel()">❌</div>
+            <div class="dock-item" onclick="switchTab('connect4', this)" onmouseenter="showDockLabel('Connect Crows')" onmouseleave="hideDockLabel()">🧶</div>
+            <div class="dock-item" onclick="switchTab('reversi', this)" onmouseenter="showDockLabel('O-pika-llo')" onmouseleave="hideDockLabel()">☯️</div>
+            <div class="dock-item" onclick="switchTab('memory', this)" onmouseenter="showDockLabel('Pika-Pairs')" onmouseleave="hideDockLabel()">🃏</div>
+            <div class="dock-item" onclick="switchTab('simon', this)" onmouseenter="showDockLabel('Pillu Says')" onmouseleave="hideDockLabel()">🔴</div>
+            <div class="dock-item" onclick="switchTab('rps', this)" onmouseenter="showDockLabel('R. P. Heart')" onmouseleave="hideDockLabel()">✌️</div>
+            <div class="dock-item" onclick="switchTab('whack', this)" onmouseenter="showDockLabel('Catch a Snack')" onmouseleave="hideDockLabel()">🔨</div>
+            <div class="dock-item" onclick="switchTab('slider', this)" onmouseenter="showDockLabel('Slider Puzzle')" onmouseleave="hideDockLabel()">🖼️</div>
+            <div class="dock-item" onclick="switchTab('hangman', this)" onmouseenter="showDockLabel('Hang-meow')" onmouseleave="hideDockLabel()">🪢</div>
+            <div class="dock-item" onclick="switchTab('coinflip', this)" onmouseenter="showDockLabel('Coin Toss')" onmouseleave="hideDockLabel()">🪙</div>
+            <div class="dock-item" onclick="switchTab('guessnum', this)" onmouseenter="showDockLabel('Guess Number')" onmouseleave="hideDockLabel()">🔢</div>
+            <div class="dock-item" onclick="switchTab('wordle', this)" onmouseenter="showDockLabel('Pika-dle')" onmouseleave="hideDockLabel()">🔤</div>
+            <div class="dock-item" onclick="switchTab('sudoku', this)" onmouseenter="showDockLabel('Su-meow-ku')" onmouseleave="hideDockLabel()">🧩</div>
+            <div class="dock-item" onclick="switchTab('waffle', this)" onmouseenter="showDockLabel('Waff-meow')" onmouseleave="hideDockLabel()">🧇</div>
+            <div class="dock-item" onclick="switchTab('pikajump', this)" onmouseenter="showDockLabel('Pillu Run')" onmouseleave="hideDockLabel()">🏃</div>
         </div>
     </div>
 
@@ -539,6 +555,16 @@
 
         // --- GLOBAL LOGIC & EFFECTS ---
         let effectIntervals = [];
+
+        function showDockLabel(name) {
+            const label = document.getElementById('dock-label-display');
+            label.innerText = name;
+            label.classList.add('show');
+        }
+
+        function hideDockLabel() {
+            document.getElementById('dock-label-display').classList.remove('show');
+        }
 
         function enterHub() {
             const splash = document.getElementById('splash-screen');
@@ -697,7 +723,7 @@
         let tttBoard = [], tttTurn = 'P1', tttVsBot = true, tttOver = false;
         function setTttMode(isBot) { tttVsBot = isBot; document.getElementById('ttt-bot-btn').classList.toggle('active', isBot); document.getElementById('ttt-pass-btn').classList.toggle('active', !isBot); initTTT(); }
         function initTTT() {
-            tttBoard = Array(9).fill(null); tttTurn = 'P1'; tttOver = false;
+            clearEffects(); tttBoard = Array(9).fill(null); tttTurn = 'P1'; tttOver = false;
             document.getElementById('ttt-message').innerHTML = `<span class="p1-text">Pillu (⚡) - Your turn!</span>`;
             const b = document.getElementById('ttt-board'); b.innerHTML = '';
             for(let i=0; i<9; i++) { let el = document.createElement('div'); el.className = 'cell ttt-cell'; el.onclick = () => tttClick(i); b.appendChild(el); }
@@ -706,9 +732,14 @@
         function makeTttMove(i, player) {
             tttBoard[i] = player; let el = document.querySelectorAll('.ttt-cell')[i]; el.innerText = ''; el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
             let playerName = player === 'P1' ? 'Pillu' : 'Crow'; if (player === 'P2' && tttVsBot) playerName = 'Bot';
-            if(checkTttWin(player)) { tttOver = true; document.getElementById('ttt-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`; (player === 'P2' && tttVsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
+            if(checkTttWin(player)) {
+                tttOver = true; document.getElementById('ttt-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`;
+                (player === 'P2' && tttVsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
             } else if (!tttBoard.includes(null)) { tttOver = true; document.getElementById('ttt-message').innerText = "It's a tie! 🐾"; celebrateTie();
-            } else { tttTurn = player === 'P1' ? 'P2' : 'P1'; let sym = tttTurn === 'P1' ? '⚡' : '🐦‍⬛'; let nextName = (tttTurn === 'P2' && tttVsBot) ? 'Bot' : (tttTurn === 'P1' ? 'Pillu' : 'Crow'); document.getElementById('ttt-message').innerHTML = `<span class="${tttTurn.toLowerCase()}-text">${nextName} (${sym}) - Thinking...</span>`; }
+            } else {
+                tttTurn = player === 'P1' ? 'P2' : 'P1'; let sym = tttTurn === 'P1' ? '⚡' : '🐦‍⬛'; let nextName = (tttTurn === 'P2' && tttVsBot) ? 'Bot' : (tttTurn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('ttt-message').innerHTML = `<span class="${tttTurn.toLowerCase()}-text">${nextName} (${sym}) - Thinking...</span>`;
+            }
         }
         function checkTttWin(p) { const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; return lines.some(l => l.every(i => tttBoard[i] === p)); }
         function tttBotMove() { if(tttOver) return; let empty = tttBoard.map((v,i) => v===null ? i : null).filter(v => v!==null); makeTttMove(empty[Math.floor(Math.random() * empty.length)], 'P2'); }
@@ -719,7 +750,7 @@
         let c4Board = [], c4Turn = 'P1', c4VsBot = true, c4Over = false; const C4R=6, C4C=7;
         function setC4Mode(isBot) { c4VsBot = isBot; document.getElementById('c4-bot-btn').classList.toggle('active', isBot); document.getElementById('c4-pass-btn').classList.toggle('active', !isBot); initC4(); }
         function initC4() {
-            c4Board = Array.from({length: C4R}, () => Array(C4C).fill(null)); c4Turn = 'P1'; c4Over = false;
+            clearEffects(); c4Board = Array.from({length: C4R}, () => Array(C4C).fill(null)); c4Turn = 'P1'; c4Over = false;
             document.getElementById('c4-message').innerHTML = `<span class="p1-text">Pillu (⚡) - Drop a piece!</span>`;
             const b = document.getElementById('c4-board'); b.innerHTML = '';
             for(let r=0; r<C4R; r++) for(let c=0; c<C4C; c++) { let el = document.createElement('div'); el.className = 'cell c4-cell revealed'; el.onclick = () => c4Click(c); b.appendChild(el); }
@@ -731,13 +762,19 @@
         function makeC4Move(r, c, player) {
             c4Board[r][c] = player; let el = document.querySelectorAll('.c4-cell')[r*C4C + c]; el.innerText = ''; el.classList.add('img-piece', player === 'P1' ? 'p1-img' : 'p2-img');
             let playerName = player === 'P1' ? 'Pillu' : 'Crow'; if (player === 'P2' && c4VsBot) playerName = 'Bot';
-            if(checkC4Win(r, c, player)) { c4Over = true; document.getElementById('c4-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`; (player === 'P2' && c4VsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
+            if(checkC4Win(r, c, player)) {
+                c4Over = true; document.getElementById('c4-message').innerText = `${playerName} Wins! ${player === 'P1' ? '⚡💛' : '🐦‍⬛'}`;
+                (player === 'P2' && c4VsBot) ? triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']) : celebrateWin();
             } else if (c4Board[0].every(cell => cell !== null)) { c4Over = true; document.getElementById('c4-message').innerText = "Board full! Tie! 🐾"; celebrateTie();
-            } else { c4Turn = player === 'P1' ? 'P2' : 'P1'; let sym = c4Turn === 'P1' ? '⚡' : '🐦‍⬛'; let nextName = (c4Turn === 'P2' && c4VsBot) ? 'Bot' : (c4Turn === 'P1' ? 'Pillu' : 'Crow'); document.getElementById('c4-message').innerHTML = `<span class="${c4Turn.toLowerCase()}-text">${nextName} (${sym})'s turn!</span>`; }
+            } else {
+                c4Turn = player === 'P1' ? 'P2' : 'P1'; let sym = c4Turn === 'P1' ? '⚡' : '🐦‍⬛'; let nextName = (c4Turn === 'P2' && c4VsBot) ? 'Bot' : (c4Turn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('c4-message').innerHTML = `<span class="${c4Turn.toLowerCase()}-text">${nextName} (${sym})'s turn!</span>`;
+            }
         }
         function checkC4Win(r, c, p) {
             const dirs = [[0,1],[1,0],[1,1],[1,-1]]; 
-            for(let [dr, dc] of dirs) { let count = 1;
+            for(let [dr, dc] of dirs) {
+                let count = 1;
                 for(let i=1; i<=3; i++) { let nr=r+dr*i, nc=c+dc*i; if(nr>=0&&nr<C4R&&nc>=0&&nc<C4C&&c4Board[nr][nc]===p) count++; else break; }
                 for(let i=1; i<=3; i++) { let nr=r-dr*i, nc=c-dc*i; if(nr>=0&&nr<C4R&&nc>=0&&nc<C4C&&c4Board[nr][nc]===p) count++; else break; }
                 if(count >= 4) return true;
@@ -751,70 +788,125 @@
         let revBoard=[], revTurn='P1', revVsBot=true, revOver=false;
         function setRevMode(isBot) { revVsBot = isBot; document.getElementById('rev-bot-btn').classList.toggle('active', isBot); document.getElementById('rev-pass-btn').classList.toggle('active', !isBot); initRev(); }
         function initRev() {
-            revBoard = Array.from({length: 8}, () => Array(8).fill(null)); revTurn = 'P1'; revOver = false; revBoard[3][3] = 'P1'; revBoard[3][4] = 'P2'; revBoard[4][3] = 'P2'; revBoard[4][4] = 'P1';
+            clearEffects(); revBoard = Array.from({length: 8}, () => Array(8).fill(null)); revTurn = 'P1'; revOver = false;
+            revBoard[3][3] = 'P1'; revBoard[3][4] = 'P2'; revBoard[4][3] = 'P2'; revBoard[4][4] = 'P1';
             const b = document.getElementById('rev-board'); b.innerHTML = '';
             for(let r=0; r<8; r++) for(let c=0; c<8; c++) { let el = document.createElement('div'); el.className = 'cell rev-cell revealed'; el.style.backgroundColor = 'transparent'; el.style.boxShadow = 'none'; el.onclick = () => revClick(r,c); b.appendChild(el); }
             updateRevDisplay();
         }
         function updateRevDisplay() {
             let p1=0, p2=0; let cells = document.querySelectorAll('.rev-cell');
-            for(let r=0; r<8; r++) for(let c=0; c<8; c++) { let v = revBoard[r][c]; let el = cells[r*8+c]; if(v==='P1') p1++; if(v==='P2') p2++; el.innerText = v === 'P1' ? '⚡' : v === 'P2' ? '🐾' : ''; }
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
+                let v = revBoard[r][c]; let el = cells[r*8+c]; if(v==='P1') p1++; if(v==='P2') p2++;
+                el.innerText = v === 'P1' ? '⚡' : v === 'P2' ? '🐾' : '';
+            }
             document.getElementById('rev-p1-score').innerText = p1; document.getElementById('rev-p2-score').innerText = p2;
             if(p1+p2 === 64 || (!hasValidMove('P1') && !hasValidMove('P2'))) {
-                revOver = true; if(p1>p2) { document.getElementById('rev-message').innerText = "Pillu Wins! ⚡💛"; celebrateWin(); } else if(p2>p1) { document.getElementById('rev-message').innerText = revVsBot ? "Bot Wins! 🙀" : "Crow Wins! 🐾"; revVsBot?triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']):celebrateWin(); } else { document.getElementById('rev-message').innerText = "It's a tie! 🐾"; celebrateTie(); }
-            } else if (!hasValidMove(revTurn)) { revTurn = revTurn==='P1'?'P2':'P1'; updateRevDisplay(); } else { let sym = revTurn === 'P1' ? '⚡' : '🐾'; let name = (revTurn === 'P2' && revVsBot) ? 'Bot' : (revTurn === 'P1' ? 'Pillu' : 'Crow'); document.getElementById('rev-message').innerHTML = `<span class="${revTurn.toLowerCase()}-text">${name} (${sym}) - Your move!</span>`; if(revVsBot && revTurn === 'P2') setTimeout(revBotMove, 800); }
+                revOver = true;
+                if(p1>p2) { document.getElementById('rev-message').innerText = "Pillu Wins! ⚡💛"; celebrateWin(); }
+                else if(p2>p1) { document.getElementById('rev-message').innerText = revVsBot ? "Bot Wins! 🙀" : "Crow Wins! 🐾"; revVsBot?triggerLoss(['🐦‍⬛', '💥', '🦅', '🐦‍⬛']):celebrateWin(); }
+                else { document.getElementById('rev-message').innerText = "It's a tie! 🐾"; celebrateTie(); }
+            } else if (!hasValidMove(revTurn)) { revTurn = revTurn==='P1'?'P2':'P1'; updateRevDisplay(); } else {
+                let sym = revTurn === 'P1' ? '⚡' : '🐾'; let name = (revTurn === 'P2' && revVsBot) ? 'Bot' : (revTurn === 'P1' ? 'Pillu' : 'Crow');
+                document.getElementById('rev-message').innerHTML = `<span class="${revTurn.toLowerCase()}-text">${name} (${sym}) - Your move!</span>`;
+                if(revVsBot && revTurn === 'P2') setTimeout(revBotMove, 800);
+            }
         }
         function getFlips(r, c, p) {
-            if(revBoard[r][c] !== null) return []; let flips = []; const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-            for(let [dr, dc] of dirs) { let temp = []; let nr=r+dr, nc=c+dc; while(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] !== null && revBoard[nr][nc] !== p) { temp.push({r:nr, c:nc}); nr+=dr; nc+=dc; } if(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] === p) flips.push(...temp); } return flips;
+            if(revBoard[r][c] !== null) return [];
+            let flips = []; const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            for(let [dr, dc] of dirs) {
+                let temp = []; let nr=r+dr, nc=c+dc;
+                while(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] !== null && revBoard[nr][nc] !== p) { temp.push({r:nr, c:nc}); nr+=dr; nc+=dc; }
+                if(nr>=0 && nr<8 && nc>=0 && nc<8 && revBoard[nr][nc] === p) flips.push(...temp);
+            } return flips;
         }
         function hasValidMove(p) { for(let r=0; r<8; r++) for(let c=0; c<8; c++) if(getFlips(r,c,p).length > 0) return true; return false; }
-        function revClick(r, c) { if(revOver || (revVsBot && revTurn === 'P2')) return; let flips = getFlips(r, c, revTurn); if(flips.length === 0) return; revBoard[r][c] = revTurn; flips.forEach(f => revBoard[f.r][f.c] = revTurn); revTurn = revTurn === 'P1' ? 'P2' : 'P1'; updateRevDisplay(); }
-        function revBotMove() { if(revOver) return; let bestMove = null; let maxFlips = -1; for(let r=0; r<8; r++) for(let c=0; c<8; c++) { let flips = getFlips(r,c,'P2'); if(flips.length > maxFlips) { maxFlips = flips.length; bestMove = {r,c,flips}; } } if(bestMove) { revBoard[bestMove.r][bestMove.c] = 'P2'; bestMove.flips.forEach(f => revBoard[f.r][f.c] = 'P2'); revTurn = 'P1'; updateRevDisplay(); } }
+        function revClick(r, c) {
+            if(revOver || (revVsBot && revTurn === 'P2')) return;
+            let flips = getFlips(r, c, revTurn); if(flips.length === 0) return;
+            revBoard[r][c] = revTurn; flips.forEach(f => revBoard[f.r][f.c] = revTurn);
+            revTurn = revTurn === 'P1' ? 'P2' : 'P1'; updateRevDisplay();
+        }
+        function revBotMove() {
+            if(revOver) return; let bestMove = null; let maxFlips = -1;
+            for(let r=0; r<8; r++) for(let c=0; c<8; c++) { let flips = getFlips(r,c,'P2'); if(flips.length > maxFlips) { maxFlips = flips.length; bestMove = {r,c,flips}; } }
+            if(bestMove) { revBoard[bestMove.r][bestMove.c] = 'P2'; bestMove.flips.forEach(f => revBoard[f.r][f.c] = 'P2'); revTurn = 'P1'; updateRevDisplay(); }
+        }
 
         // ==========================================
         // 5. PIKA-PAIRS (MEMORY)
         // ==========================================
         const memEmojis = ['⚡', '🐦‍⬛', '💖', '🧶', '🐾', '🎈', '😻', '🧇']; let memCards = [], memFlipped = [], memMatched = 0, memMoves = 0, memLock = false;
         function initMemory() {
-            memCards = [...memEmojis, ...memEmojis].sort(() => Math.random() - 0.5); memFlipped = []; memMatched = 0; memMoves = 0; memLock = false; document.getElementById('mem-moves').innerText = '0'; document.getElementById('mem-msg').innerText = "Find the pairs! 🃏"; const b = document.getElementById('mem-board'); b.innerHTML = '';
-            for(let i=0; i<16; i++) { let cell = document.createElement('div'); cell.className = 'mem-cell cell'; cell.innerHTML = `<div class="mem-inner"><div class="mem-front"></div><div class="mem-back">${memCards[i]}</div></div>`; cell.onclick = () => memClick(cell, i); b.appendChild(cell); }
+            clearEffects(); memCards = [...memEmojis, ...memEmojis].sort(() => Math.random() - 0.5);
+            memFlipped = []; memMatched = 0; memMoves = 0; memLock = false;
+            document.getElementById('mem-moves').innerText = '0'; document.getElementById('mem-msg').innerText = "Find the pairs! 🃏";
+            const b = document.getElementById('mem-board'); b.innerHTML = '';
+            for(let i=0; i<16; i++) {
+                let cell = document.createElement('div'); cell.className = 'mem-cell cell';
+                cell.innerHTML = `<div class="mem-inner"><div class="mem-front"></div><div class="mem-back">${memCards[i]}</div></div>`;
+                cell.onclick = () => memClick(cell, i); b.appendChild(cell);
+            }
         }
         function memClick(cell, i) {
-            if(memLock || cell.classList.contains('revealed')) return; cell.classList.add('revealed'); memFlipped.push({cell, val: memCards[i]});
+            if(memLock || cell.classList.contains('revealed')) return;
+            cell.classList.add('revealed'); memFlipped.push({cell, val: memCards[i]});
             if(memFlipped.length === 2) {
                 memLock = true; memMoves++; document.getElementById('mem-moves').innerText = memMoves;
-                if(memFlipped[0].val === memFlipped[1].val) { memMatched++; memFlipped = []; memLock = false; if(memMatched === 8) { document.getElementById('mem-msg').innerText = "You found them all! 💛"; celebrateWin(); } } else { setTimeout(() => { memFlipped[0].cell.classList.remove('revealed'); memFlipped[1].cell.classList.remove('revealed'); shakeContainer('memory'); memFlipped = []; memLock = false; }, 1000); }
+                if(memFlipped[0].val === memFlipped[1].val) {
+                    memMatched++; memFlipped = []; memLock = false;
+                    if(memMatched === 8) { document.getElementById('mem-msg').innerText = "You found them all! 💛"; celebrateWin(); }
+                } else {
+                    setTimeout(() => { memFlipped[0].cell.classList.remove('revealed'); memFlipped[1].cell.classList.remove('revealed'); shakeContainer('memory'); memFlipped = []; memLock = false; }, 1000);
+                }
             }
         }
 
         // ==========================================
         // 6. PILLU SAYS (SIMON)
         // ==========================================
-        let simonSeq = [], simonPlayerSeq = [], simonScore = 0, simonPlaying = false; const sleep = ms => new Promise(r => setTimeout(r, ms));
+        let simonSeq = [], simonPlayerSeq = [], simonScore = 0, simonPlaying = false;
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
         async function initSimon() {
-            simonSeq = []; simonScore = 0; simonPlaying = true; document.getElementById('simon-score').innerText = '0'; document.getElementById('simon-msg').innerText = "Watch closely..."; await sleep(1000); simonNextRound();
+            clearEffects(); simonSeq = []; simonScore = 0; simonPlaying = true;
+            document.getElementById('simon-score').innerText = '0'; document.getElementById('simon-msg').innerText = "Watch closely...";
+            await sleep(1000); simonNextRound();
         }
         async function simonNextRound() {
             simonPlayerSeq = []; simonSeq.push(Math.floor(Math.random() * 4)); document.getElementById('simon-msg').innerText = "Watch closely...";
-            for(let i=0; i<simonSeq.length; i++) { await sleep(500); let btn = document.getElementById(`simon-${simonSeq[i]}`); btn.classList.add('active-glow'); await sleep(400); btn.classList.remove('active-glow'); } document.getElementById('simon-msg').innerText = "Your turn! 🐾";
+            for(let i=0; i<simonSeq.length; i++) {
+                await sleep(500); let btn = document.getElementById(`simon-${simonSeq[i]}`);
+                btn.classList.add('active-glow'); await sleep(400); btn.classList.remove('active-glow');
+            } document.getElementById('simon-msg').innerText = "Your turn! 🐾";
         }
         function simonClick(id) {
-            if(!simonPlaying) return; let btn = document.getElementById(`simon-${id}`); btn.classList.add('active-glow'); setTimeout(() => btn.classList.remove('active-glow'), 200); simonPlayerSeq.push(id);
-            if(simonPlayerSeq[simonPlayerSeq.length-1] !== simonSeq[simonPlayerSeq.length-1]) { simonPlaying = false; document.getElementById('simon-msg').innerText = "Oops! Game Over! 🙀"; shakeContainer('simon'); triggerLoss(['💥', '🙀']); return; }
-            if(simonPlayerSeq.length === simonSeq.length) { simonScore++; document.getElementById('simon-score').innerText = simonScore; simonPlaying = false; setTimeout(() => { simonPlaying = true; simonNextRound(); }, 1000); }
+            if(!simonPlaying) return;
+            let btn = document.getElementById(`simon-${id}`); btn.classList.add('active-glow'); setTimeout(() => btn.classList.remove('active-glow'), 200);
+            simonPlayerSeq.push(id);
+            if(simonPlayerSeq[simonPlayerSeq.length-1] !== simonSeq[simonPlayerSeq.length-1]) {
+                simonPlaying = false; document.getElementById('simon-msg').innerText = "Oops! Game Over! 🙀"; shakeContainer('simon'); triggerLoss(['💥', '🙀']); return;
+            }
+            if(simonPlayerSeq.length === simonSeq.length) {
+                simonScore++; document.getElementById('simon-score').innerText = simonScore; simonPlaying = false;
+                setTimeout(() => { simonPlaying = true; simonNextRound(); }, 1000);
+            }
         }
 
         // ==========================================
         // 7. ROCK PAPER HEART
         // ==========================================
-        let rpsP1 = 0, rpsP2 = 0; const rpsRules = { 'Pika': 'Heart', 'Crow': 'Pika', 'Heart': 'Crow' }; const rpsEmojis = { 'Pika': '⚡', 'Crow': '🐦‍⬛', 'Heart': '💖' };
-        function initRPS() { rpsP1=0; rpsP2=0; document.getElementById('rps-p1').innerText = 0; document.getElementById('rps-p2').innerText = 0; document.getElementById('rps-msg').innerText = "First to 3 wins!"; }
+        let rpsP1 = 0, rpsP2 = 0;
+        const rpsRules = { 'Pika': 'Heart', 'Crow': 'Pika', 'Heart': 'Crow' }; const rpsEmojis = { 'Pika': '⚡', 'Crow': '🐦‍⬛', 'Heart': '💖' };
+        function initRPS() { clearEffects(); rpsP1=0; rpsP2=0; document.getElementById('rps-p1').innerText = 0; document.getElementById('rps-p2').innerText = 0; document.getElementById('rps-msg').innerText = "First to 3 wins!"; }
         function playRPS(p1Choice) {
-            if(rpsP1 >= 3 || rpsP2 >= 3) return; const choices = ['Pika', 'Crow', 'Heart']; const botChoice = choices[Math.floor(Math.random() * 3)];
+            if(rpsP1 >= 3 || rpsP2 >= 3) return;
+            const choices = ['Pika', 'Crow', 'Heart']; const botChoice = choices[Math.floor(Math.random() * 3)];
             let result = ""; if(p1Choice === botChoice) result = "Tie!"; else if(rpsRules[p1Choice] === botChoice) { result = "You win round!"; rpsP1++; } else { result = "Bot wins round!"; rpsP2++; }
-            document.getElementById('rps-p1').innerText = rpsP1; document.getElementById('rps-p2').innerText = rpsP2; document.getElementById('rps-msg').innerText = `${rpsEmojis[p1Choice]} vs ${rpsEmojis[botChoice]} - ${result}`;
-            if(rpsP1 >= 3) { document.getElementById('rps-msg').innerText += " You Win Match! 💛"; celebrateWin(); } else if(rpsP2 >= 3) { document.getElementById('rps-msg').innerText += " Bot Wins Match! 🙀"; shakeContainer('rps'); triggerLoss(['🐦‍⬛']); }
+            document.getElementById('rps-p1').innerText = rpsP1; document.getElementById('rps-p2').innerText = rpsP2;
+            document.getElementById('rps-msg').innerText = `${rpsEmojis[p1Choice]} vs ${rpsEmojis[botChoice]} - ${result}`;
+            if(rpsP1 >= 3) { document.getElementById('rps-msg').innerText += " You Win Match! 💛"; celebrateWin(); }
+            else if(rpsP2 >= 3) { document.getElementById('rps-msg').innerText += " Bot Wins Match! 🙀"; shakeContainer('rps'); triggerLoss(['🐦‍⬛']); }
         }
 
         // ==========================================
@@ -826,14 +918,15 @@
             for(let i=0; i<9; i++) { let cell = document.createElement('div'); cell.className = 'whack-cell'; let mole = document.createElement('div'); mole.className = 'mole'; mole.id = `mole-${i}`; cell.appendChild(mole); cell.onmousedown = () => whackHit(i); b.appendChild(cell); }
         }
         function initWhack() {
-            clearInterval(wkTimer); clearInterval(wkMoleTimer); wkScore = 0; wkTime = 30; wkActive = true;
+            clearEffects(); clearInterval(wkTimer); clearInterval(wkMoleTimer); wkScore = 0; wkTime = 30; wkActive = true;
             document.getElementById('whack-score').innerText = wkScore; document.getElementById('whack-time').innerText = wkTime; document.getElementById('whack-msg').innerText = "Whack the snacks!";
-            drawWhackBoard();
-            wkTimer = setInterval(() => { wkTime--; document.getElementById('whack-time').innerText = wkTime; if(wkTime <= 0) endWhack(); }, 1000); popMole();
+            drawWhackBoard(); wkTimer = setInterval(() => { wkTime--; document.getElementById('whack-time').innerText = wkTime; if(wkTime <= 0) endWhack(); }, 1000); popMole();
         }
         function popMole() {
             if(!wkActive) return; let holes = document.querySelectorAll('.mole'); holes.forEach(h => h.classList.remove('up'));
-            let idx = Math.floor(Math.random() * 9); let isBad = Math.random() > 0.7; holes[idx].innerText = isBad ? '🙀' : ['🍼', '🐟', '🧇'][Math.floor(Math.random() * 3)]; holes[idx].dataset.bad = isBad; holes[idx].classList.add('up'); wkMoleTimer = setTimeout(popMole, Math.random() * 600 + 400); 
+            let idx = Math.floor(Math.random() * 9); let isBad = Math.random() > 0.7; 
+            holes[idx].innerText = isBad ? '🙀' : ['🍼', '🐟', '🧇'][Math.floor(Math.random() * 3)]; holes[idx].dataset.bad = isBad; holes[idx].classList.add('up');
+            wkMoleTimer = setTimeout(popMole, Math.random() * 600 + 400); 
         }
         function whackHit(idx) {
             if(!wkActive) return; let mole = document.getElementById(`mole-${idx}`);
@@ -846,16 +939,31 @@
         // ==========================================
         let slBoard = [], slMoves = 0;
         function initSlider() {
-            slMoves = 0; document.getElementById('slider-moves').innerText = '0'; document.getElementById('slider-msg').innerText = "Solve the picture!"; slBoard = [0,1,2,3,4,5,6,7,null];
-            for(let i=0; i<100; i++) { let nullIdx = slBoard.indexOf(null); let possible = []; if(nullIdx % 3 !== 0) possible.push(nullIdx - 1); if(nullIdx % 3 !== 2) possible.push(nullIdx + 1); if(nullIdx >= 3) possible.push(nullIdx - 3); if(nullIdx <= 5) possible.push(nullIdx + 3); let move = possible[Math.floor(Math.random() * possible.length)]; slBoard[nullIdx] = slBoard[move]; slBoard[move] = null; } drawSlider();
+            clearEffects(); slMoves = 0; document.getElementById('slider-moves').innerText = '0'; document.getElementById('slider-msg').innerText = "Solve the picture!";
+            slBoard = [0,1,2,3,4,5,6,7,null];
+            for(let i=0; i<100; i++) {
+                let nullIdx = slBoard.indexOf(null); let possible = [];
+                if(nullIdx % 3 !== 0) possible.push(nullIdx - 1); if(nullIdx % 3 !== 2) possible.push(nullIdx + 1); if(nullIdx >= 3) possible.push(nullIdx - 3); if(nullIdx <= 5) possible.push(nullIdx + 3);
+                let move = possible[Math.floor(Math.random() * possible.length)]; slBoard[nullIdx] = slBoard[move]; slBoard[move] = null;
+            } drawSlider();
         }
         function drawSlider() {
             const b = document.getElementById('slider-board'); b.innerHTML = '';
-            for(let i=0; i<9; i++) { let cell = document.createElement('div'); cell.className = 'slide-cell'; if(slBoard[i] === null) cell.classList.add('slide-empty'); else { let r = Math.floor(slBoard[i] / 3); let c = slBoard[i] % 3; cell.style.backgroundPosition = `-${c * 80}px -${r * 80}px`; cell.onclick = () => moveSlider(i); } b.appendChild(cell); }
+            for(let i=0; i<9; i++) {
+                let cell = document.createElement('div'); cell.className = 'slide-cell';
+                if(slBoard[i] === null) cell.classList.add('slide-empty'); else {
+                    let r = Math.floor(slBoard[i] / 3); let c = slBoard[i] % 3;
+                    cell.style.backgroundPosition = `-${c * 80}px -${r * 80}px`; cell.onclick = () => moveSlider(i);
+                } b.appendChild(cell);
+            }
         }
         function moveSlider(i) {
-            let nullIdx = slBoard.indexOf(null); let validMoves = [nullIdx-1, nullIdx+1, nullIdx-3, nullIdx+3]; if(nullIdx % 3 === 0) validMoves = validMoves.filter(m => m !== nullIdx-1); if(nullIdx % 3 === 2) validMoves = validMoves.filter(m => m !== nullIdx+1);
-            if(validMoves.includes(i)) { slBoard[nullIdx] = slBoard[i]; slBoard[i] = null; slMoves++; document.getElementById('slider-moves').innerText = slMoves; drawSlider(); if(slBoard.every((val, idx) => val === idx || (idx === 8 && val === null))) { document.getElementById('slider-msg').innerText = "Picture perfect! 💛"; celebrateWin(); slBoard[8] = 8; drawSlider(); } }
+            let nullIdx = slBoard.indexOf(null); let validMoves = [nullIdx-1, nullIdx+1, nullIdx-3, nullIdx+3];
+            if(nullIdx % 3 === 0) validMoves = validMoves.filter(m => m !== nullIdx-1); if(nullIdx % 3 === 2) validMoves = validMoves.filter(m => m !== nullIdx+1);
+            if(validMoves.includes(i)) {
+                slBoard[nullIdx] = slBoard[i]; slBoard[i] = null; slMoves++; document.getElementById('slider-moves').innerText = slMoves; drawSlider();
+                if(slBoard.every((val, idx) => val === idx || (idx === 8 && val === null))) { document.getElementById('slider-msg').innerText = "Picture perfect! 💛"; celebrateWin(); slBoard[8] = 8; drawSlider(); }
+            }
         }
 
         // ==========================================
@@ -863,31 +971,43 @@
         // ==========================================
         let hmTarget = "", hmGuessed = [], hmWrong = 0, hmMax = 6, hmOver = false;
         function initHangman() {
-            hmTarget = hmWords[Math.floor(Math.random() * hmWords.length)]; hmGuessed = []; hmWrong = 0; hmOver = false;
+            clearEffects(); hmTarget = hmWords[Math.floor(Math.random() * hmWords.length)]; hmGuessed = []; hmWrong = 0; hmOver = false;
             document.getElementById('hm-msg').innerText = "Guess a letter!"; document.getElementById('hm-lives-display').innerText = "Lives: 🎈🎈🎈🎈🎈🎈";
             for(let i=1; i<=6; i++) document.getElementById(`hm-part-${i}`).style.display = 'none'; drawHmWord(); drawHmKeyboard();
         }
         function drawHmWord() { const container = document.getElementById('hm-word-display'); let displayStr = ""; for(let char of hmTarget) displayStr += (hmGuessed.includes(char) || hmOver) ? char + " " : "_ "; container.innerText = displayStr.trim(); }
         function drawHmKeyboard() {
             const kb = document.getElementById('hm-keyboard'); kb.innerHTML = ''; const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
-            rows.forEach(row => { let rDiv = document.createElement('div'); rDiv.style.display = 'flex'; rDiv.style.justifyContent = 'center'; rDiv.style.gap = '4px'; rDiv.style.marginBottom = '6px';
-                for(let char of row) { let btn = document.createElement('button'); btn.className = 'hm-key'; btn.innerText = char; if(hmGuessed.includes(char)) { btn.disabled = true; if(hmTarget.includes(char)) { btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22'; } else { btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080'; } } btn.onclick = () => hmGuess(char, btn); rDiv.appendChild(btn); } kb.appendChild(rDiv);
+            rows.forEach(row => {
+                let rDiv = document.createElement('div'); rDiv.style.display = 'flex'; rDiv.style.justifyContent = 'center'; rDiv.style.gap = '4px'; rDiv.style.marginBottom = '6px';
+                for(let char of row) {
+                    let btn = document.createElement('button'); btn.className = 'hm-key'; btn.innerText = char;
+                    if(hmGuessed.includes(char)) { btn.disabled = true; if(hmTarget.includes(char)) { btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22'; } else { btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080'; } }
+                    btn.onclick = () => hmGuess(char, btn); rDiv.appendChild(btn);
+                } kb.appendChild(rDiv);
             });
         }
         function hmGuess(char, btn) {
             if(hmOver || hmGuessed.includes(char)) return; hmGuessed.push(char);
-            if(hmTarget.includes(char)) { btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22'; } else { btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080'; hmWrong++; shakeContainer('hangman'); document.getElementById(`hm-part-${hmWrong}`).style.display = 'block'; document.getElementById('hm-lives-display').innerText = `Lives: ${"🎈".repeat(6 - hmWrong) + "💥".repeat(hmWrong)}`; } btn.disabled = true; drawHmWord();
+            if(hmTarget.includes(char)) { btn.style.background = '#32cd32'; btn.style.color = '#fff'; btn.style.borderColor = '#228b22'; } else {
+                btn.style.background = '#a9a9a9'; btn.style.color = '#fff'; btn.style.borderColor = '#808080'; hmWrong++; shakeContainer('hangman'); document.getElementById(`hm-part-${hmWrong}`).style.display = 'block'; document.getElementById('hm-lives-display').innerText = `Lives: ${"🎈".repeat(6 - hmWrong) + "💥".repeat(hmWrong)}`;
+            } btn.disabled = true; drawHmWord();
             if(hmTarget.split('').every(c => hmGuessed.includes(c))) { hmOver = true; celebrateWin(); document.getElementById('hm-msg').innerHTML = `Saved! 😻<br><span style="font-size:0.9rem; font-weight:normal;">${wordDict[hmTarget]||""}</span>`; } else if(hmWrong >= hmMax) { hmOver = true; drawHmWord(); triggerLoss(['🙀', '💥']); document.getElementById('hm-msg').innerText = "Oh no! 🙀"; }
         }
 
         // ==========================================
         // 11. COIN TOSS
         // ==========================================
+        let cfFlipping = false;
         function flipCoin(guess) {
-            if(cfFlipping) return; cfFlipping = true; document.getElementById('cf-msg').innerText = "Flipping... 🪙";
-            const coin = document.getElementById('coin-inner'); coin.classList.remove('img-piece', 'p1-img', 'p2-img'); coin.innerText = "✨"; coin.style.transform = 'rotateY(1080deg)';
+            if(cfFlipping) return; cfFlipping = true; clearEffects(); document.getElementById('cf-msg').innerText = "Flipping... 🪙";
+            const coin = document.getElementById('coin-inner'); 
+            coin.style.backgroundImage = 'none'; coin.innerText = "✨"; coin.style.transform = 'rotateY(1080deg)';
             setTimeout(() => {
-                const isPillu = Math.random() > 0.5; coin.style.transition = 'none'; coin.style.transform = 'rotateY(0deg)'; coin.innerText = ''; coin.classList.add('img-piece', isPillu ? 'p1-img' : 'p2-img'); setTimeout(() => coin.style.transition = 'transform 1s cubic-bezier(0.4, 2, 0.2, 1)', 50);
+                const isPillu = Math.random() > 0.5; coin.style.transition = 'none'; coin.style.transform = 'rotateY(0deg)'; coin.innerText = ''; 
+                coin.classList.add('img-piece');
+                coin.style.backgroundImage = isPillu ? "url('pikachu.png')" : "url('crow.png')";
+                setTimeout(() => coin.style.transition = 'transform 1s cubic-bezier(0.4, 2, 0.2, 1)', 50);
                 if((isPillu && guess==='Pillu') || (!isPillu && guess==='Crow')) { document.getElementById('cf-msg').innerText = "You called it right! 💛"; celebrateWin(); } else { document.getElementById('cf-msg').innerText = "Oof, wrong call! 🙀"; triggerLoss(['🐦‍⬛','💥']); } cfFlipping = false;
             }, 1000);
         }
@@ -895,9 +1015,11 @@
         // ==========================================
         // 12. GUESS NUMBER
         // ==========================================
-        function initGN() { gnTarget = Math.floor(Math.random() * 100) + 1; gnOver = false; document.getElementById('gn-input').value = ''; document.getElementById('gn-msg').innerText = "I'm thinking of a number (1-100)!"; }
+        let gnTarget = 0, gnOver = false;
+        function initGN() { gnTarget = Math.floor(Math.random() * 100) + 1; gnOver = false; document.getElementById('gn-input').value = ''; document.getElementById('gn-msg').innerText = "I'm thinking of a number (1-100)!"; clearEffects(); }
         function guessNum() {
-            if(gnOver) return; let val = parseInt(document.getElementById('gn-input').value); let msg = document.getElementById('gn-msg'); if(isNaN(val)) return msg.innerText = "Please enter a valid number! 🔢";
+            if(gnOver) return; let val = parseInt(document.getElementById('gn-input').value); let msg = document.getElementById('gn-msg');
+            if(isNaN(val)) return msg.innerText = "Please enter a valid number! 🔢";
             if(val === gnTarget) { msg.innerText = `Correct! It was ${gnTarget}! ⚡💛`; gnOver = true; celebrateWin(); } else if(val < gnTarget) msg.innerText = "Higher! ⬆️"; else msg.innerText = "Lower! ⬇️"; document.getElementById('gn-input').value = '';
         }
 
@@ -906,18 +1028,22 @@
         // ==========================================
         let wdTarget = "", wdRow = 0, wdOver = false;
         function initWordle() {
-            wdTarget = hmWords[Math.floor(Math.random() * hmWords.length)]; wdRow = 0; wdOver = false;
+            wdTarget = hmWords[Math.floor(Math.random() * hmWords.length)]; wdRow = 0; wdOver = false; clearEffects();
             const b = document.getElementById('wd-board'); b.innerHTML = '';
             for(let r=0; r<6; r++) for(let c=0; c<5; c++) { let el = document.createElement('div'); el.className = 'cell wd-cell'; el.id = `wd-${r}-${c}`; b.appendChild(el); }
             document.getElementById('wd-input').value = ''; document.getElementById('wd-msg').innerText = "Guess the 5-letter word!";
         }
         function guessWordle() {
-            if(wdOver) return; let val = document.getElementById('wd-input').value.toUpperCase(); if(val.length !== 5) return document.getElementById('wd-msg').innerText = "Must be 5 letters! 🔤";
+            if(wdOver) return; let val = document.getElementById('wd-input').value.toUpperCase();
+            if(val.length !== 5) return document.getElementById('wd-msg').innerText = "Must be 5 letters! 🔤";
             for(let i=0; i<5; i++) {
                 let cell = document.getElementById(`wd-${wdRow}-${i}`); cell.innerText = val[i];
-                if(val[i] === wdTarget[i]) { cell.style.background = '#32cd32'; cell.style.color = '#fff'; cell.style.borderColor = '#228b22'; } else if(wdTarget.includes(val[i])) { cell.style.background = '#ffd700'; cell.style.color = '#fff'; cell.style.borderColor = '#cca700'; } else { cell.style.background = '#a9a9a9'; cell.style.color = '#fff'; cell.style.borderColor = '#808080'; }
+                if(val[i] === wdTarget[i]) { cell.style.background = '#32cd32'; cell.style.color = '#fff'; cell.style.borderColor = '#228b22'; }
+                else if(wdTarget.includes(val[i])) { cell.style.background = '#ffd700'; cell.style.color = '#fff'; cell.style.borderColor = '#cca700'; }
+                else { cell.style.background = '#a9a9a9'; cell.style.color = '#fff'; cell.style.borderColor = '#808080'; }
             }
-            if(val === wdTarget) { wdOver = true; celebrateWin(); document.getElementById('wd-msg').innerHTML = `Genius! ⚡<br><span style="font-size:0.9rem; font-weight:normal;">${wordDict[wdTarget]||""}</span>`; } else { wdRow++; if(wdRow >= 6) { wdOver = true; triggerLoss(['🐦‍⬛']); document.getElementById('wd-msg').innerText = `Game Over! Word was ${wdTarget} 🙀`; } else document.getElementById('wd-msg').innerText = `Guess ${wdRow+1} of 6`; } document.getElementById('wd-input').value = '';
+            if(val === wdTarget) { wdOver = true; celebrateWin(); document.getElementById('wd-msg').innerHTML = `Genius! ⚡<br><span style="font-size:0.9rem; font-weight:normal;">${wordDict[wdTarget]||""}</span>`; 
+            } else { wdRow++; if(wdRow >= 6) { wdOver = true; triggerLoss(['🐦‍⬛']); document.getElementById('wd-msg').innerText = `Game Over! Word was ${wdTarget} 🙀`; } else document.getElementById('wd-msg').innerText = `Guess ${wdRow+1} of 6`; } document.getElementById('wd-input').value = '';
         }
 
         // ==========================================
@@ -928,7 +1054,7 @@
         function setSuLevel(level) { document.querySelectorAll('#sudoku .toggle-btn').forEach(b => b.classList.remove('active')); document.getElementById(`su-btn-${level}`).classList.add('active'); suHidden = level === 'beginner' ? 30 : (level === 'pikium' ? 45 : 55); initSudoku(); }
         function togglePencil() { suPencilMode = !suPencilMode; const btn = document.getElementById('su-pencil-btn'); if(suPencilMode) { btn.classList.add('active'); btn.innerText = "Pencil On ✏️"; } else { btn.classList.remove('active'); btn.innerText = "Pencil Off ✏️"; } }
         function initSudoku() {
-            suOver=false; suSelected=null; suLives=3; document.getElementById('su-lives-display').innerText = "Lives: 💖💖💖"; document.getElementById('su-msg').innerText = "Select a blank square!";
+            clearEffects(); suOver=false; suSelected=null; suLives=3; document.getElementById('su-lives-display').innerText = "Lives: 💖💖💖"; document.getElementById('su-msg').innerText = "Select a blank square!";
             let nums = ['1','2','3','4','5','6','7','8','9'].sort(() => Math.random() - 0.5); let map = {}; for(let i=1; i<=9; i++) map[i.toString()] = nums[i-1]; suSolution = suBaseSolution.split('').map(n => map[n]).join('');
             suBoard = suSolution.split(''); suEditable = []; suPencils = Array(81).fill().map(()=>[]);
             let hidden = 0; while(hidden < suHidden) { let idx = Math.floor(Math.random()*81); if(suBoard[idx] !== '') { suBoard[idx] = ''; suEditable.push(idx); hidden++; } } drawSudoku();
@@ -958,7 +1084,7 @@
         const wfTarget = [ 'S','W','E','E','T', 'H',' ','N',' ','R', 'A','U','D','I','O', 'R',' ','U',' ','U', 'E','V','E','N','T' ];
         let wfCurrent = [], wfSelected = null, wfOver = false, wfSwaps = 15;
         function initWaffle() {
-            wfOver = false; wfSelected = null; wfSwaps = 15; document.getElementById('wf-swaps-display').innerText = `Swaps left: ${wfSwaps}`; document.getElementById('wf-msg').innerText = "Swap letters to match the words!";
+            clearEffects(); wfOver = false; wfSelected = null; wfSwaps = 15; document.getElementById('wf-swaps-display').innerText = `Swaps left: ${wfSwaps}`; document.getElementById('wf-msg').innerText = "Swap letters to match the words!";
             wfCurrent = [...wfTarget]; let letters = wfCurrent.filter(c => c !== ' ').sort(() => Math.random() - 0.5); let lIdx = 0; for(let i=0; i<25; i++) if(wfCurrent[i] !== ' ') wfCurrent[i] = letters[lIdx++]; drawWaffle();
         }
         function drawWaffle() {
@@ -988,7 +1114,7 @@
         // ==========================================
         let pjTimer = null, pjScore = 0, pjHigh = 0, pjActive = false;
         function initPJ() {
-            pjScore = 0; pjActive = true; document.getElementById('pj-score').innerText = pjScore; document.getElementById('pj-msg').innerText = "Run Pillu, Run!";
+            clearEffects(); pjScore = 0; pjActive = true; document.getElementById('pj-score').innerText = pjScore; document.getElementById('pj-msg').innerText = "Run Pillu, Run!";
             const obs = document.getElementById('pj-obs'); obs.style.animation = 'none'; void obs.offsetWidth; obs.style.animation = 'pjMove 1.5s infinite linear';
             clearInterval(pjTimer); pjTimer = setInterval(pjCheckHit, 50);
         }
