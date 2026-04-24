@@ -50,7 +50,12 @@
         button, .cell, .close-btn, input, .dock-item, .slide-cell {
             cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>⚡</text></svg>") 16 0, pointer !important;
         }
-
+.game-container, .game-container * {
+    cursor: auto !important;
+}
+.game-container button, .game-container .cell, .game-container .slide-cell, .game-container input {
+    cursor: pointer !important;
+}
         /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
