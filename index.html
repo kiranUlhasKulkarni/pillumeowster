@@ -30,17 +30,9 @@
             --p2-color: #cccccc;
         }
 
-        .img-piece {
-            background-size: 80%; 
-            background-repeat: no-repeat;
-            background-position: center;
-            color: transparent !important; 
-        }
-        
-        .p1-img { background-image: url('pikachu.png'); }
-        .p2-img { background-image: url('crow.png'); }
-
+        /* --- CUSTOM CURSORS --- */
         body {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🐾</text></svg>") 16 0, auto;
             font-family: 'Nunito', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -54,6 +46,40 @@
             overflow-x: hidden; 
         }
 
+        button, .cell, .close-btn, .menu-toggle, input {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>⚡</text></svg>") 16 0, pointer !important;
+        }
+
+        /* --- AMBIENT BACKGROUND CSS --- */
+        .ambient-shape {
+            position: fixed;
+            bottom: -10vh;
+            color: rgba(255, 105, 180, 0.3);
+            z-index: -1;
+            pointer-events: none;
+            animation: floatDrift linear infinite;
+        }
+        body.dark-mode .ambient-shape {
+            color: rgba(255, 0, 255, 0.15);
+        }
+
+        @keyframes floatDrift {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .img-piece {
+            background-size: 80%; 
+            background-repeat: no-repeat;
+            background-position: center;
+            color: transparent !important; 
+        }
+        
+        .p1-img { background-image: url('pikachu.png'); }
+        .p2-img { background-image: url('crow.png'); }
+
         .theme-toggle {
             position: absolute;
             top: 20px;
@@ -64,12 +90,12 @@
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: bold;
-            cursor: pointer;
             box-shadow: 0 3px 0 var(--dark-pink);
             z-index: 100;
+            transition: all 0.15s;
         }
 
-        .theme-toggle:active { transform: translateY(2px); box-shadow: 0 0 0 var(--dark-pink); }
+        .theme-toggle:active { transform: scale(0.95) translateY(2px); box-shadow: 0 0 0 var(--dark-pink); }
 
         h1 {
             font-size: 2.5rem;
@@ -91,7 +117,6 @@
         .menu-toggle {
             display: none;
             font-size: 1.2rem;
-            cursor: pointer;
             background: var(--container-bg);
             padding: 10px 20px;
             border-radius: 25px;
@@ -99,7 +124,9 @@
             box-shadow: 0 4px 0 var(--primary-pink);
             font-weight: bold;
             color: var(--text-color);
+            transition: all 0.15s;
         }
+        .menu-toggle:active { transform: scale(0.95) translateY(4px); box-shadow: 0 0 0 var(--primary-pink); }
 
         .nav-tabs {
             display: flex;
@@ -125,9 +152,8 @@
             border-radius: 25px;
             font-size: 1.1rem;
             font-weight: bold;
-            cursor: pointer;
             box-shadow: 0 4px 0 var(--primary-pink);
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
         .nav-btn.active {
@@ -153,6 +179,7 @@
         }
 
         .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn:active { transform: scale(0.95) translateY(2px); box-shadow: 0 0 0 var(--primary-pink); }
         body.dark-mode .nav-btn.active { color: #fff; }
 
         /* --- MODAL (INSTRUCTIONS) --- */
@@ -191,7 +218,6 @@
             position: absolute;
             top: 15px; right: 20px;
             font-size: 1.5rem;
-            cursor: pointer;
             transition: transform 0.2s;
         }
         .close-btn:hover { transform: scale(1.2); }
@@ -234,9 +260,10 @@
             color: var(--text-color);
             border-radius: 10px;
             padding: 5px 10px;
-            cursor: pointer;
             font-weight: bold;
+            transition: all 0.15s;
         }
+        .toggle-btn:active { transform: scale(0.9); }
         .toggle-btn.active {
             background: var(--dark-pink);
             color: white;
@@ -254,7 +281,6 @@
         .cell {
             background-color: var(--primary-pink);
             border-radius: 8px;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -264,11 +290,10 @@
             color: var(--text-color);
             font-size: 20px;
         }
-        .cell:active:not(.revealed) { transform: translateY(3px); box-shadow: 0 0 0 var(--dark-pink); }
+        .cell:active:not(.revealed) { transform: scale(0.9) translateY(3px); box-shadow: 0 0 0 var(--dark-pink); }
         .cell.revealed {
             background-color: var(--cell-revealed);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            cursor: default;
             transform: none;
         }
 
@@ -285,13 +310,11 @@
         #rev-board { background-color: var(--dark-pink); gap: 2px; padding: 4px; border-radius: 8px; border: 3px solid var(--primary-pink); box-shadow: none; }
         .rev-cell { width: 40px; height: 40px; border-radius: 0 !important; background-color: var(--cell-revealed) !important; box-shadow: none !important; transform: none !important; }
 
-        /* Dark mode borders for Wordle/Waffle so they don't blend in */
         .wd-cell, .wf-cell { 
             width: 45px; height: 45px; font-size: 25px; font-weight: bold; text-transform: uppercase; 
             background-color: var(--cell-revealed); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); 
             border: 2px solid var(--primary-pink);
         }
-        .wd-cell { cursor: default; }
 
         /* --- NEW SUDOKU GRID --- */
         #su-board {
@@ -311,8 +334,9 @@
             font-size: 20px; font-weight: bold; cursor: pointer;
             box-shadow: none; border-radius: 0; color: var(--text-color);
             position: relative;
+            transition: all 0.1s;
         }
-        /* Thick borders for 3x3 grids */
+        .su-cell:active:not(.fixed) { transform: scale(0.85); }
         .su-cell { box-sizing: border-box; } 
 
         .su-cell:nth-child(9n+3), 
@@ -327,7 +351,7 @@
         
         .su-cell.selected { background-color: #ffebf0; }
         body.dark-mode .su-cell.selected { background-color: #3a0021; }
-        .su-cell.fixed { color: var(--text-color); opacity: 0.6; cursor: default; }
+        .su-cell.fixed { color: var(--text-color); opacity: 0.6; }
         .su-cell.user-input { color: #32cd32; }
         .su-pencil-grid {
             position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
@@ -344,9 +368,9 @@
         .num-btn {
             background: var(--bg-color); border: 2px solid var(--primary-pink);
             color: var(--text-color); font-weight: bold; font-size: 1.2rem;
-            padding: 10px 0; border-radius: 10px; cursor: pointer;
+            padding: 10px 0; border-radius: 10px; transition: all 0.15s;
         }
-        .num-btn:active { transform: translateY(2px); }
+        .num-btn:active { transform: scale(0.9) translateY(2px); }
         .pencil-btn { grid-column: span 2; background: var(--primary-pink); }
         .pencil-btn.active { background: #32cd32; color: white; border-color: #228b22; }
 
@@ -355,9 +379,10 @@
         .action-btn {
             background-color: var(--dark-pink); color: white; border: none;
             padding: 12px 25px; border-radius: 25px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 0 #8b005d; width: 100%; margin-top: 5px;
+            box-shadow: 0 4px 0 #8b005d; width: 100%; margin-top: 5px;
+            transition: all 0.15s;
         }
-        .action-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #8b005d; }
+        .action-btn:active { transform: scale(0.95) translateY(4px); box-shadow: 0 0 0 #8b005d; }
         
         .secondary-btn {
             background-color: var(--primary-pink);
@@ -586,6 +611,46 @@
         // --- GLOBAL LOGIC & EFFECTS ---
         let effectIntervals = [];
 
+        // Create Ambient Background Hearts
+        function createAmbientHearts() {
+            for (let i = 0; i < 20; i++) {
+                let shape = document.createElement('div');
+                shape.className = 'ambient-shape';
+                shape.innerText = ['💖', '💛', '✨', '🌸', '☁️'][Math.floor(Math.random() * 5)];
+                shape.style.left = Math.random() * 100 + 'vw';
+                shape.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                shape.style.animationDelay = (Math.random() * 15) + 's';
+                shape.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+                document.body.appendChild(shape);
+            }
+        }
+        createAmbientHearts();
+
+        // Juicy Button Sparkles on Click
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.classList.contains('cell') || e.target.classList.contains('su-cell')) {
+                for (let i = 0; i < 3; i++) {
+                    let sparkle = document.createElement('div');
+                    sparkle.className = 'effect-element';
+                    sparkle.innerText = '✨';
+                    sparkle.style.left = e.clientX + 'px';
+                    sparkle.style.top = e.clientY + 'px';
+                    sparkle.style.fontSize = '20px';
+                    
+                    let angle = Math.random() * Math.PI * 2;
+                    let distance = Math.random() * 40 + 20;
+                    
+                    sparkle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                    sparkle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                    sparkle.style.setProperty('--rot', (Math.random() * 180) + 'deg');
+                    sparkle.style.animation = 'explode 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards';
+                    
+                    document.body.appendChild(sparkle);
+                    setTimeout(() => sparkle.remove(), 600);
+                }
+            }
+        });
+
         function switchTab(tabId) {
             document.querySelectorAll('.game-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn:not(.info-btn)').forEach(btn => btn.classList.remove('active'));
@@ -607,7 +672,7 @@
         function clearEffects() {
             effectIntervals.forEach(clearInterval);
             effectIntervals = [];
-            document.querySelectorAll('.effect-element').forEach(el => el.remove());
+            document.querySelectorAll('.confetti, .bubble, .angry-emoji').forEach(el => el.remove());
         }
 
         function celebrateWin() {
@@ -668,7 +733,8 @@
             'AUDIO': 'Sound, especially when recorded, transmitted, or reproduced.',
             'EVENT': 'A thing that happens, especially one of importance.',
             'SHARE': 'To have a portion of something with another or others.',
-            'ELITE': 'A select part of a group that is superior to the rest.'
+            'ENDUE': 'Provide with a quality or ability.',
+            'TROUT': 'A chiefly freshwater fish of the salmon family.'
         };
 
         // --- INSTRUCTIONS LOGIC ---
@@ -1215,7 +1281,6 @@
         // ==========================================
         // 9. WAFF-MEOW (WAFFLE)
         // ==========================================
-        // Fixed intersecting words: SWEET, AUDIO, EVENT (Horizontal) & SHARE, ENDUE, TROUT (Vertical)
         const wfTarget = [ 'S','W','E','E','T', 'H',' ','N',' ','R', 'A','U','D','I','O', 'R',' ','U',' ','U', 'E','V','E','N','T' ];
         let wfCurrent = [], wfSelected = null, wfOver = false, wfSwaps = 15;
 
@@ -1235,7 +1300,6 @@
             for(let i=0; i<25; i++) {
                 let cell = document.createElement('div'); cell.className = 'cell wf-cell';
                 
-                // Keep the holes transparent and unclickable
                 if(wfTarget[i] === ' ') { 
                     cell.classList.add('revealed'); 
                     cell.style.background = 'transparent'; 
@@ -1250,11 +1314,9 @@
                     let targetRowStr = "";
                     let targetColStr = "";
                     
-                    // Only pull row strings for the actual horizontal word rows (0, 2, 4)
                     if (Math.floor(i / 5) % 2 === 0) {
                         targetRowStr = wfTarget.slice(rowStart, rowStart+5).join('');
                     }
-                    // Only pull col strings for the actual vertical word cols (0, 2, 4)
                     if (i % 2 === 0) {
                         targetColStr = [wfTarget[colStart], wfTarget[colStart+5], wfTarget[colStart+10], wfTarget[colStart+15], wfTarget[colStart+20]].join('');
                     }
