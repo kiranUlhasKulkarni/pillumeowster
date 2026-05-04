@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pillu & Crow Adventure 🛴</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adv.css">
+</head>
+<body>
+
+<!-- Travel overlay -->
+<div id="travel-overlay"><div class="travel-scooter">🛴</div><div class="travel-text" id="travel-text">Scooting...</div></div>
+
+<!-- Room interior overlay -->
+<div class="room-interior" id="room-interior" onclick="if(event.target===this)closeRoom()">
+    <div class="room-card">
+        <button class="room-close" onclick="closeRoom()">✕</button>
+        <div class="room-title" id="ri-title">Room</div>
+        <div class="room-scene-wrap" id="ri-scene"></div>
+        <div class="room-desc" id="ri-desc"></div>
+        <div id="ri-items"></div>
+        <div class="msg-box" id="ri-msg"></div>
+    </div>
+</div>
+
+<!-- ===== MAP ===== -->
+<div class="screen active" id="screen-map">
+    <div class="top-bar"><span class="loc-name">🗺️ Boston Map</span><span id="map-comp"></span></div>
+    <div class="map-wrap">
+        <div class="map-river" style="top:-20px;right:-10px;width:200px;height:120px;"></div>
+        <div class="map-river" style="top:40px;right:60px;width:100px;height:60px;"></div>
+        <div class="map-road map-road-h" style="top:150px;left:0;right:0;"></div>
+        <div class="map-road map-road-h" style="top:300px;left:0;right:0;"></div>
+        <div class="map-road map-road-h" style="top:380px;left:0;right:0;"></div>
+        <div class="map-road map-road-v" style="left:180px;top:0;bottom:0;"></div>
+        <div class="map-road map-road-v" style="left:350px;top:0;bottom:0;"></div>
+        <div class="map-road map-road-v" style="left:480px;top:0;bottom:0;"></div>
+        <div class="map-building" style="left:30px;top:40px;width:40px;height:30px;"></div>
+        <div class="map-building" style="left:100px;top:200px;width:50px;height:25px;"></div>
+        <div class="map-building" style="left:400px;top:100px;width:35px;height:40px;"></div>
+        <div class="map-building" style="left:300px;top:340px;width:45px;height:20px;"></div>
+        <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
+        <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
+        <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
+        <div class="dest-pin" style="left:100px;top:240px;" onclick="travelTo('dunkin')"><div class="pin-icon" id="ic-dunkin">☕</div><div class="pin-label">Dunkin'</div></div>
+        <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera</div></div>
+        <div class="scooter-map" id="map-scoot" style="left:50px;top:100px;">🛴</div>
+        <div class="map-legend">🗺️ Fenway — Nubian Sq — NEU</div>
+    </div>
+    <div class="msg-box" id="map-hint">Tap a destination to scoot there! 🛴</div>
+</div>
+
+<!-- ===== NEU ===== -->
+<div class="screen" id="screen-neu">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🎓 Northeastern</span><span id="neu-comp"></span></div>
+    <div class="panel-title">Campus Destinations</div>
+    <div class="choices" style="max-width:400px;width:95vw;">
+        <button class="choice-btn" onclick="travelTo('snell')"><span class="ce">📚</span>Snell Library</button>
+        <button class="choice-btn" onclick="travelTo('curry')"><span class="ce">🏓</span>Curry Center</button>
+        <button class="choice-btn" onclick="travelTo('classroom')"><span class="ce">🏫</span>Classroom</button>
+        <button class="choice-btn" onclick="goMap()"><span class="ce">🗺️</span>Back to Map</button>
+    </div>
+</div>
+
+<!-- ===== PIKA HOUSE ===== -->
+<div class="screen" id="screen-pikaHouse">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🏠 1171 Boylston</span><span id="pikaHouse-comp"></span></div>
+    <div class="panel">
+        <div class="floor-plan" style="height:380px;background:linear-gradient(180deg,#fef8f0,#f8f0e8);">
+            <div class="room-spot" style="top:2%;left:28%;width:52%;height:24%;" onclick="openRoom('pikaHouse','bedroom');searchRoom('pikaHouse','bedroom')"><span class="re">🛏️</span><span class="rn">Bedroom (Bay)</span></div>
+            <div class="room-spot" style="top:2%;left:2%;width:24%;height:24%;" onclick="openRoom('pikaHouse','bathroom');searchRoom('pikaHouse','bathroom')"><span class="re">🚿</span><span class="rn">Bathroom</span></div>
+            <div class="room-spot" style="top:28%;left:2%;width:44%;height:30%;border-color:#9b59b6;border-width:3px;background:rgba(155,89,182,.06);" onclick="openRoom('pikaHouse','pikaSpot');searchRoom('pikaHouse','pikaSpot')"><span class="re">⚡</span><span class="rn">Pika's Spot<br>🛏️ | 🖥️</span></div>
+            <div class="room-spot" style="top:28%;left:48%;width:14%;height:14%;border-color:var(--gold);" onclick="openRoom('pikaHouse','closet');searchRoom('pikaHouse','closet')"><span class="re">👕</span><span class="rn">Closet⭐</span></div>
+            <div class="room-spot" style="top:44%;left:48%;width:14%;height:14%;" onclick="searchRoom('pikaHouse','closet2')"><span class="re">📦</span><span class="rn">Closet 2</span></div>
+            <div class="room-spot" style="top:28%;right:2%;width:20%;height:30%;" onclick="searchRoom('pikaHouse','hall')"><span class="re">🚪</span><span class="rn">Hall</span></div>
+            <div class="room-spot" style="bottom:2%;left:2%;width:92%;height:26%;" onclick="openRoom('pikaHouse','kitchen');searchRoom('pikaHouse','kitchen')"><span class="re">🍳</span><span class="rn">Kitchen</span></div>
+        </div>
+        <div class="msg-box" id="pikaHouse-msg">Tap rooms to explore & search! 🔍</div>
+    </div>
+</div>
+
+<!-- ===== CROW HOUSE ===== -->
+<div class="screen" id="screen-crowHouse">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🏡 Encore</span><span id="crowHouse-comp"></span></div>
+    <div class="panel">
+        <div class="floor-plan" style="height:420px;background:linear-gradient(180deg,#f0f0e8,#e8e8e0);">
+            <div class="room-spot" style="top:1%;left:32%;width:26%;height:7%;border-style:dashed;" onclick="openRoom('crowHouse','porch');searchRoom('crowHouse','porch')"><span class="re">🚪</span><span class="rn">Porch</span></div>
+            <div class="room-spot" style="top:10%;left:2%;width:28%;height:20%;" onclick="openRoom('crowHouse','r1');searchRoom('crowHouse','r1')"><span class="re">🛏️</span><span class="rn">Room 1</span></div>
+            <div class="room-spot" style="top:10%;left:32%;width:28%;height:20%;border-color:#555;border-width:3px;" onclick="openRoom('crowHouse','r2');searchRoom('crowHouse','r2')"><span class="re">🐦‍⬛</span><span class="rn">Crow's Room</span></div>
+            <div class="room-spot" style="top:10%;right:2%;width:20%;height:9%;" onclick="searchRoom('crowHouse','b1')"><span class="re">🚿</span><span class="rn">Bath1</span></div>
+            <div class="room-spot" style="top:21%;right:2%;width:20%;height:9%;" onclick="searchRoom('crowHouse','b2')"><span class="re">🛁</span><span class="rn">Bath2</span></div>
+            <div class="room-spot" style="top:33%;left:2%;width:28%;height:16%;" onclick="openRoom('crowHouse','kitchen');searchRoom('crowHouse','kitchen')"><span class="re">🍳</span><span class="rn">Kitchen</span></div>
+            <div class="room-spot" style="top:33%;left:32%;width:38%;height:16%;" onclick="searchRoom('crowHouse','hall')"><span class="re">🏠</span><span class="rn">Hallway</span></div>
+            <div class="room-spot" style="bottom:2%;left:2%;width:36%;height:28%;" onclick="searchRoom('crowHouse','r3')"><span class="re">🛏️</span><span class="rn">Room 3</span></div>
+            <div class="room-spot" style="bottom:2%;right:2%;width:36%;height:28%;" onclick="searchRoom('crowHouse','r4')"><span class="re">🛏️</span><span class="rn">Room 4</span></div>
+        </div>
+        <div class="msg-box" id="crowHouse-msg">Explore Crow's house! 🔍</div>
+    </div>
+</div>
+
+<!-- ===== DUNKIN ===== -->
+<div class="screen" id="screen-dunkin">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">☕ Dunkin'</span><span id="dunkin-comp"></span></div>
+    <div class="panel" id="dk-panel"></div>
+</div>
+
+<!-- ===== PANERA ===== -->
+<div class="screen" id="screen-panera">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🥤 Panera Sip Club</span><span id="panera-comp"></span></div>
+    <div class="panel" id="pn-panel"></div>
+</div>
+
+<!-- ===== SNELL ===== -->
+<div class="screen" id="screen-snell">
+    <div class="top-bar"><button class="back-btn" onclick="show('screen-neu')">← NEU</button><span class="loc-name">📚 Snell</span><span id="snell-comp"></span></div>
+    <div class="panel">
+        <div class="panel-title">📚 Study at Snell</div>
+        <div class="study-desk">
+            <div style="font-size:2rem;letter-spacing:8px;">📖 💻 ☕</div>
+            <p style="font-size:.7rem;color:#8b6508;margin:5px 0;">Pika works here!</p>
+            <div class="study-timer" id="study-timer">25:00</div>
+        </div>
+        <button class="action-btn" id="study-btn" onclick="toggleStudy()">Start Studying 📖</button>
+        <div class="msg-box" id="snell-msg">Focus mode 🤫</div>
+    </div>
+</div>
+
+<!-- ===== CURRY CENTER ===== -->
+<div class="screen" id="screen-curry">
+    <div class="top-bar"><button class="back-btn" onclick="stopGames();show('screen-neu')">← NEU</button><span class="loc-name">🏓 Curry Center</span><span id="curry-comp"></span></div>
+    <div class="panel">
+        <div class="choices" style="margin-bottom:10px;">
+            <button class="choice-btn" onclick="showCurryGame('tt')"><span class="ce">🏓</span>Table Tennis</button>
+            <button class="choice-btn" onclick="showCurryGame('pool')"><span class="ce">🎱</span>8-Ball Pool</button>
+        </div>
+        <!-- TABLE TENNIS -->
+        <div id="curry-tt" style="display:none;">
+            <div class="diff-bar">
+                <button class="diff-btn sel" data-d="beginner" onclick="setTTDiff('beginner')">Beginner</button>
+                <button class="diff-btn" data-d="medium" onclick="setTTDiff('medium')">Medium</button>
+                <button class="diff-btn" data-d="expert" onclick="setTTDiff('expert')">Expert</button>
+            </div>
+            <div class="game-score tt-score">
+                <span>⚡ Pika<br><span class="sn" id="tt-ps">0</span></span>
+                <span style="font-size:.6rem;opacity:.7;">to 11</span>
+                <span>Crow 🐦‍⬛<br><span class="sn" id="tt-bs">0</span></span>
+            </div>
+            <div class="game-canvas-wrap"><canvas id="tt-cvs" width="340" height="500"></canvas></div>
+            <div class="game-hint">Drag to move paddle • Tap to serve</div>
+            <div class="msg-box" id="tt-msg">Tap to serve! 🏓</div>
+            <button class="action-btn sec" onclick="resetTTScore()">Reset Match 🔄</button>
+        </div>
+        <!-- 8-BALL POOL -->
+        <div id="curry-pool" style="display:none;">
+            <div class="diff-bar">
+                <button class="diff-btn sel" data-d="beginner" onclick="setPoolDiff('beginner')">Beginner</button>
+                <button class="diff-btn" data-d="medium" onclick="setPoolDiff('medium')">Medium</button>
+                <button class="diff-btn" data-d="expert" onclick="setPoolDiff('expert')">Expert</button>
+            </div>
+            <div class="game-score pool-score">
+                <span id="pool-pinfo">⚡ Pika: —</span>
+                <span id="pool-turn">Your shot</span>
+                <span id="pool-binfo">Crow: — 🐦‍⬛</span>
+            </div>
+            <div class="game-canvas-wrap"><canvas id="pool-cvs" width="360" height="640"></canvas></div>
+            <div class="game-hint">Drag from cue ball → aim & power</div>
+            <div class="msg-box" id="pool-msg">Drag from the white ball to shoot!</div>
+            <button class="action-btn sec" onclick="initPool()">New Game 🔄</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CLASSROOM ===== -->
+<div class="screen" id="screen-classroom">
+    <div class="top-bar"><button class="back-btn" onclick="exitClassroom()">← NEU</button><span class="loc-name">🏫 Classroom</span><span id="classroom-comp"></span></div>
+    <!-- Subject Picker (shown first) -->
+    <div class="panel" id="subj-picker">
+        <div class="panel-title">🏫 Pick a Class</div>
+        <div class="subj-grid" id="subj-grid"></div>
+    </div>
+    <!-- Classroom Scene (shown after picking subject) -->
+    <div class="panel" id="classroom-scene" style="display:none;">
+        <div class="classroom-room">
+            <!-- Ceiling lights -->
+            <div class="cl-lights">💡 &nbsp; 💡 &nbsp; 💡</div>
+            <!-- Board -->
+            <div class="cl-board-frame">
+                <div class="cl-board-label" id="cl-subj-label">📐 Subject</div>
+                <div class="cl-board" id="class-board">Welcome to class! 📚</div>
+            </div>
+            <!-- Note nav -->
+            <div class="cl-nav">
+                <button class="back-btn" onclick="prevNote()">← Prev</button>
+                <span id="note-counter" style="font-size:.7rem;font-weight:800;">0/0</span>
+                <button class="back-btn" onclick="nextNote()">Next →</button>
+            </div>
+            <!-- Desk area -->
+            <div class="cl-desks">
+                <div class="cl-desk-row">
+                    <div class="cl-desk empty"></div>
+                    <div class="cl-desk empty"></div>
+                </div>
+                <div class="cl-desk-row">
+                    <div class="cl-desk pika-desk" id="pika-desk">
+                        <div class="cl-student">⚡</div>
+                        <div class="cl-items">📓 ✏️ 💻</div>
+                    </div>
+                    <div class="cl-desk" id="crow-desk">
+                        <div class="cl-student" id="crow-seat"></div>
+                        <div class="cl-items" id="crow-items"></div>
+                    </div>
+                </div>
+                <div class="cl-desk-row">
+                    <div class="cl-desk empty"></div>
+                    <div class="cl-desk empty"></div>
+                </div>
+            </div>
+            <!-- Floor -->
+            <div class="cl-floor"></div>
+        </div>
+        <button class="action-btn sec" onclick="exitClassroom()" style="margin-top:6px;">Switch Subject 📚</button>
+    </div>
+</div>
+
+<!-- ===== FOUND CROW ===== -->
+<div class="screen" id="screen-found">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name" id="found-loc">📍</span><span class="companion-found">🐦‍⬛ Together!</span></div>
+    <div class="panel" style="text-align:center;">
+        <div style="font-size:3.5rem;margin:8px 0;">⚡🤝🐦‍⬛</div>
+        <div class="panel-title">You found Crow! 💛</div>
+        <p style="font-size:.8rem;font-weight:700;color:#888;margin-bottom:12px;">Where to hang out?</p>
+        <div class="choices" id="found-choices"></div>
+    </div>
+</div>
+
+<!-- Load all JS modules -->
+<script src="adv-core.js"></script>
+<script src="adv-games.js"></script>
+<script src="adv-shops.js"></script>
+<script src="adv-school.js"></script>
+<script>
+    // Boot everything up
+    initCore();
+    buildDK();
+    buildPanera();
+    buildSubjects();
+    initTT();
+    initPool();
+</script>
+</body>
+</html>
