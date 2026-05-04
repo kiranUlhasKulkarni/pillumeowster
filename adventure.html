@@ -27,49 +27,78 @@
 <!-- ===== MAP ===== -->
 <div class="screen active" id="screen-map">
     <div class="top-bar"><span class="loc-name">🗺️ Boston Map</span><span id="map-comp"></span></div>
-    <div class="map-wrap" style="background:linear-gradient(180deg,#d8e8d0 0%,#c8dcc0 30%,#cce0c4 60%,#c4d8bc 100%);">
+    <div class="map-wrap" style="background:#e8e4dc;">
+        <!-- Base terrain layers -->
+        <div style="position:absolute;inset:0;background:linear-gradient(170deg,#dfe8d4 0%,#e2e6da 25%,#e6e8de 50%,#e4e6dc 75%,#e0e2d8 100%);"></div>
         <!-- Charles River -->
-        <div style="position:absolute;top:-10px;left:100px;right:-20px;height:65px;background:linear-gradient(180deg,#80b8d8,#6aa8cc);border-radius:0 0 40% 30%;opacity:.6;"></div>
-        <!-- The Fens (park) -->
-        <div style="position:absolute;top:55px;left:10px;width:110px;height:80px;background:radial-gradient(ellipse,#6ab04c,#78c058);border-radius:40%;opacity:.5;"></div>
-        <div style="position:absolute;top:75px;left:35px;font-size:.35rem;color:#3a7a20;font-weight:900;z-index:3;opacity:.6;">The Fens</div>
-        <!-- Southwest Corridor Park -->
-        <div style="position:absolute;top:180px;left:200px;width:12px;height:200px;background:#7ab860;border-radius:6px;opacity:.35;transform:rotate(8deg);"></div>
-        <!-- === STREETS === -->
-        <!-- Boylston St (main E-W through Fenway) -->
-        <div class="map-road map-road-h" style="top:110px;left:0;right:100px;height:7px;background:#e0d4c0;border:1px solid #ccc4b0;"></div>
-        <div style="position:absolute;top:100px;left:10px;font-size:.32rem;color:#8a7a60;font-weight:900;z-index:5;">Boylston St</div>
-        <!-- Huntington Ave (diagonal through NEU) -->
-        <div style="position:absolute;top:145px;left:80px;width:420px;height:7px;background:#e0d4c0;border:1px solid #ccc4b0;border-radius:2px;transform:rotate(12deg);z-index:2;"></div>
-        <div style="position:absolute;top:148px;left:130px;font-size:.32rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(12deg);">Huntington Ave</div>
-        <!-- Tremont St (N-S) -->
-        <div class="map-road map-road-v" style="left:320px;top:50px;height:430px;width:6px;background:#ddd0c0;border:1px solid #c8bca8;transform:rotate(-5deg);"></div>
-        <div style="position:absolute;top:260px;left:326px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(-5deg);">Tremont St</div>
-        <!-- Mass Ave -->
-        <div class="map-road map-road-v" style="left:190px;top:0;height:480px;width:7px;background:#e0d4c0;border:1px solid #ccc4b0;"></div>
-        <div style="position:absolute;top:30px;left:198px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(90deg);">Mass Ave</div>
+        <div style="position:absolute;top:-15px;left:80px;right:-30px;height:58px;background:linear-gradient(180deg,#7ab8d8,#6aaccc);border-radius:0 0 50% 30%;opacity:.55;"></div>
+        <div style="position:absolute;top:30px;left:160px;font-size:.3rem;color:#4a88a8;font-weight:900;z-index:5;opacity:.6;">Charles River</div>
+        <!-- The Fens park -->
+        <div style="position:absolute;top:50px;left:5px;width:120px;height:90px;background:radial-gradient(ellipse,#8cc060,#6aa840 70%,transparent);border-radius:40%;opacity:.4;"></div>
+        <div style="position:absolute;top:85px;left:32px;font-size:.32rem;color:#3a7a20;font-weight:900;z-index:5;opacity:.55;">The Fens</div>
+        <!-- Trees in Fens -->
+        <div style="position:absolute;top:62px;left:25px;font-size:.5rem;opacity:.3;">🌳🌳🌲🌳</div>
+        <div style="position:absolute;top:100px;left:50px;font-size:.5rem;opacity:.3;">🌳🌲🌳</div>
+        <!-- SW Corridor Park -->
+        <div style="position:absolute;top:175px;left:196px;width:10px;height:220px;background:linear-gradient(180deg,#8cc060,#7ab050,#8cc060);border-radius:5px;opacity:.3;transform:rotate(6deg);"></div>
+        <!-- Emerald Necklace path -->
+        <div style="position:absolute;top:130px;left:5px;width:140px;height:3px;background:#8ab848;opacity:.3;border-radius:2px;transform:rotate(5deg);"></div>
+        <!-- === MAJOR STREETS === -->
+        <!-- Boylston St -->
+        <div style="position:absolute;top:108px;left:0;width:480px;height:8px;background:#f0ece4;border:1px solid #d8d0c4;border-radius:1px;z-index:2;"></div>
+        <div style="position:absolute;top:99px;left:10px;font-size:.33rem;color:#6a6050;font-weight:800;z-index:6;letter-spacing:.5px;">BOYLSTON ST</div>
+        <!-- Huntington Ave (angled) -->
+        <div style="position:absolute;top:148px;left:70px;width:450px;height:8px;background:#f0ece4;border:1px solid #d8d0c4;border-radius:1px;transform:rotate(11deg);z-index:2;"></div>
+        <div style="position:absolute;top:150px;left:110px;font-size:.33rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(11deg);letter-spacing:.5px;">HUNTINGTON AVE</div>
+        <!-- Mass Ave (vertical) -->
+        <div style="position:absolute;left:188px;top:0;width:9px;height:480px;background:#f0ece4;border:1px solid #d8d0c4;z-index:2;"></div>
+        <div style="position:absolute;top:42px;left:168px;font-size:.3rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(-90deg);letter-spacing:.5px;">MASS AVE</div>
+        <!-- Tremont St -->
+        <div style="position:absolute;left:315px;top:40px;width:7px;height:440px;background:#ece8e0;border:1px solid #d4ccc0;transform:rotate(-4deg);z-index:2;"></div>
+        <div style="position:absolute;top:280px;left:324px;font-size:.28rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(-4deg);">TREMONT ST</div>
         <!-- Columbus Ave (diagonal) -->
-        <div style="position:absolute;top:200px;left:180px;width:340px;height:5px;background:#d8ccb8;border-radius:2px;transform:rotate(22deg);z-index:1;"></div>
-        <div style="position:absolute;top:250px;left:280px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(22deg);">Columbus Ave</div>
+        <div style="position:absolute;top:210px;left:170px;width:350px;height:6px;background:#ece8e0;border:1px solid #d4ccc0;transform:rotate(20deg);z-index:1;"></div>
+        <div style="position:absolute;top:265px;left:290px;font-size:.27rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(20deg);">COLUMBUS AVE</div>
+        <!-- === MINOR STREETS === -->
         <!-- Ruggles St -->
-        <div style="position:absolute;top:185px;left:210px;width:100px;height:4px;background:#d8ccb8;border-radius:2px;z-index:1;"></div>
-        <!-- Winthrop St (near Crow) -->
-        <div style="position:absolute;top:370px;left:400px;width:120px;height:5px;background:#d8ccb8;border-radius:2px;transform:rotate(-8deg);z-index:1;"></div>
-        <div style="position:absolute;top:362px;left:420px;font-size:.28rem;color:#8a7a60;font-weight:900;z-index:5;">Winthrop St</div>
+        <div style="position:absolute;top:186px;left:205px;width:100px;height:4px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
+        <!-- Parker St -->
+        <div style="position:absolute;top:140px;left:0;width:80px;height:4px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
+        <!-- Forsyth St -->
+        <div style="position:absolute;top:125px;left:120px;width:4px;height:50px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
+        <!-- Gainsborough -->
+        <div style="position:absolute;top:60px;left:155px;width:4px;height:55px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
+        <!-- Winthrop St -->
+        <div style="position:absolute;top:368px;left:395px;width:130px;height:5px;background:#e8e4dc;transform:rotate(-6deg);z-index:1;"></div>
+        <div style="position:absolute;top:360px;left:415px;font-size:.25rem;color:#7a7060;font-weight:800;z-index:6;">Winthrop St</div>
+        <!-- Washington St -->
+        <div style="position:absolute;top:250px;left:350px;width:6px;height:230px;background:#ece8e0;transform:rotate(-8deg);z-index:1;"></div>
+        <div style="position:absolute;top:350px;left:356px;font-size:.25rem;color:#7a7060;font-weight:800;z-index:6;transform:rotate(-8deg);">Washington</div>
+        <!-- Melnea Cass Blvd -->
+        <div style="position:absolute;top:340px;left:240px;width:280px;height:5px;background:#ece8e0;transform:rotate(5deg);z-index:1;"></div>
+        <div style="position:absolute;top:332px;left:310px;font-size:.24rem;color:#7a7060;font-weight:800;z-index:6;">Melnea Cass Blvd</div>
+        <!-- === TRANSIT (Orange Line) === -->
+        <div style="position:absolute;top:170px;left:196px;width:5px;height:250px;background:#e87020;border-radius:3px;opacity:.25;z-index:1;transform:rotate(5deg);"></div>
+        <div style="position:absolute;top:175px;left:200px;width:7px;height:7px;background:#e87020;border-radius:50%;opacity:.5;z-index:6;"></div>
         <!-- === BUILDING BLOCKS === -->
-        <div class="map-building" style="left:20px;top:120px;width:35px;height:22px;border-radius:2px;"></div>
-        <div class="map-building" style="left:85px;top:160px;width:30px;height:18px;"></div>
-        <div class="map-building" style="left:230px;top:80px;width:45px;height:20px;"></div>
-        <div class="map-building" style="left:350px;top:90px;width:30px;height:35px;"></div>
-        <div class="map-building" style="left:140px;top:220px;width:35px;height:28px;"></div>
-        <div class="map-building" style="left:260px;top:160px;width:40px;height:18px;"></div>
-        <div class="map-building" style="left:380px;top:280px;width:50px;height:22px;"></div>
-        <div class="map-building" style="left:440px;top:340px;width:35px;height:25px;"></div>
-        <div class="map-building" style="left:300px;top:400px;width:40px;height:18px;"></div>
-        <div class="map-building" style="left:500px;top:200px;width:28px;height:30px;"></div>
-        <div class="map-building" style="left:100px;top:300px;width:30px;height:22px;"></div>
-        <!-- Ruggles label -->
-        <div style="position:absolute;top:180px;left:215px;font-size:.28rem;color:#ff69b4;font-weight:900;z-index:5;background:rgba(255,255,255,.7);padding:0 3px;border-radius:3px;">Ruggles</div>
+        <div class="map-building" style="left:20px;top:118px;width:30px;height:18px;opacity:.12;"></div>
+        <div class="map-building" style="left:80px;top:155px;width:25px;height:15px;opacity:.12;"></div>
+        <div class="map-building" style="left:228px;top:78px;width:40px;height:18px;opacity:.1;"></div>
+        <div class="map-building" style="left:245px;top:125px;width:50px;height:22px;opacity:.1;background:#888;"></div>
+        <div class="map-building" style="left:340px;top:85px;width:28px;height:30px;opacity:.1;"></div>
+        <div class="map-building" style="left:135px;top:215px;width:30px;height:24px;opacity:.1;"></div>
+        <div class="map-building" style="left:260px;top:160px;width:35px;height:16px;opacity:.12;"></div>
+        <div class="map-building" style="left:370px;top:275px;width:45px;height:20px;opacity:.1;"></div>
+        <div class="map-building" style="left:435px;top:335px;width:30px;height:22px;opacity:.1;"></div>
+        <div class="map-building" style="left:460px;top:260px;width:25px;height:28px;opacity:.1;"></div>
+        <div class="map-building" style="left:295px;top:395px;width:35px;height:16px;opacity:.1;"></div>
+        <div class="map-building" style="left:100px;top:290px;width:28px;height:20px;opacity:.1;"></div>
+        <div class="map-building" style="left:500px;top:180px;width:22px;height:25px;opacity:.1;"></div>
+        <div class="map-building" style="left:155px;top:160px;width:18px;height:14px;opacity:.1;"></div>
+        <!-- Station markers -->
+        <div style="position:absolute;top:178px;left:212px;font-size:.28rem;color:#e87020;font-weight:900;z-index:6;background:rgba(255,255,255,.75);padding:0 4px;border-radius:3px;border:1px solid #e87020;">Ruggles</div>
+        <!-- Nubian Sq label -->
+        <div style="position:absolute;top:405px;left:410px;font-size:.26rem;color:#6a6050;font-weight:800;z-index:5;background:rgba(255,255,255,.6);padding:0 3px;border-radius:2px;">Nubian Square</div>
         <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
         <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
         <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
