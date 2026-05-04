@@ -8,7 +8,7 @@ The ultimate custom web experience — **16 mini-games**, a **secret kitchen que
 
 ```
 ├── index.html            ← Game Hub (16 games + secret links)
-├── secret_Quest.html     ← Kitchen baking quest → love letter
+├── secret_Quest.html     ← Kitchen baking quest → secret letter
 ├── adventure.html        ← Boston adventure shell
 ├── adv.css               ← Adventure styles + dark mode
 ├── adv-core.js           ← Map, navigation, houses, rooms, Crow hide-and-seek
@@ -82,7 +82,7 @@ A state-machine puzzle inside Linda's kitchen. Crow ate Linda's cake — bake a 
 
 **Password:** `CrowEatsLindasCake`
 
-**Celebration unlock:** confetti rain, a love letter from Pillu, and a scuba-dance section with embedded YouTube audio.
+**Celebration unlock:** confetti rain, a secret letter from Crow, and a scuba-dance section with embedded YouTube audio.
 
 ---
 
