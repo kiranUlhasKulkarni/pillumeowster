@@ -530,16 +530,77 @@ function poolDraw() {
         // Highlight
         c.beginPath(); c.arc(b.x - 2, b.y - 2, b.r * 0.3, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,.3)'; c.fill();
     }
-    // Aiming
+    // Aiming with TRAJECTORY PREDICTION
     if (P.dragging && P.cueBall && !P.cueBall.sunk) {
         var cb = P.cueBall;
         var adx = cb.x - P.aimX, ady = cb.y - P.aimY;
         var dragDist = Math.hypot(adx, ady);
         if (dragDist > 3) {
             var pwr = Math.min(dragDist, 120);
-            // Guide line in shot direction
-            c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = 1; c.setLineDash([3, 3]);
-            c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(cb.x + adx * 2.5, cb.y + ady * 2.5); c.stroke(); c.setLineDash([]);
+            // Shot direction (normalized)
+            var sdx = adx / dragDist, sdy = ady / dragDist;
+
+            // --- TRAJECTORY PREDICTION ---
+            // Find first ball the cue ball will hit
+            var hitBall = null, hitDist = 9999, hitPt = null;
+            var rl2 = P.RL + P.BR;
+            for (var ti = 0; ti < P.balls.length; ti++) {
+                var tb = P.balls[ti];
+                if (tb.sunk || tb.n === 0) continue;
+                // Ray-circle intersection: ray from cb in direction (sdx,sdy), circle at tb with radius 2*BR
+                var ocx = cb.x - tb.x, ocy = cb.y - tb.y;
+                var R = P.BR * 2;
+                var a2 = sdx * sdx + sdy * sdy;
+                var b2 = 2 * (ocx * sdx + ocy * sdy);
+                var c2 = ocx * ocx + ocy * ocy - R * R;
+                var disc = b2 * b2 - 4 * a2 * c2;
+                if (disc >= 0) {
+                    var t = (-b2 - Math.sqrt(disc)) / (2 * a2);
+                    if (t > 0 && t < hitDist) {
+                        hitDist = t;
+                        hitBall = tb;
+                        hitPt = { x: cb.x + sdx * t, y: cb.y + sdy * t };
+                    }
+                }
+            }
+            // Check wall hit distance
+            var wallDist = 9999;
+            var wallPt = null, wallBounceX = sdx, wallBounceY = sdy;
+            if (sdx > 0) { var tw = (W - rl2 - cb.x) / sdx; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = -sdx; wallBounceY = sdy; } }
+            if (sdx < 0) { var tw = (rl2 - cb.x) / sdx; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = -sdx; wallBounceY = sdy; } }
+            if (sdy > 0) { var tw = (H - rl2 - cb.y) / sdy; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = sdx; wallBounceY = -sdy; } }
+            if (sdy < 0) { var tw = (rl2 - cb.y) / sdy; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = sdx; wallBounceY = -sdy; } }
+            wallPt = { x: cb.x + sdx * wallDist, y: cb.y + sdy * wallDist };
+
+            // Draw guide line to first hit
+            c.setLineDash([3, 3]); c.lineWidth = 1;
+            if (hitBall && hitDist < wallDist) {
+                // Line to ball hit point
+                c.strokeStyle = 'rgba(255,255,255,.5)';
+                c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(hitPt.x, hitPt.y); c.stroke();
+                // Ghost ball circle at contact
+                c.beginPath(); c.arc(hitPt.x, hitPt.y, P.BR, 0, Math.PI * 2);
+                c.strokeStyle = 'rgba(255,255,255,.25)'; c.stroke();
+                // Target ball deflection direction
+                var deflX = hitBall.x - hitPt.x, deflY = hitBall.y - hitPt.y;
+                var deflDist = Math.hypot(deflX, deflY);
+                if (deflDist > 0) {
+                    var dnx = deflX / deflDist, dny = deflY / deflDist;
+                    c.strokeStyle = 'rgba(255,200,50,.5)';
+                    c.beginPath(); c.moveTo(hitBall.x, hitBall.y);
+                    c.lineTo(hitBall.x + dnx * 80, hitBall.y + dny * 80); c.stroke();
+                }
+            } else if (wallPt) {
+                // Line to wall
+                c.strokeStyle = 'rgba(255,255,255,.5)';
+                c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(wallPt.x, wallPt.y); c.stroke();
+                // Bounce line
+                c.strokeStyle = 'rgba(255,150,150,.3)';
+                c.beginPath(); c.moveTo(wallPt.x, wallPt.y);
+                c.lineTo(wallPt.x + wallBounceX * 60, wallPt.y + wallBounceY * 60); c.stroke();
+            }
+            c.setLineDash([]);
+
             // Cue stick — BEHIND ball, toward drag point
             var ndx = (P.aimX - cb.x) / dragDist;
             var ndy = (P.aimY - cb.y) / dragDist;
