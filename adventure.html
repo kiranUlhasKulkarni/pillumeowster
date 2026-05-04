@@ -27,78 +27,8 @@
 <!-- ===== MAP ===== -->
 <div class="screen active" id="screen-map">
     <div class="top-bar"><span class="loc-name">🗺️ Boston Map</span><span id="map-comp"></span></div>
-    <div class="map-wrap" style="background:#e8e4dc;">
-        <!-- Base terrain layers -->
-        <div style="position:absolute;inset:0;background:linear-gradient(170deg,#dfe8d4 0%,#e2e6da 25%,#e6e8de 50%,#e4e6dc 75%,#e0e2d8 100%);"></div>
-        <!-- Charles River -->
-        <div style="position:absolute;top:-15px;left:80px;right:-30px;height:58px;background:linear-gradient(180deg,#7ab8d8,#6aaccc);border-radius:0 0 50% 30%;opacity:.55;"></div>
-        <div style="position:absolute;top:30px;left:160px;font-size:.3rem;color:#4a88a8;font-weight:900;z-index:5;opacity:.6;">Charles River</div>
-        <!-- The Fens park -->
-        <div style="position:absolute;top:50px;left:5px;width:120px;height:90px;background:radial-gradient(ellipse,#8cc060,#6aa840 70%,transparent);border-radius:40%;opacity:.4;"></div>
-        <div style="position:absolute;top:85px;left:32px;font-size:.32rem;color:#3a7a20;font-weight:900;z-index:5;opacity:.55;">The Fens</div>
-        <!-- Trees in Fens -->
-        <div style="position:absolute;top:62px;left:25px;font-size:.5rem;opacity:.3;">🌳🌳🌲🌳</div>
-        <div style="position:absolute;top:100px;left:50px;font-size:.5rem;opacity:.3;">🌳🌲🌳</div>
-        <!-- SW Corridor Park -->
-        <div style="position:absolute;top:175px;left:196px;width:10px;height:220px;background:linear-gradient(180deg,#8cc060,#7ab050,#8cc060);border-radius:5px;opacity:.3;transform:rotate(6deg);"></div>
-        <!-- Emerald Necklace path -->
-        <div style="position:absolute;top:130px;left:5px;width:140px;height:3px;background:#8ab848;opacity:.3;border-radius:2px;transform:rotate(5deg);"></div>
-        <!-- === MAJOR STREETS === -->
-        <!-- Boylston St -->
-        <div style="position:absolute;top:108px;left:0;width:480px;height:8px;background:#f0ece4;border:1px solid #d8d0c4;border-radius:1px;z-index:2;"></div>
-        <div style="position:absolute;top:99px;left:10px;font-size:.33rem;color:#6a6050;font-weight:800;z-index:6;letter-spacing:.5px;">BOYLSTON ST</div>
-        <!-- Huntington Ave (angled) -->
-        <div style="position:absolute;top:148px;left:70px;width:450px;height:8px;background:#f0ece4;border:1px solid #d8d0c4;border-radius:1px;transform:rotate(11deg);z-index:2;"></div>
-        <div style="position:absolute;top:150px;left:110px;font-size:.33rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(11deg);letter-spacing:.5px;">HUNTINGTON AVE</div>
-        <!-- Mass Ave (vertical) -->
-        <div style="position:absolute;left:188px;top:0;width:9px;height:480px;background:#f0ece4;border:1px solid #d8d0c4;z-index:2;"></div>
-        <div style="position:absolute;top:42px;left:168px;font-size:.3rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(-90deg);letter-spacing:.5px;">MASS AVE</div>
-        <!-- Tremont St -->
-        <div style="position:absolute;left:315px;top:40px;width:7px;height:440px;background:#ece8e0;border:1px solid #d4ccc0;transform:rotate(-4deg);z-index:2;"></div>
-        <div style="position:absolute;top:280px;left:324px;font-size:.28rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(-4deg);">TREMONT ST</div>
-        <!-- Columbus Ave (diagonal) -->
-        <div style="position:absolute;top:210px;left:170px;width:350px;height:6px;background:#ece8e0;border:1px solid #d4ccc0;transform:rotate(20deg);z-index:1;"></div>
-        <div style="position:absolute;top:265px;left:290px;font-size:.27rem;color:#6a6050;font-weight:800;z-index:6;transform:rotate(20deg);">COLUMBUS AVE</div>
-        <!-- === MINOR STREETS === -->
-        <!-- Ruggles St -->
-        <div style="position:absolute;top:186px;left:205px;width:100px;height:4px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
-        <!-- Parker St -->
-        <div style="position:absolute;top:140px;left:0;width:80px;height:4px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
-        <!-- Forsyth St -->
-        <div style="position:absolute;top:125px;left:120px;width:4px;height:50px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
-        <!-- Gainsborough -->
-        <div style="position:absolute;top:60px;left:155px;width:4px;height:55px;background:#e8e4dc;border-radius:2px;z-index:1;"></div>
-        <!-- Winthrop St -->
-        <div style="position:absolute;top:368px;left:395px;width:130px;height:5px;background:#e8e4dc;transform:rotate(-6deg);z-index:1;"></div>
-        <div style="position:absolute;top:360px;left:415px;font-size:.25rem;color:#7a7060;font-weight:800;z-index:6;">Winthrop St</div>
-        <!-- Washington St -->
-        <div style="position:absolute;top:250px;left:350px;width:6px;height:230px;background:#ece8e0;transform:rotate(-8deg);z-index:1;"></div>
-        <div style="position:absolute;top:350px;left:356px;font-size:.25rem;color:#7a7060;font-weight:800;z-index:6;transform:rotate(-8deg);">Washington</div>
-        <!-- Melnea Cass Blvd -->
-        <div style="position:absolute;top:340px;left:240px;width:280px;height:5px;background:#ece8e0;transform:rotate(5deg);z-index:1;"></div>
-        <div style="position:absolute;top:332px;left:310px;font-size:.24rem;color:#7a7060;font-weight:800;z-index:6;">Melnea Cass Blvd</div>
-        <!-- === TRANSIT (Orange Line) === -->
-        <div style="position:absolute;top:170px;left:196px;width:5px;height:250px;background:#e87020;border-radius:3px;opacity:.25;z-index:1;transform:rotate(5deg);"></div>
-        <div style="position:absolute;top:175px;left:200px;width:7px;height:7px;background:#e87020;border-radius:50%;opacity:.5;z-index:6;"></div>
-        <!-- === BUILDING BLOCKS === -->
-        <div class="map-building" style="left:20px;top:118px;width:30px;height:18px;opacity:.12;"></div>
-        <div class="map-building" style="left:80px;top:155px;width:25px;height:15px;opacity:.12;"></div>
-        <div class="map-building" style="left:228px;top:78px;width:40px;height:18px;opacity:.1;"></div>
-        <div class="map-building" style="left:245px;top:125px;width:50px;height:22px;opacity:.1;background:#888;"></div>
-        <div class="map-building" style="left:340px;top:85px;width:28px;height:30px;opacity:.1;"></div>
-        <div class="map-building" style="left:135px;top:215px;width:30px;height:24px;opacity:.1;"></div>
-        <div class="map-building" style="left:260px;top:160px;width:35px;height:16px;opacity:.12;"></div>
-        <div class="map-building" style="left:370px;top:275px;width:45px;height:20px;opacity:.1;"></div>
-        <div class="map-building" style="left:435px;top:335px;width:30px;height:22px;opacity:.1;"></div>
-        <div class="map-building" style="left:460px;top:260px;width:25px;height:28px;opacity:.1;"></div>
-        <div class="map-building" style="left:295px;top:395px;width:35px;height:16px;opacity:.1;"></div>
-        <div class="map-building" style="left:100px;top:290px;width:28px;height:20px;opacity:.1;"></div>
-        <div class="map-building" style="left:500px;top:180px;width:22px;height:25px;opacity:.1;"></div>
-        <div class="map-building" style="left:155px;top:160px;width:18px;height:14px;opacity:.1;"></div>
-        <!-- Station markers -->
-        <div style="position:absolute;top:178px;left:212px;font-size:.28rem;color:#e87020;font-weight:900;z-index:6;background:rgba(255,255,255,.75);padding:0 4px;border-radius:3px;border:1px solid #e87020;">Ruggles</div>
-        <!-- Nubian Sq label -->
-        <div style="position:absolute;top:405px;left:410px;font-size:.26rem;color:#6a6050;font-weight:800;z-index:5;background:rgba(255,255,255,.6);padding:0 3px;border-radius:2px;">Nubian Square</div>
+    <div class="map-wrap" style="background:#f2efe9;position:relative;">
+        <canvas id="map-canvas" width="600" height="480" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
         <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
         <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
         <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
@@ -300,6 +230,207 @@
 <script src="adv-school.js"></script>
 <script>
     // Boot everything up
+    // Draw realistic map
+    (function(){
+        var mc = document.getElementById('map-canvas');
+        if (!mc) return;
+        var c = mc.getContext('2d');
+        var W = 600, H = 480;
+
+        // -- Background --
+        c.fillStyle = '#f2efe9'; c.fillRect(0, 0, W, H);
+
+        // -- Water: Charles River --
+        c.fillStyle = '#aad4f0';
+        c.beginPath(); c.moveTo(100, 0); c.lineTo(W + 20, 0); c.lineTo(W + 20, 35);
+        c.bezierCurveTo(480, 55, 300, 65, 160, 48);
+        c.bezierCurveTo(130, 45, 105, 30, 100, 0); c.fill();
+        // water texture
+        c.strokeStyle = 'rgba(150,200,230,.25)'; c.lineWidth = 0.5;
+        for (var wy = 8; wy < 50; wy += 7) {
+            c.beginPath();
+            for (var wx = 120; wx < W; wx += 30) {
+                c.moveTo(wx, wy + Math.sin(wx * 0.05) * 3);
+                c.lineTo(wx + 15, wy + Math.sin((wx + 15) * 0.05) * 3);
+            }
+            c.stroke();
+        }
+
+        // -- Parks --
+        // The Fens
+        c.fillStyle = '#c5e29c';
+        c.beginPath(); c.ellipse(65, 92, 62, 48, 0.08, 0, Math.PI * 2); c.fill();
+        c.fillStyle = '#b0d580';
+        c.beginPath(); c.ellipse(50, 88, 28, 18, -0.1, 0, Math.PI * 2); c.fill();
+        c.fillStyle = '#a0cc70';
+        c.beginPath(); c.ellipse(80, 100, 20, 12, 0.2, 0, Math.PI * 2); c.fill();
+        // Fens pond
+        c.fillStyle = '#90c8e0';
+        c.beginPath(); c.ellipse(60, 95, 12, 6, 0, 0, Math.PI * 2); c.fill();
+        // paths in Fens
+        c.strokeStyle = '#d8d0b8'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(10, 80); c.quadraticCurveTo(60, 78, 110, 95); c.stroke();
+        c.beginPath(); c.moveTo(40, 60); c.quadraticCurveTo(65, 100, 50, 130); c.stroke();
+
+        // SW Corridor Park
+        c.fillStyle = '#c0dd9c';
+        c.save(); c.translate(208, 175); c.rotate(0.08);
+        c.beginPath(); c.roundRect(-5, 0, 10, 240, 5); c.fill(); c.restore();
+
+        // -- Road helper --
+        function rd(x1,y1,x2,y2,w) {
+            c.lineCap = 'round';
+            // border
+            c.strokeStyle = '#ddd8d0'; c.lineWidth = w + 2;
+            c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+            // fill
+            c.strokeStyle = '#fff'; c.lineWidth = w;
+            c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+        }
+        function crd(pts, w) {
+            c.lineCap = 'round';
+            c.strokeStyle = '#ddd8d0'; c.lineWidth = w + 2;
+            c.beginPath(); c.moveTo(pts[0], pts[1]);
+            if (pts.length === 6) c.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]);
+            else if (pts.length === 8) c.bezierCurveTo(pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
+            c.stroke();
+            c.strokeStyle = '#fff'; c.lineWidth = w;
+            c.beginPath(); c.moveTo(pts[0], pts[1]);
+            if (pts.length === 6) c.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]);
+            else if (pts.length === 8) c.bezierCurveTo(pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
+            c.stroke();
+        }
+        function lbl(t,x,y,a,s,cl) {
+            c.save(); c.translate(x,y); if (a) c.rotate(a);
+            // white halo
+            c.font = '700 ' + (s||6.5) + 'px sans-serif';
+            c.strokeStyle = 'rgba(242,239,233,.85)'; c.lineWidth = 2.5; c.lineJoin = 'round';
+            c.strokeText(t, 0, 0);
+            c.fillStyle = cl || '#666'; c.fillText(t, 0, 0);
+            c.restore();
+        }
+
+        // ============ MINOR STREETS (draw first, under major) ============
+        var minors = [
+            // Fenway area grid
+            [0,145,100,145], [130,58,130,155], [160,52,160,115],
+            [45,70,45,145], [80,115,80,165],
+            // NEU campus area
+            [230,95,230,190], [260,85,260,155], [290,108,290,210],
+            [210,190,315,190], [230,140,310,140],
+            // Between Huntington & Columbus
+            [195,250,320,250], [195,290,280,290], [150,200,195,200],
+            [100,200,100,330], [145,165,145,260],
+            // South/East grid
+            [370,195,370,330], [400,250,510,250], [430,295,430,410],
+            [460,175,460,290], [400,175,530,175],
+            [480,320,480,440], [510,250,510,380],
+            // Roxbury area
+            [310,395,310,H], [250,420,410,420], [350,360,350,440],
+            [270,350,270,430], [400,300,540,300],
+            [0,255,100,255], [150,310,195,310],
+            // Additional fill
+            [50,200,50,290], [345,250,345,350],
+            [220,320,310,320], [440,170,440,240],
+            [500,110,500,250], [540,200,540,370],
+            [250,55,250,110], [200,55,250,55],
+            [380,55,380,170], [420,80,420,165],
+        ];
+        for (var mi = 0; mi < minors.length; mi++) {
+            var m = minors[mi];
+            rd(m[0], m[1], m[2], m[3], 2.5);
+        }
+
+        // ============ MAJOR STREETS ============
+        rd(0, 115, 510, 115, 7);  // Boylston St
+        lbl('BOYLSTON ST', 15, 109, 0, 7.5, '#555');
+        crd([75, 155, 260, 180, 540, 240], 7);  // Huntington Ave
+        lbl('HUNTINGTON AVE', 150, 168, 0.14, 7.5, '#555');
+        rd(195, 0, 195, H, 7);  // Mass Ave
+        lbl('MASS AVE', 176, 48, -Math.PI/2, 7, '#555');
+        rd(325, 42, 308, H, 6);  // Tremont St
+        lbl('TREMONT ST', 329, 85, -0.04, 6.5, '#666');
+        crd([185, 218, 330, 295, 535, 385], 5);  // Columbus Ave
+        lbl('COLUMBUS AVE', 310, 300, 0.32, 6, '#666');
+        rd(248, 340, 545, 358, 5.5);  // Melnea Cass
+        lbl('MELNEA CASS BLVD', 315, 340, 0.02, 5.5, '#777');
+        rd(355, 52, 338, H, 4.5);  // Washington St
+        lbl('WASHINGTON ST', 360, 280, -0.04, 5, '#888');
+        rd(395, 370, 550, 362, 4);  // Winthrop St
+        lbl('Winthrop St', 425, 362, -0.04, 5.5, '#888');
+        // Ruggles St
+        rd(210, 192, 320, 192, 3.5);
+
+        // ============ BUILDINGS (dense clusters) ============
+        c.fillStyle = '#e2ded6';
+        var B = [
+            [18,120,26,15],[68,158,20,12],[138,220,26,18],[230,78,32,14],
+            [248,128,38,16],[342,86,22,26],[265,162,28,12],[375,275,36,16],
+            [438,336,24,18],[462,255,18,22],[298,396,28,12],[103,293,22,16],
+            [502,182,16,20],[158,262,20,14],[408,198,20,16],[498,298,18,22],
+            [338,158,16,20],[218,218,14,12],[278,258,18,14],[82,228,12,10],
+            [268,358,16,12],[378,418,20,14],[178,338,14,16],[118,118,12,8],
+            // more density
+            [38,158,14,10],[355,128,12,18],[395,245,16,12],[530,258,16,20],
+            [453,398,18,14],[188,148,10,8],[305,108,14,10],[445,128,12,16],
+            [285,205,20,10],[425,358,14,12],[365,398,12,10],[488,158,14,18],
+            [148,175,10,8],[75,285,10,12],[555,315,12,16],[522,408,14,12],
+            [328,425,16,10],[185,395,12,14],[248,288,14,10],[408,88,10,14],
+            [540,135,12,10],[468,438,10,12],[205,438,14,10],[358,315,12,14],
+            [138,345,10,12],[558,218,10,14],[488,368,12,10],[312,268,10,12],
+        ];
+        for (var bi = 0; bi < B.length; bi++) {
+            var b = B[bi]; c.fillRect(b[0], b[1], b[2], b[3]);
+        }
+        // Darker accent buildings (larger / important)
+        c.fillStyle = '#d8d4cc';
+        c.fillRect(240, 132, 45, 22); // NEU
+        c.fillRect(22, 60, 18, 14);   // near Pika
+        c.fillRect(450, 375, 22, 18); // near Crow
+
+        // ============ TRANSIT (Orange Line) ============
+        c.setLineDash([]);
+        c.strokeStyle = '#e87020'; c.lineWidth = 3.5; c.globalAlpha = 0.22;
+        c.beginPath(); c.moveTo(205, 165); c.lineTo(215, 455); c.stroke();
+        c.globalAlpha = 1;
+        // Ruggles station
+        c.fillStyle = '#e87020';
+        c.beginPath(); c.arc(209, 192, 5, 0, Math.PI * 2); c.fill();
+        c.fillStyle = '#fff';
+        c.beginPath(); c.arc(209, 192, 2.5, 0, Math.PI * 2); c.fill();
+        // station label
+        c.fillStyle = '#e87020';
+        c.beginPath(); c.roundRect(218, 184, 44, 13, 3); c.fill();
+        c.fillStyle = '#fff'; c.font = '700 7.5px sans-serif'; c.fillText('Ruggles', 221, 194);
+
+        // ============ AREA LABELS ============
+        lbl('Fenway', 12, 140, 0, 6.5, '#888');
+        // Nubian Sq
+        c.fillStyle = 'rgba(242,239,233,.75)';
+        c.beginPath(); c.roundRect(412, 396, 64, 13, 3); c.fill();
+        c.fillStyle = '#666'; c.font = '600 7px sans-serif'; c.fillText('Nubian Square', 415, 406);
+        // Fens label
+        c.fillStyle = '#5a8830'; c.font = '700 7.5px sans-serif'; c.fillText('The Fens', 30, 96);
+
+        // ============ COMPASS ============
+        c.fillStyle = '#bbb'; c.font = '700 10px sans-serif'; c.textAlign = 'center';
+        c.fillText('N', 570, 72);
+        c.strokeStyle = '#bbb'; c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(570, 74); c.lineTo(570, 90); c.stroke();
+        c.beginPath(); c.moveTo(567, 78); c.lineTo(570, 74); c.lineTo(573, 78); c.closePath(); c.fill();
+        c.textAlign = 'left';
+
+        // ============ SCALE BAR ============
+        c.fillStyle = '#999'; c.font = '600 5.5px sans-serif';
+        c.fillText('0.25 mi', 15, H - 12);
+        c.strokeStyle = '#999'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(15, H - 7); c.lineTo(75, H - 7); c.stroke();
+        c.beginPath(); c.moveTo(15, H - 10); c.lineTo(15, H - 4); c.stroke();
+        c.beginPath(); c.moveTo(75, H - 10); c.lineTo(75, H - 4); c.stroke();
+    })();
+
+
+
     initCore();
     buildDK();
     buildPanera();
