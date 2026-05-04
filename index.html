@@ -342,7 +342,7 @@
     </style>
 </head>
 <body>
-<div class="scooter-runner" id="adventure-scooter" onclick="window.location.href='adventure.html'" style="display:none;">🛴</div>
+<div class="scooter-runner" id="adventure-scooter" style="display:none;">🛴</div>
 <div class="scooter-banner" id="scooter-banner">Catch the scooter → Boston Adventure! 🗺️</div>
 <div class="secret-envelope" id="secret-envelope" onclick="window.location.href='secret_Quest.html'">💌</div>
 <div class="envelope-hint" id="envelope-hint">Catch me! 🐾</div>
@@ -1264,28 +1264,34 @@
 (function() {
     const scoot = document.getElementById('adventure-scooter');
     const banner = document.getElementById('scooter-banner');
-    let scootInterval = null;
-    let trailInterval = null;
- 
+    let scootInterval = null, trailInterval = null;
+
+    // USE POINTERDOWN — fires instantly, no click delay, works on animated elements
+    scoot.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Stop the animation so it doesn't fight navigation
+        scoot.style.animation = 'none';
+        scoot.style.display = 'none';
+        clearInterval(trailInterval);
+        // Navigate
+        window.location.href = 'adventure.html';
+    });
+
     function launchScooter() {
-        // Random direction
         const goRight = Math.random() > 0.5;
-        // Random speed (3-6 seconds to cross)
         const speed = (Math.random() * 3 + 3).toFixed(1);
-        // Random vertical position (avoid dock area)
         const bottom = Math.floor(Math.random() * 300 + 120);
- 
+
         scoot.style.display = 'block';
         scoot.style.bottom = bottom + 'px';
         scoot.style.setProperty('--speed', speed + 's');
         scoot.style.transform = goRight ? 'scaleX(1)' : 'scaleX(-1)';
         scoot.className = 'scooter-runner ' + (goRight ? 'going-right' : 'going-left');
- 
-        // Show banner briefly
+
         banner.classList.add('show');
         setTimeout(() => banner.classList.remove('show'), 2500);
- 
-        // Dust trail particles
+
         clearInterval(trailInterval);
         trailInterval = setInterval(() => {
             const rect = scoot.getBoundingClientRect();
@@ -1299,8 +1305,7 @@
             document.body.appendChild(dust);
             setTimeout(() => dust.remove(), 800);
         }, 80);
- 
-        // Hide after animation ends
+
         const hideTime = parseFloat(speed) * 1000 + 200;
         setTimeout(() => {
             scoot.style.display = 'none';
@@ -1308,14 +1313,12 @@
             clearInterval(trailInterval);
         }, hideTime);
     }
- 
-    // First scooter appears after 5 seconds, then every 12-20 seconds
+
     setTimeout(() => {
         launchScooter();
         scootInterval = setInterval(launchScooter, Math.random() * 8000 + 12000);
     }, 5000);
- 
-    // Re-randomize interval occasionally
+
     setInterval(() => {
         clearInterval(scootInterval);
         scootInterval = setInterval(launchScooter, Math.random() * 8000 + 12000);
