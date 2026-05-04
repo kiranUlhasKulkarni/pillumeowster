@@ -169,3 +169,25 @@ function openRoom(house, room) {
 }
 
 function closeRoom() { document.getElementById('room-interior').classList.remove('active'); }
+
+// =============================================
+// MAP SCOOTER TRACKING
+// =============================================
+var PIN_POS = {
+    pikaHouse: { x: 55, y: 80 },
+    crowHouse: { x: 495, y: 410 },
+    neu: { x: 245, y: 120 },
+    dunkin: { x: 125, y: 260 },
+    panera: { x: 365, y: 220 },
+    snell: { x: 245, y: 120 },
+    curry: { x: 245, y: 120 },
+    classroom: { x: 245, y: 120 }
+};
+
+function moveScooterTo(loc) {
+    var scoot = document.getElementById('map-scoot');
+    if (!scoot) return;
+    var pos = PIN_POS[loc] || PIN_POS.pikaHouse;
+    scoot.style.left = pos.x + 'px';
+    scoot.style.top = pos.y + 'px';
+}
