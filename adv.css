@@ -150,3 +150,62 @@ background:linear-gradient(160deg,#c8e6c0 0%,#b4d8a8 20%,#a8d0a0 40%,#c0deb8 60%
 /* ===== STUDY ===== */
 .study-desk{text-align:center;padding:15px;background:linear-gradient(135deg,#f8f0e8,#f0e8e0);border:2px solid #d8c8b8;border-radius:10px;margin-bottom:10px;}
 .study-timer{font-size:1.8rem;font-weight:900;color:var(--dpink);font-family:'Baloo 2',cursive;}
+
+/* ===== DARK MODE ===== */
+body.dark{--bg:#1a1a2e;--card:#252540;--text:#e8a0c0;--lpink:#4a3060;--dpink:#c850a0;--shadow:rgba(0,0,0,.4);--pink:#d070a0;--gold:#e8c840;--green:#40c860;}
+body.dark .top-bar{background:#252540;border-color:#3a3058;}
+body.dark .back-btn{background:#3a3058;color:#d8a0c0;border-color:#5a4070;}
+body.dark .panel{background:#252540;border-color:#3a3058;}
+body.dark .choice-btn{background:#2a2a48;border-color:#3a3058;color:#d0a0c0;}
+body.dark .choice-btn:hover{background:#353560;border-color:#5a4070;}
+body.dark .diff-btn{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+body.dark .diff-btn.sel{background:#c850a0;color:#fff;border-color:#c850a0;}
+body.dark .msg-box{color:#c0a0b0;}
+body.dark .pin-icon{background:#2a2a48;border-color:#c850a0;}
+body.dark .pin-label{background:rgba(30,30,50,.9);color:#d8a0c0;}
+body.dark .map-wrap{border-color:#3a3058;}
+body.dark .map-legend{background:rgba(30,30,50,.85);color:#aaa;}
+body.dark #travel-overlay{background:rgba(20,20,40,.95);}
+body.dark .floor-plan{border-color:#3a3058;background:linear-gradient(180deg,#252540,#202038)!important;}
+body.dark .room-spot{background:rgba(40,40,65,.6);border-color:#3a3058;color:#c0a0b0;}
+body.dark .room-spot:hover{background:rgba(60,50,80,.4);border-color:#5a4070;}
+body.dark .room-spot.searched{background:rgba(40,80,40,.2);border-color:#40c860;}
+body.dark .room-card{background:#252540;border-color:#3a3058;}
+body.dark .room-close{color:#c850a0;}
+body.dark .room-title{color:#d0a0c0;}
+body.dark .room-scene-wrap{background:linear-gradient(180deg,#2a2a48,#222240);border-color:#3a3058;}
+body.dark .room-scene-wall{background:linear-gradient(180deg,#303050,#282846);}
+body.dark .room-scene-floor{background:linear-gradient(180deg,#3a3050,#2a2840);}
+body.dark .room-desc{color:#a090a0;}
+body.dark .room-item{background:linear-gradient(135deg,#2a2a48,#252540);border-color:#3a3058;color:#c0a0b0;}
+body.dark .room-item:hover{background:#353560;box-shadow:0 3px 8px rgba(0,0,0,.3);}
+body.dark .room-item.tapped{background:linear-gradient(135deg,#352a48,#302840);border-color:#5a4070;}
+body.dark .room-interior{background:rgba(0,0,0,.75);}
+body.dark .menu-grid .menu-item{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+body.dark .cust-panel{background:#2a2a48;border-color:#3a3058;}
+body.dark .cust-label{color:#d0a0c0;}
+body.dark .opt{background:#252540;border-color:#3a3058;color:#b0a0b0;}
+body.dark .opt.sel{background:#c850a0;color:#fff;border-color:#c850a0;}
+body.dark .cart-box{background:#2a2a48;border-color:#3a3058;}
+body.dark .cart-row{border-color:#3a3058;color:#c0a0b0;}
+body.dark .pay-btn{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+body.dark .pay-btn:hover{border-color:#5a4070;background:#353560;}
+body.dark .builder-area{background:#2a2a48;border-color:#3a3058;}
+body.dark .builder-label{color:#d0a0c0;}
+body.dark .b-opt{background:#252540;border-color:#3a3058;color:#a0a0b0;}
+body.dark .b-opt.sel{background:#2a7a20;color:#fff;border-color:#208a18;}
+body.dark .subj-btn{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+body.dark .subj-btn:hover{background:#353560;border-color:#5a4070;}
+body.dark .classroom-room{background:linear-gradient(180deg,#2a2a48 0%,#222240 60%,#1a1a30 100%);border-color:#3a3058;}
+body.dark .cl-board-frame{background:#1a1a28;border-color:#6a5010;}
+body.dark .cl-board{background:#1a3a0a;color:#a0d880;}
+body.dark .cl-desk{background:linear-gradient(180deg,#6a5030,#5a4020);border-color:#4a3810;}
+body.dark .study-desk{background:linear-gradient(135deg,#2a2a48,#252540);border-color:#3a3058;}
+body.dark .game-hint{color:#808090;}
+body.dark .drink-desc{color:#a090a0;}
+
+/* Floating controls */
+.float-controls{position:fixed;top:12px;right:12px;z-index:900;display:flex;gap:6px;}
+.float-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--lpink);background:var(--card);font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;transition:all .2s;}
+.float-btn:active{transform:scale(.9);}
+body.dark .float-btn{border-color:#3a3058;background:#252540;box-shadow:0 2px 8px rgba(0,0,0,.3);}
