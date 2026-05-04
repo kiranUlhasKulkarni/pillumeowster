@@ -540,64 +540,79 @@ function poolDraw() {
             // Shot direction (normalized)
             var sdx = adx / dragDist, sdy = ady / dragDist;
 
-            // --- TRAJECTORY PREDICTION ---
-            // Find first ball the cue ball will hit
-            var hitBall = null, hitDist = 9999, hitPt = null;
-            var rl2 = P.RL + P.BR;
-            for (var ti = 0; ti < P.balls.length; ti++) {
-                var tb = P.balls[ti];
-                if (tb.sunk || tb.n === 0) continue;
-                // Ray-circle intersection: ray from cb in direction (sdx,sdy), circle at tb with radius 2*BR
-                var ocx = cb.x - tb.x, ocy = cb.y - tb.y;
-                var R = P.BR * 2;
-                var a2 = sdx * sdx + sdy * sdy;
-                var b2 = 2 * (ocx * sdx + ocy * sdy);
-                var c2 = ocx * ocx + ocy * ocy - R * R;
-                var disc = b2 * b2 - 4 * a2 * c2;
-                if (disc >= 0) {
-                    var t = (-b2 - Math.sqrt(disc)) / (2 * a2);
-                    if (t > 0 && t < hitDist) {
-                        hitDist = t;
-                        hitBall = tb;
-                        hitPt = { x: cb.x + sdx * t, y: cb.y + sdy * t };
+            // --- TRAJECTORY PREDICTION (multi-bounce) ---
+            // Simulate cue ball path with wall bounces, stop at ball hit
+            var simX = cb.x, simY = cb.y, simDX = sdx, simDY = sdy;
+            var segments = []; // [{x1,y1,x2,y2}]
+            var hitTarget = null;
+            var minWall = P.RL + P.BR + 1;
+            var maxWX = W - P.RL - P.BR - 1;
+            var maxWY = H - P.RL - P.BR - 1;
+            for (var bounce = 0; bounce < 4; bounce++) {
+                // Find closest ball hit from (simX,simY) in direction (simDX,simDY)
+                var bestBallT = 99999, bestBallRef = null;
+                for (var ti = 0; ti < P.balls.length; ti++) {
+                    var tb = P.balls[ti];
+                    if (tb.sunk || tb.n === 0) continue;
+                    var ocx = simX - tb.x, ocy = simY - tb.y;
+                    var R = P.BR * 2;
+                    var qa = simDX * simDX + simDY * simDY;
+                    var qb = 2 * (ocx * simDX + ocy * simDY);
+                    var qc = ocx * ocx + ocy * ocy - R * R;
+                    var disc = qb * qb - 4 * qa * qc;
+                    if (disc >= 0) {
+                        var tt = (-qb - Math.sqrt(disc)) / (2 * qa);
+                        if (tt > 1 && tt < bestBallT) { bestBallT = tt; bestBallRef = tb; }
                     }
                 }
-            }
-            // Check wall hit distance
-            var wallDist = 9999;
-            var wallPt = null, wallBounceX = sdx, wallBounceY = sdy;
-            if (sdx > 0) { var tw = (W - rl2 - cb.x) / sdx; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = -sdx; wallBounceY = sdy; } }
-            if (sdx < 0) { var tw = (rl2 - cb.x) / sdx; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = -sdx; wallBounceY = sdy; } }
-            if (sdy > 0) { var tw = (H - rl2 - cb.y) / sdy; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = sdx; wallBounceY = -sdy; } }
-            if (sdy < 0) { var tw = (rl2 - cb.y) / sdy; if (tw > 0 && tw < wallDist) { wallDist = tw; wallBounceX = sdx; wallBounceY = -sdy; } }
-            wallPt = { x: cb.x + sdx * wallDist, y: cb.y + sdy * wallDist };
+                // Find closest wall hit
+                var wallT = 99999, wallNX = 0, wallNY = 0;
+                if (simDX > 0.001) { var t = (maxWX - simX) / simDX; if (t > 0 && t < wallT) { wallT = t; wallNX = -1; wallNY = 0; } }
+                if (simDX < -0.001) { var t = (minWall - simX) / simDX; if (t > 0 && t < wallT) { wallT = t; wallNX = 1; wallNY = 0; } }
+                if (simDY > 0.001) { var t = (maxWY - simY) / simDY; if (t > 0 && t < wallT) { wallT = t; wallNX = 0; wallNY = -1; } }
+                if (simDY < -0.001) { var t = (minWall - simY) / simDY; if (t > 0 && t < wallT) { wallT = t; wallNX = 0; wallNY = 1; } }
 
-            // Draw guide line to first hit
-            c.setLineDash([3, 3]); c.lineWidth = 1;
-            if (hitBall && hitDist < wallDist) {
-                // Line to ball hit point
-                c.strokeStyle = 'rgba(255,255,255,.5)';
-                c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(hitPt.x, hitPt.y); c.stroke();
-                // Ghost ball circle at contact
-                c.beginPath(); c.arc(hitPt.x, hitPt.y, P.BR, 0, Math.PI * 2);
-                c.strokeStyle = 'rgba(255,255,255,.25)'; c.stroke();
-                // Target ball deflection direction
-                var deflX = hitBall.x - hitPt.x, deflY = hitBall.y - hitPt.y;
-                var deflDist = Math.hypot(deflX, deflY);
-                if (deflDist > 0) {
-                    var dnx = deflX / deflDist, dny = deflY / deflDist;
-                    c.strokeStyle = 'rgba(255,200,50,.5)';
-                    c.beginPath(); c.moveTo(hitBall.x, hitBall.y);
-                    c.lineTo(hitBall.x + dnx * 80, hitBall.y + dny * 80); c.stroke();
+                if (bestBallRef && bestBallT < wallT) {
+                    // Hit a ball — draw segment, then deflection
+                    var hx = simX + simDX * bestBallT, hy = simY + simDY * bestBallT;
+                    segments.push({x1:simX, y1:simY, x2:hx, y2:hy, col:'rgba(255,255,255,.45)'});
+                    hitTarget = {ball: bestBallRef, cx: hx, cy: hy};
+                    break;
+                } else if (wallT < 99990) {
+                    // Hit a wall — draw segment, bounce, continue
+                    var wx = simX + simDX * wallT, wy = simY + simDY * wallT;
+                    segments.push({x1:simX, y1:simY, x2:wx, y2:wy, col: bounce === 0 ? 'rgba(255,255,255,.45)' : 'rgba(255,200,100,.3)'});
+                    // Reflect direction
+                    simX = wx; simY = wy;
+                    if (wallNX !== 0) simDX = -simDX;
+                    if (wallNY !== 0) simDY = -simDY;
+                } else break;
+            }
+            // Draw all segments
+            c.lineWidth = 1.5;
+            for (var si = 0; si < segments.length; si++) {
+                var seg = segments[si];
+                c.strokeStyle = seg.col; c.setLineDash([4, 4]);
+                c.beginPath(); c.moveTo(seg.x1, seg.y1); c.lineTo(seg.x2, seg.y2); c.stroke();
+                // Bounce dot at wall contact (except first segment start)
+                if (si > 0) {
+                    c.fillStyle = 'rgba(255,200,100,.6)';
+                    c.beginPath(); c.arc(seg.x1, seg.y1, 3, 0, Math.PI * 2); c.fill();
                 }
-            } else if (wallPt) {
-                // Line to wall
-                c.strokeStyle = 'rgba(255,255,255,.5)';
-                c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(wallPt.x, wallPt.y); c.stroke();
-                // Bounce line
-                c.strokeStyle = 'rgba(255,150,150,.3)';
-                c.beginPath(); c.moveTo(wallPt.x, wallPt.y);
-                c.lineTo(wallPt.x + wallBounceX * 60, wallPt.y + wallBounceY * 60); c.stroke();
+            }
+            // If hit a ball, show ghost + deflection
+            if (hitTarget) {
+                c.setLineDash([]);
+                c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = 1;
+                c.beginPath(); c.arc(hitTarget.cx, hitTarget.cy, P.BR, 0, Math.PI * 2); c.stroke();
+                // Target deflection
+                var dx2 = hitTarget.ball.x - hitTarget.cx, dy2 = hitTarget.ball.y - hitTarget.cy;
+                var d2 = Math.hypot(dx2, dy2);
+                if (d2 > 0) {
+                    c.strokeStyle = 'rgba(255,210,60,.5)'; c.setLineDash([3, 3]); c.lineWidth = 1.5;
+                    c.beginPath(); c.moveTo(hitTarget.ball.x, hitTarget.ball.y);
+                    c.lineTo(hitTarget.ball.x + dx2/d2 * 70, hitTarget.ball.y + dy2/d2 * 70); c.stroke();
+                }
             }
             c.setLineDash([]);
 
