@@ -25,9 +25,9 @@
 </div>
 
 <!-- Floating Controls -->
-<div class="float-controls">
-    <button class="float-btn" onclick="window.location.href='index.html'" title="Home">🏠</button>
-    <button class="float-btn" id="dark-btn" onclick="toggleDark()" title="Dark Mode">🌙</button>
+<div style="position:fixed;top:12px;right:12px;z-index:9999;display:flex;gap:6px;">
+    <button onclick="window.location.href='index.html'" title="Home" style="width:42px;height:42px;border-radius:50%;border:2px solid #ff69b4;background:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.2);cursor:pointer;">🏠</button>
+    <button id="dark-btn" onclick="toggleDark()" title="Dark Mode" style="width:42px;height:42px;border-radius:50%;border:2px solid #ff69b4;background:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.2);cursor:pointer;">🌙</button>
 </div>
 
 <!-- ===== MAP ===== -->
@@ -441,7 +441,15 @@
     window.toggleDark = function() {
         document.body.classList.toggle('dark');
         var dk = document.body.classList.contains('dark');
-        document.getElementById('dark-btn').innerText = dk ? '☀️' : '🌙';
+        var dbtn = document.getElementById('dark-btn');
+        dbtn.innerText = dk ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        // Update inline button styles
+        var btns = dbtn.parentElement.querySelectorAll('button');
+        btns.forEach(function(b) {
+            b.style.background = dk ? '#252540' : '#fff';
+            b.style.borderColor = dk ? '#3a3058' : '#ff69b4';
+            b.style.boxShadow = dk ? '0 3px 12px rgba(0,0,0,.4)' : '0 3px 12px rgba(0,0,0,.2)';
+        });
         var mbg = document.getElementById('map-bg');
         if (mbg) mbg.style.background = dk ? '#242f3e' : '#f2efe9';
         drawMap();
