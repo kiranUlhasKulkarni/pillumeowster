@@ -24,10 +24,16 @@
     </div>
 </div>
 
+<!-- Floating Controls -->
+<div class="float-controls">
+    <button class="float-btn" onclick="window.location.href='index.html'" title="Home">🏠</button>
+    <button class="float-btn" id="dark-btn" onclick="toggleDark()" title="Dark Mode">🌙</button>
+</div>
+
 <!-- ===== MAP ===== -->
 <div class="screen active" id="screen-map">
     <div class="top-bar"><span class="loc-name">🗺️ Boston Map</span><span id="map-comp"></span></div>
-    <div class="map-wrap" style="background:#f2efe9;position:relative;">
+    <div class="map-wrap" style="position:relative;" id="map-bg">
         <canvas id="map-canvas" width="600" height="480" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
         <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
         <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
@@ -231,22 +237,23 @@
 <script>
     // Boot everything up
     // Draw realistic map
-    (function(){
+    window.drawMap = function(){
         var mc = document.getElementById('map-canvas');
         if (!mc) return;
         var c = mc.getContext('2d');
         var W = 600, H = 480;
 
+        var dk = document.body.classList.contains('dark');
         // -- Background --
-        c.fillStyle = '#f2efe9'; c.fillRect(0, 0, W, H);
+        c.fillStyle = dk ? '#242f3e' : '#f2efe9'; c.fillRect(0, 0, W, H);
 
         // -- Water: Charles River --
-        c.fillStyle = '#aad4f0';
+        c.fillStyle = dk ? '#17263c' : '#aad4f0';
         c.beginPath(); c.moveTo(100, 0); c.lineTo(W + 20, 0); c.lineTo(W + 20, 35);
         c.bezierCurveTo(480, 55, 300, 65, 160, 48);
         c.bezierCurveTo(130, 45, 105, 30, 100, 0); c.fill();
         // water texture
-        c.strokeStyle = 'rgba(150,200,230,.25)'; c.lineWidth = 0.5;
+        c.strokeStyle = dk ? 'rgba(60,100,140,.25)' : 'rgba(150,200,230,.25)'; c.lineWidth = 0.5;
         for (var wy = 8; wy < 50; wy += 7) {
             c.beginPath();
             for (var wx = 120; wx < W; wx += 30) {
@@ -258,22 +265,22 @@
 
         // -- Parks --
         // The Fens
-        c.fillStyle = '#c5e29c';
+        c.fillStyle = dk ? '#263d29' : '#c5e29c';
         c.beginPath(); c.ellipse(65, 92, 62, 48, 0.08, 0, Math.PI * 2); c.fill();
-        c.fillStyle = '#b0d580';
+        c.fillStyle = dk ? '#1e3520' : '#b0d580';
         c.beginPath(); c.ellipse(50, 88, 28, 18, -0.1, 0, Math.PI * 2); c.fill();
-        c.fillStyle = '#a0cc70';
+        c.fillStyle = dk ? '#1a3018' : '#a0cc70';
         c.beginPath(); c.ellipse(80, 100, 20, 12, 0.2, 0, Math.PI * 2); c.fill();
         // Fens pond
-        c.fillStyle = '#90c8e0';
+        c.fillStyle = dk ? '#152838' : '#90c8e0';
         c.beginPath(); c.ellipse(60, 95, 12, 6, 0, 0, Math.PI * 2); c.fill();
         // paths in Fens
-        c.strokeStyle = '#d8d0b8'; c.lineWidth = 1;
+        c.strokeStyle = dk ? '#3a4a38' : '#d8d0b8'; c.lineWidth = 1;
         c.beginPath(); c.moveTo(10, 80); c.quadraticCurveTo(60, 78, 110, 95); c.stroke();
         c.beginPath(); c.moveTo(40, 60); c.quadraticCurveTo(65, 100, 50, 130); c.stroke();
 
         // SW Corridor Park
-        c.fillStyle = '#c0dd9c';
+        c.fillStyle = dk ? '#1e3520' : '#c0dd9c';
         c.save(); c.translate(208, 175); c.rotate(0.08);
         c.beginPath(); c.roundRect(-5, 0, 10, 240, 5); c.fill(); c.restore();
 
@@ -281,20 +288,20 @@
         function rd(x1,y1,x2,y2,w) {
             c.lineCap = 'round';
             // border
-            c.strokeStyle = '#ddd8d0'; c.lineWidth = w + 2;
+            c.strokeStyle = dk ? '#1a2030' : '#ddd8d0'; c.lineWidth = w + 2;
             c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
             // fill
-            c.strokeStyle = '#fff'; c.lineWidth = w;
+            c.strokeStyle = dk ? '#38414e' : '#fff'; c.lineWidth = w;
             c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
         }
         function crd(pts, w) {
             c.lineCap = 'round';
-            c.strokeStyle = '#ddd8d0'; c.lineWidth = w + 2;
+            c.strokeStyle = dk ? '#1a2030' : '#ddd8d0'; c.lineWidth = w + 2;
             c.beginPath(); c.moveTo(pts[0], pts[1]);
             if (pts.length === 6) c.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]);
             else if (pts.length === 8) c.bezierCurveTo(pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
             c.stroke();
-            c.strokeStyle = '#fff'; c.lineWidth = w;
+            c.strokeStyle = dk ? '#38414e' : '#fff'; c.lineWidth = w;
             c.beginPath(); c.moveTo(pts[0], pts[1]);
             if (pts.length === 6) c.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]);
             else if (pts.length === 8) c.bezierCurveTo(pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
@@ -304,7 +311,7 @@
             c.save(); c.translate(x,y); if (a) c.rotate(a);
             // white halo
             c.font = '700 ' + (s||6.5) + 'px sans-serif';
-            c.strokeStyle = 'rgba(242,239,233,.85)'; c.lineWidth = 2.5; c.lineJoin = 'round';
+            c.strokeStyle = dk ? 'rgba(36,47,62,.85)' : 'rgba(242,239,233,.85)'; c.lineWidth = 2.5; c.lineJoin = 'round';
             c.strokeText(t, 0, 0);
             c.fillStyle = cl || '#666'; c.fillText(t, 0, 0);
             c.restore();
@@ -362,7 +369,7 @@
         rd(210, 192, 320, 192, 3.5);
 
         // ============ BUILDINGS (dense clusters) ============
-        c.fillStyle = '#e2ded6';
+        c.fillStyle = dk ? '#1c2a38' : '#e2ded6';
         var B = [
             [18,120,26,15],[68,158,20,12],[138,220,26,18],[230,78,32,14],
             [248,128,38,16],[342,86,22,26],[265,162,28,12],[375,275,36,16],
@@ -383,7 +390,7 @@
             var b = B[bi]; c.fillRect(b[0], b[1], b[2], b[3]);
         }
         // Darker accent buildings (larger / important)
-        c.fillStyle = '#d8d4cc';
+        c.fillStyle = dk ? '#222e3a' : '#d8d4cc';
         c.fillRect(240, 132, 45, 22); // NEU
         c.fillRect(22, 60, 18, 14);   // near Pika
         c.fillRect(450, 375, 22, 18); // near Crow
@@ -406,14 +413,14 @@
         // ============ AREA LABELS ============
         lbl('Fenway', 12, 140, 0, 6.5, '#888');
         // Nubian Sq
-        c.fillStyle = 'rgba(242,239,233,.75)';
+        c.fillStyle = dk ? 'rgba(36,47,62,.75)' : 'rgba(242,239,233,.75)';
         c.beginPath(); c.roundRect(412, 396, 64, 13, 3); c.fill();
         c.fillStyle = '#666'; c.font = '600 7px sans-serif'; c.fillText('Nubian Square', 415, 406);
         // Fens label
-        c.fillStyle = '#5a8830'; c.font = '700 7.5px sans-serif'; c.fillText('The Fens', 30, 96);
+        c.fillStyle = dk ? '#4a7838' : '#5a8830'; c.font = '700 7.5px sans-serif'; c.fillText('The Fens', 30, 96);
 
         // ============ COMPASS ============
-        c.fillStyle = '#bbb'; c.font = '700 10px sans-serif'; c.textAlign = 'center';
+        c.fillStyle = dk ? '#667' : '#bbb'; c.font = '700 10px sans-serif'; c.textAlign = 'center';
         c.fillText('N', 570, 72);
         c.strokeStyle = '#bbb'; c.lineWidth = 1.5;
         c.beginPath(); c.moveTo(570, 74); c.lineTo(570, 90); c.stroke();
@@ -421,13 +428,24 @@
         c.textAlign = 'left';
 
         // ============ SCALE BAR ============
-        c.fillStyle = '#999'; c.font = '600 5.5px sans-serif';
+        c.fillStyle = dk ? '#667' : '#999'; c.font = '600 5.5px sans-serif';
         c.fillText('0.25 mi', 15, H - 12);
         c.strokeStyle = '#999'; c.lineWidth = 1;
         c.beginPath(); c.moveTo(15, H - 7); c.lineTo(75, H - 7); c.stroke();
         c.beginPath(); c.moveTo(15, H - 10); c.lineTo(15, H - 4); c.stroke();
         c.beginPath(); c.moveTo(75, H - 10); c.lineTo(75, H - 4); c.stroke();
-    })();
+    };
+    drawMap();
+
+    // Dark mode toggle
+    window.toggleDark = function() {
+        document.body.classList.toggle('dark');
+        var dk = document.body.classList.contains('dark');
+        document.getElementById('dark-btn').innerText = dk ? '☀️' : '🌙';
+        var mbg = document.getElementById('map-bg');
+        if (mbg) mbg.style.background = dk ? '#242f3e' : '#f2efe9';
+        drawMap();
+    };
 
 
 
