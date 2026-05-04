@@ -3,9 +3,9 @@
 // =============================================
 var ttDiff = 'beginner', poolDiff = 'beginner';
 var DIFF = {
-    beginner: { ttSpd: 1.2, ttErr: 80, ttMiss: 0.25, pAcc: 0.3, pPwr: [2, 3.5] },
-    medium:   { ttSpd: 3.8, ttErr: 18, ttMiss: 0.04, pAcc: 0.65, pPwr: [3, 6] },
-    expert:   { ttSpd: 7.5, ttErr: 2,  ttMiss: 0,    pAcc: 0.93, pPwr: [5, 9] }
+    beginner: { ttSpd: 1.2, ttErr: 80, ttMiss: 0.25, ttBall: 5, pAcc: 0.3, pPwr: [2, 3.5] },
+    medium:   { ttSpd: 3.8, ttErr: 18, ttMiss: 0.04, ttBall: 7, pAcc: 0.65, pPwr: [3, 6] },
+    expert:   { ttSpd: 7.5, ttErr: 2,  ttMiss: 0,    ttBall: 9, pAcc: 0.93, pPwr: [5, 9] }
 };
 
 function setTTDiff(d) {
@@ -78,7 +78,7 @@ function ttResetRound(ps) {
 function ttServe() {
     if (!T.wait) return;
     T.wait = false;
-    var spd = 6; // faster serve
+    var spd = DIFF[ttDiff].ttBall;
     if (T.srv) { T.ball.vx = (Math.random() - .5) * 4; T.ball.vy = -spd; }
     else { T.ball.vx = (Math.random() - .5) * 4; T.ball.vy = spd; }
     var el = document.getElementById('tt-msg');
@@ -150,7 +150,7 @@ function ttUpdate() {
 function ttHit(b, pad, dir) {
     T.rally++;
     var hp = (b.x - pad.x) / (pad.w / 2);
-    var spd = Math.min(6 + T.rally * 0.35, 13);
+    var spd = Math.min(DIFF[ttDiff].ttBall + T.rally * 0.35, DIFF[ttDiff].ttBall + 5);
     b.vx = Math.sin(hp * 0.8) * spd + (pad.vx || 0) * 0.3;
     b.vy = Math.cos(Math.abs(hp) * 0.3) * spd * dir;
     b.y = dir < 0 ? pad.y - pad.h / 2 - b.r - 1 : pad.y + pad.h / 2 + b.r + 1;
@@ -534,22 +534,29 @@ function poolDraw() {
     if (P.dragging && P.cueBall && !P.cueBall.sunk) {
         var cb = P.cueBall;
         var adx = cb.x - P.aimX, ady = cb.y - P.aimY;
-        var pwr = Math.min(Math.hypot(adx, ady), 120);
-        // Guide
-        c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = 1; c.setLineDash([3, 3]);
-        c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(cb.x + adx * 2.5, cb.y + ady * 2.5); c.stroke(); c.setLineDash([]);
-        // Cue stick
-        var cang = Math.atan2(-ady, -adx);
-        var sdist = P.BR + 4 + pwr * 0.25;
-        c.save();
-        c.translate(cb.x - Math.cos(cang) * sdist, cb.y - Math.sin(cang) * sdist);
-        c.rotate(cang + Math.PI);
-        c.fillStyle = '#d4a050'; c.fillRect(0, -1.5, 90, 3);
-        c.fillStyle = '#f0e0c0'; c.fillRect(0, -1.5, 5, 3);
-        c.restore();
-        // Power bar
-        c.fillStyle = 'rgba(255,' + Math.round(255 - pwr * 2) + ',0,.6)';
-        c.fillRect(W - 12, H - 16 - pwr, 4, pwr);
-        c.strokeStyle = '#fff'; c.lineWidth = 0.5; c.strokeRect(W - 12, H - 136, 4, 120);
+        var dragDist = Math.hypot(adx, ady);
+        if (dragDist > 3) {
+            var pwr = Math.min(dragDist, 120);
+            // Guide line in shot direction
+            c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = 1; c.setLineDash([3, 3]);
+            c.beginPath(); c.moveTo(cb.x, cb.y); c.lineTo(cb.x + adx * 2.5, cb.y + ady * 2.5); c.stroke(); c.setLineDash([]);
+            // Cue stick — BEHIND ball, toward drag point
+            var ndx = (P.aimX - cb.x) / dragDist;
+            var ndy = (P.aimY - cb.y) / dragDist;
+            var gap = P.BR + 4 + pwr * 0.3;
+            var tipX = cb.x + ndx * gap;
+            var tipY = cb.y + ndy * gap;
+            var sang = Math.atan2(ndy, ndx);
+            c.save();
+            c.translate(tipX, tipY);
+            c.rotate(sang);
+            c.fillStyle = '#d4a050'; c.fillRect(0, -1.5, 100, 3);
+            c.fillStyle = '#f0e0c0'; c.fillRect(-1, -2, 5, 4);
+            c.restore();
+            // Power bar
+            c.fillStyle = 'rgba(255,' + Math.round(255 - pwr * 2) + ',0,.6)';
+            c.fillRect(W - 12, H - 16 - pwr, 4, pwr);
+            c.strokeStyle = '#fff'; c.lineWidth = 0.5; c.strokeRect(W - 12, H - 136, 4, 120);
+        }
     }
 }
