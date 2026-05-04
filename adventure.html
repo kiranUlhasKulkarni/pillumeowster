@@ -27,19 +27,49 @@
 <!-- ===== MAP ===== -->
 <div class="screen active" id="screen-map">
     <div class="top-bar"><span class="loc-name">🗺️ Boston Map</span><span id="map-comp"></span></div>
-    <div class="map-wrap">
-        <div class="map-river" style="top:-20px;right:-10px;width:200px;height:120px;"></div>
-        <div class="map-river" style="top:40px;right:60px;width:100px;height:60px;"></div>
-        <div class="map-road map-road-h" style="top:150px;left:0;right:0;"></div>
-        <div class="map-road map-road-h" style="top:300px;left:0;right:0;"></div>
-        <div class="map-road map-road-h" style="top:380px;left:0;right:0;"></div>
-        <div class="map-road map-road-v" style="left:180px;top:0;bottom:0;"></div>
-        <div class="map-road map-road-v" style="left:350px;top:0;bottom:0;"></div>
-        <div class="map-road map-road-v" style="left:480px;top:0;bottom:0;"></div>
-        <div class="map-building" style="left:30px;top:40px;width:40px;height:30px;"></div>
-        <div class="map-building" style="left:100px;top:200px;width:50px;height:25px;"></div>
-        <div class="map-building" style="left:400px;top:100px;width:35px;height:40px;"></div>
-        <div class="map-building" style="left:300px;top:340px;width:45px;height:20px;"></div>
+    <div class="map-wrap" style="background:linear-gradient(180deg,#d8e8d0 0%,#c8dcc0 30%,#cce0c4 60%,#c4d8bc 100%);">
+        <!-- Charles River -->
+        <div style="position:absolute;top:-10px;left:100px;right:-20px;height:65px;background:linear-gradient(180deg,#80b8d8,#6aa8cc);border-radius:0 0 40% 30%;opacity:.6;"></div>
+        <!-- The Fens (park) -->
+        <div style="position:absolute;top:55px;left:10px;width:110px;height:80px;background:radial-gradient(ellipse,#6ab04c,#78c058);border-radius:40%;opacity:.5;"></div>
+        <div style="position:absolute;top:75px;left:35px;font-size:.35rem;color:#3a7a20;font-weight:900;z-index:3;opacity:.6;">The Fens</div>
+        <!-- Southwest Corridor Park -->
+        <div style="position:absolute;top:180px;left:200px;width:12px;height:200px;background:#7ab860;border-radius:6px;opacity:.35;transform:rotate(8deg);"></div>
+        <!-- === STREETS === -->
+        <!-- Boylston St (main E-W through Fenway) -->
+        <div class="map-road map-road-h" style="top:110px;left:0;right:100px;height:7px;background:#e0d4c0;border:1px solid #ccc4b0;"></div>
+        <div style="position:absolute;top:100px;left:10px;font-size:.32rem;color:#8a7a60;font-weight:900;z-index:5;">Boylston St</div>
+        <!-- Huntington Ave (diagonal through NEU) -->
+        <div style="position:absolute;top:145px;left:80px;width:420px;height:7px;background:#e0d4c0;border:1px solid #ccc4b0;border-radius:2px;transform:rotate(12deg);z-index:2;"></div>
+        <div style="position:absolute;top:148px;left:130px;font-size:.32rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(12deg);">Huntington Ave</div>
+        <!-- Tremont St (N-S) -->
+        <div class="map-road map-road-v" style="left:320px;top:50px;height:430px;width:6px;background:#ddd0c0;border:1px solid #c8bca8;transform:rotate(-5deg);"></div>
+        <div style="position:absolute;top:260px;left:326px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(-5deg);">Tremont St</div>
+        <!-- Mass Ave -->
+        <div class="map-road map-road-v" style="left:190px;top:0;height:480px;width:7px;background:#e0d4c0;border:1px solid #ccc4b0;"></div>
+        <div style="position:absolute;top:30px;left:198px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(90deg);">Mass Ave</div>
+        <!-- Columbus Ave (diagonal) -->
+        <div style="position:absolute;top:200px;left:180px;width:340px;height:5px;background:#d8ccb8;border-radius:2px;transform:rotate(22deg);z-index:1;"></div>
+        <div style="position:absolute;top:250px;left:280px;font-size:.3rem;color:#8a7a60;font-weight:900;z-index:5;transform:rotate(22deg);">Columbus Ave</div>
+        <!-- Ruggles St -->
+        <div style="position:absolute;top:185px;left:210px;width:100px;height:4px;background:#d8ccb8;border-radius:2px;z-index:1;"></div>
+        <!-- Winthrop St (near Crow) -->
+        <div style="position:absolute;top:370px;left:400px;width:120px;height:5px;background:#d8ccb8;border-radius:2px;transform:rotate(-8deg);z-index:1;"></div>
+        <div style="position:absolute;top:362px;left:420px;font-size:.28rem;color:#8a7a60;font-weight:900;z-index:5;">Winthrop St</div>
+        <!-- === BUILDING BLOCKS === -->
+        <div class="map-building" style="left:20px;top:120px;width:35px;height:22px;border-radius:2px;"></div>
+        <div class="map-building" style="left:85px;top:160px;width:30px;height:18px;"></div>
+        <div class="map-building" style="left:230px;top:80px;width:45px;height:20px;"></div>
+        <div class="map-building" style="left:350px;top:90px;width:30px;height:35px;"></div>
+        <div class="map-building" style="left:140px;top:220px;width:35px;height:28px;"></div>
+        <div class="map-building" style="left:260px;top:160px;width:40px;height:18px;"></div>
+        <div class="map-building" style="left:380px;top:280px;width:50px;height:22px;"></div>
+        <div class="map-building" style="left:440px;top:340px;width:35px;height:25px;"></div>
+        <div class="map-building" style="left:300px;top:400px;width:40px;height:18px;"></div>
+        <div class="map-building" style="left:500px;top:200px;width:28px;height:30px;"></div>
+        <div class="map-building" style="left:100px;top:300px;width:30px;height:22px;"></div>
+        <!-- Ruggles label -->
+        <div style="position:absolute;top:180px;left:215px;font-size:.28rem;color:#ff69b4;font-weight:900;z-index:5;background:rgba(255,255,255,.7);padding:0 3px;border-radius:3px;">Ruggles</div>
         <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
         <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
         <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
