@@ -40,11 +40,11 @@
         <div class="map-building" style="left:100px;top:200px;width:50px;height:25px;"></div>
         <div class="map-building" style="left:400px;top:100px;width:35px;height:40px;"></div>
         <div class="map-building" style="left:300px;top:340px;width:45px;height:20px;"></div>
-        <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">Pika's Place</div></div>
-        <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">Crow's Encore</div></div>
-        <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
-        <div class="dest-pin" style="left:100px;top:240px;" onclick="travelTo('dunkin')"><div class="pin-icon" id="ic-dunkin">☕</div><div class="pin-label">Dunkin'</div></div>
-        <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera</div></div>
+        <div class="dest-pin" style="left:30px;top:60px;" onclick="travelTo('pikaHouse')"><div class="pin-icon" id="ic-pikaHouse">🏠</div><div class="pin-label">1171 Boylston 02115</div></div>
+        <div class="dest-pin" style="left:470px;top:390px;" onclick="travelTo('crowHouse')"><div class="pin-icon" id="ic-crowHouse">🏡</div><div class="pin-label">20 Winthrop 02119</div></div>
+        <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Huntington Ave 02115</div></div>
+        <div class="dest-pin" style="left:100px;top:240px;" onclick="travelTo('dunkin')"><div class="pin-icon" id="ic-dunkin">☕</div><div class="pin-label">Dunkin' Tremont</div></div>
+        <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera Huntington</div></div>
         <div class="scooter-map" id="map-scoot" style="left:50px;top:100px;">🛴</div>
         <div class="map-legend">🗺️ Fenway — Nubian Sq — NEU</div>
     </div>
@@ -163,7 +163,7 @@
                 <span id="pool-turn">Your shot</span>
                 <span id="pool-binfo">Crow: — 🐦‍⬛</span>
             </div>
-            <div class="game-canvas-wrap"><canvas id="pool-cvs" width="360" height="640"></canvas></div>
+            <div class="game-canvas-wrap"><canvas id="pool-cvs" width="360" height="600"></canvas></div>
             <div class="game-hint">Drag from cue ball → aim & power</div>
             <div class="msg-box" id="pool-msg">Drag from the white ball to shoot!</div>
             <button class="action-btn sec" onclick="initPool()">New Game 🔄</button>
@@ -245,8 +245,13 @@
     buildDK();
     buildPanera();
     buildSubjects();
-    initTT();
-    initPool();
+
+    // Wrap travelTo to also move the map scooter
+    var _origTravel = travelTo;
+    travelTo = function(d) {
+        moveScooterTo(d);
+        _origTravel(d);
+    };
 </script>
 </body>
 </html>
