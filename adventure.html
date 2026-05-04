@@ -146,7 +146,25 @@
             <div class="msg-box" id="tt-msg">Tap to serve! 🏓</div>
             <button class="action-btn sec" onclick="resetTTScore()">Reset Match 🔄</button>
         </div>
-       
+        <!-- 8-BALL POOL -->
+        <div id="curry-pool" style="display:none;">
+            <div class="diff-bar">
+                <button class="diff-btn sel" data-d="beginner" onclick="setPoolDiff('beginner')">Beginner</button>
+                <button class="diff-btn" data-d="medium" onclick="setPoolDiff('medium')">Medium</button>
+                <button class="diff-btn" data-d="expert" onclick="setPoolDiff('expert')">Expert</button>
+            </div>
+            <div class="game-score pool-score">
+                <span id="pool-pinfo">⚡ Pika: —</span>
+                <span id="pool-turn">Your shot</span>
+                <span id="pool-binfo">Crow: — 🐦‍⬛</span>
+            </div>
+            <div class="game-canvas-wrap"><canvas id="pool-cvs" width="350" height="550" style="width:100%;max-width:350px;"></canvas></div>
+            <div class="game-hint">Drag from cue ball → aim & power</div>
+            <div class="msg-box" id="pool-msg">Drag from the white ball to shoot!</div>
+            <button class="action-btn sec" onclick="initPool()">New Game 🔄</button>
+        </div>
+    </div>
+</div>
 
 <!-- ===== CLASSROOM ===== -->
 <div class="screen" id="screen-classroom">
