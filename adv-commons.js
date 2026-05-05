@@ -2,6 +2,15 @@
 // BOSTON COMMON — Cherry + Tulips + Pond + Food
 // All canvases use fixed resolution for reliable rendering
 // =============================================
+
+// Preload character images (shared across all canvas scenes)
+var pikaImg = new Image(); pikaImg.src = 'pikachu.png';
+var crowImg = new Image(); crowImg.src = 'crow.png';
+function drawChar(c, img, x, y, sz) {
+    if (!img.complete || !img.naturalWidth) return;
+    c.drawImage(img, x - sz / 2, y - sz, sz, sz);
+}
+
 function setupCvs(cvs, w, h) {
     cvs.width = w; cvs.height = h;
     var ctx = cvs.getContext('2d');
@@ -95,9 +104,10 @@ function cherryDraw() {
     });
     // Characters
     var cf = typeof crowFound !== 'undefined' && crowFound;
-    c.font = (H * .045) + 'px sans-serif'; c.textAlign = 'center';
-    c.fillText('⚡', W * .46, H * .78); if (cf) c.fillText('🐦‍⬛', W * .54, H * .78);
-    c.fillStyle = 'rgba(255,255,255,.8)'; c.font = '700 ' + (W * .02) + 'px Nunito';
+    var charSz = H * .06;
+    drawChar(c, pikaImg, W * .46, H * .78, charSz);
+    if (cf) drawChar(c, crowImg, W * .54, H * .78, charSz);
+    c.fillStyle = 'rgba(255,255,255,.8)'; c.font = '700 ' + (W * .02) + 'px Nunito'; c.textAlign = 'center';
     c.fillText('🌸 Cherry Blossom Walk', W / 2, H * .97); c.textAlign = 'left';
 }
 
