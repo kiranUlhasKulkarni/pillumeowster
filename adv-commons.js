@@ -5,10 +5,15 @@
 function hiDPI(cvs) {
     var dpr = window.devicePixelRatio || 1;
     var p = cvs.parentElement;
-    var w = p.clientWidth || 440, h = p.clientHeight || 500;
-    cvs.width = w * dpr; cvs.height = h * dpr;
+    var w = p.clientWidth || window.innerWidth || 440;
+    var h = p.clientHeight || window.innerHeight || 500;
+    // Ensure minimum size
+    if (w < 100) w = window.innerWidth || 440;
+    if (h < 100) h = window.innerHeight || 500;
+    cvs.width = Math.round(w * dpr);
+    cvs.height = Math.round(h * dpr);
     var ctx = cvs.getContext('2d');
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     return { ctx: ctx, W: w, H: h, dpr: dpr };
 }
 
@@ -20,12 +25,14 @@ var CH = { cvs:null,ctx:null,W:0,H:0,petals:[],t:0,run:false,aid:null };
 function initCherry() {
     CH.cvs = document.getElementById('cherry-cvs');
     if (!CH.cvs) return;
-    resizeCH();
     CH.t = 0;
     CH.petals = [];
     for (var i = 0; i < 60; i++) CH.petals.push(mkPetal(true));
     window.addEventListener('resize', resizeCH);
-    if (!CH.run) { CH.run = true; cherryLoop(); }
+    requestAnimationFrame(function(){
+        resizeCH();
+        if (!CH.run) { CH.run = true; cherryLoop(); }
+    });
 }
 function resizeCH() {
     if (!CH.cvs) return;
@@ -150,7 +157,6 @@ var TU = { cvs:null,ctx:null,W:0,H:0,tulips:[],butterflies:[],mx:-1,my:-1,t:0,ru
 function initTulips() {
     TU.cvs = document.getElementById('tulip-cvs');
     if (!TU.cvs) return;
-    resizeTU();
     TU.t = 0; TU.mx = -1; TU.my = -1;
     var colors = ['#e03040','#ff69b4','#ffd740','#ff8c00','#9b59b6'];
     TU.tulips = [];
@@ -183,7 +189,10 @@ function initTulips() {
         if (best) { best.plucked = true; best.regrowAt = Date.now() + 5000; }
     };
     window.addEventListener('resize', resizeTU);
-    if (!TU.run) { TU.run = true; tulipLoop(); }
+    requestAnimationFrame(function(){
+        resizeTU();
+        if (!TU.run) { TU.run = true; tulipLoop(); }
+    });
 }
 function resizeTU() { if (!TU.cvs) return; var d = hiDPI(TU.cvs); TU.ctx = d.ctx; TU.W = d.W; TU.H = d.H; }
 function stopTulips() { TU.run = false; if (TU.aid) cancelAnimationFrame(TU.aid); window.removeEventListener('resize', resizeTU); }
@@ -282,7 +291,7 @@ function tulipDraw() {
     c.fillText('🌷 Tap tulips to pluck! Hover near butterflies!', W / 2, H * .98); c.textAlign = 'left';
 }
 
-function dkCol(hex) { var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+function dkCol(hex) { if(hex.length===4)hex='#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3]; var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
     return 'rgb(' + Math.max(0, r - 40) + ',' + Math.max(0, g - 40) + ',' + Math.max(0, b - 40) + ')'; }
 
 // =============================================
@@ -293,7 +302,7 @@ var PD = { cvs:null,ctx:null,W:0,H:0,run:false,aid:null,ducks:[],ripples:[],t:0 
 function initPond() {
     PD.cvs = document.getElementById('pond-cvs');
     if (!PD.cvs) return;
-    resizePD(); PD.t = 0; PD.ripples = [];
+    PD.t = 0; PD.ripples = [];
     PD.ducks = [];
     for (var di = 0; di < 7; di++) PD.ducks.push({ x: .15 + Math.random() * .7, y: .35 + Math.random() * .35,
         vx: (Math.random() - .5) * .002, vy: (Math.random() - .5) * .001, dir: Math.random() > .5 ? 1 : -1, bob: Math.random() * Math.PI * 2, baby: di > 4 });
@@ -304,7 +313,10 @@ function initPond() {
             if (dist < .25 && dist > 0) { d.vx += dx / dist * .008; d.vy += dy / dist * .005; } });
     };
     window.addEventListener('resize', resizePD);
-    if (!PD.run) { PD.run = true; pondLoop(); }
+    requestAnimationFrame(function(){
+        resizePD();
+        if (!PD.run) { PD.run = true; pondLoop(); }
+    });
 }
 function resizePD() { if (!PD.cvs) return; var d = hiDPI(PD.cvs); PD.ctx = d.ctx; PD.W = d.W; PD.H = d.H; }
 function stopPond() { PD.run = false; if (PD.aid) cancelAnimationFrame(PD.aid); window.removeEventListener('resize', resizePD); }
