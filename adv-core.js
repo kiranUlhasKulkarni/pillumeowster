@@ -110,7 +110,7 @@ function show(id) { document.querySelectorAll('.screen').forEach(s => s.classLis
 function goMap() { show('screen-map'); }
 
 function travelTo(d) {
-    const names = { pikaHouse:"Pika's House", crowHouse:"Crow's Encore", neu:"Northeastern", dunkin:"Dunkin'", panera:"Panera", snell:"Snell Library", curry:"Curry Center", classroom:"Classroom", commons:"Boston Common" };
+    const names = { pikaHouse:"Pika's House", crowHouse:"Crow's Encore", neu:"Northeastern", dunkin:"Dunkin'", panera:"Panera", snell:"Snell Library", curry:"Curry Center", classroom:"Classroom", commons:"Boston Common", prudential:"Prudential Center" };
     document.getElementById('travel-text').innerText = 'Scooting to ' + (names[d]||d) + '...';
     document.getElementById('travel-overlay').classList.add('active');
     setTimeout(() => {
@@ -182,7 +182,8 @@ var PIN_POS = {
     snell: { x: 245, y: 120 },
     curry: { x: 245, y: 120 },
     classroom: { x: 245, y: 120 },
-    commons: { x: 475, y: 50 }
+    commons: { x: 475, y: 50 },
+    prudential: { x: 165, y: 90 }
 };
 
 function moveScooterTo(loc) {
