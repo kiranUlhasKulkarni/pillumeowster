@@ -123,27 +123,29 @@
 
 <!-- ===== CHERRY BLOSSOMS ===== -->
 <div class="screen" id="screen-cherry">
-    <div class="top-bar"><button class="back-btn" onclick="stopCherry();show('screen-commons')">← Common</button><span class="loc-name">🌸 Cherry Blossoms</span></div>
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <div id="cherry-scene"></div>
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.35);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopCherry();show('screen-commons')">← Back</button>
+        <span class="loc-name" style="color:#fff;">🌸 Cherry Blossoms</span>
     </div>
+    <canvas id="cherry-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
 </div>
 
 <!-- ===== TULIP GARDEN ===== -->
 <div class="screen" id="screen-tulips">
-    <div class="top-bar"><button class="back-btn" onclick="stopTulips();show('screen-commons')">← Common</button><span class="loc-name">🌷 Tulip Garden</span></div>
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <div id="tulip-scene"></div>
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.35);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopTulips();show('screen-commons')">← Back</button>
+        <span class="loc-name" style="color:#fff;">🌷 Tulip Garden</span>
     </div>
+    <canvas id="tulip-cvs" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;"></canvas>
 </div>
 
 <!-- ===== POND & BRIDGE ===== -->
 <div class="screen" id="screen-pond">
-    <div class="top-bar"><button class="back-btn" onclick="stopPond();show('screen-commons')">← Common</button><span class="loc-name">🦆 Pond & Bridge</span></div>
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <canvas id="pond-cvs" width="400" height="360" style="width:100%;max-width:400px;display:block;margin:0 auto;border-radius:10px;"></canvas>
-        <div class="msg-box" id="pond-msg">Tap the water to scatter ducks! 🦆</div>
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.35);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopPond();show('screen-commons')">← Back</button>
+        <span class="loc-name" style="color:#fff;">🦆 Pond & Bridge</span>
     </div>
+    <canvas id="pond-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
 </div>
 
 <!-- ===== FOOD STALLS ===== -->
