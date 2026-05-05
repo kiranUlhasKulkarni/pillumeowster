@@ -57,8 +57,6 @@ var SKY_VIEWS={
 function initSkywalk(){
     SK.cvs=document.getElementById('skywalk-cvs');
     if(!SK.cvs)return;
-    resizeSK();
-    SK.ctx=SK.cvs.getContext('2d');
     SK.t=0;SK.dir='N';
     // Direction buttons
     var dd=document.getElementById('sky-dir');
@@ -71,7 +69,11 @@ function initSkywalk(){
         dd.appendChild(b);
     });
     window.addEventListener('resize',resizeSK);
-    if(!SK.run){SK.run=true;skLoop();}
+    // Delay resize to ensure DOM layout is computed
+    requestAnimationFrame(function(){
+        resizeSK();
+        if(!SK.run){SK.run=true;skLoop();}
+    });
 }
 function resizeSK(){
     if(!SK.cvs)return;
@@ -218,8 +220,8 @@ function skDraw(){
     c.textAlign='left';
 }
 
-function lc(h,n){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return'rgb('+Math.min(255,r+n)+','+Math.min(255,g+n)+','+Math.min(255,b+n)+')';}
-function dc(h,n){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return'rgb('+Math.max(0,r-n)+','+Math.max(0,g-n)+','+Math.max(0,b-n)+')';}
+function lc(h,n){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return'rgb('+Math.min(255,r+n)+','+Math.min(255,g+n)+','+Math.min(255,b+n)+')';}
+function dc(h,n){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return'rgb('+Math.max(0,r-n)+','+Math.max(0,g-n)+','+Math.max(0,b-n)+')';}
 
 // =============================================
 // 2. STARGAZING — fullscreen, rich nebula, click-to-fall
@@ -239,8 +241,6 @@ var CONSTELLATIONS=[
 function initStargaze(){
     SG.cvs=document.getElementById('star-cvs');
     if(!SG.cvs)return;
-    resizeSG();
-    SG.ctx=SG.cvs.getContext('2d');
     SG.t=0;SG.traced=[];SG.tracing=null;SG.selected=[];SG.fallers=[];
 
     SG.nebulae=[];
@@ -304,7 +304,10 @@ function initStargaze(){
         }
     };
     window.addEventListener('resize',resizeSG);
-    if(!SG.run){SG.run=true;sgLoop();}
+    requestAnimationFrame(function(){
+        resizeSG();
+        if(!SG.run){SG.run=true;sgLoop();}
+    });
 }
 function resizeSG(){if(!SG.cvs)return;var d=hiDPI(SG.cvs);SG.ctx=d.ctx;SG.W=d.W;SG.H=d.H;}
 function stopStargaze(){SG.run=false;if(SG.aid)cancelAnimationFrame(SG.aid);window.removeEventListener('resize',resizeSG);}
