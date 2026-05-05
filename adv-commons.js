@@ -1,26 +1,17 @@
 // =============================================
 // BOSTON COMMON — Cherry + Tulips + Pond + Food
-// All canvases use devicePixelRatio for crisp rendering
+// All canvases use fixed resolution for reliable rendering
 // =============================================
-function hiDPI(cvs) {
-    var dpr = window.devicePixelRatio || 1;
-    var p = cvs.parentElement;
-    var w = p.clientWidth || window.innerWidth || 440;
-    var h = p.clientHeight || window.innerHeight || 500;
-    // Ensure minimum size
-    if (w < 100) w = window.innerWidth || 440;
-    if (h < 100) h = window.innerHeight || 500;
-    cvs.width = Math.round(w * dpr);
-    cvs.height = Math.round(h * dpr);
+function setupCvs(cvs, w, h) {
+    cvs.width = w; cvs.height = h;
     var ctx = cvs.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { ctx: ctx, W: w, H: h, dpr: dpr };
+    return { ctx: ctx, W: w, H: h };
 }
 
 // =============================================
 // 1. CHERRY BLOSSOMS
 // =============================================
-var CH = { cvs:null,ctx:null,W:0,H:0,petals:[],t:0,run:false,aid:null };
+var CH = { cvs:null,ctx:null,W:800,H:600,petals:[],t:0,run:false,aid:null };
 
 function initCherry() {
     CH.cvs = document.getElementById('cherry-cvs');
@@ -28,17 +19,10 @@ function initCherry() {
     CH.t = 0;
     CH.petals = [];
     for (var i = 0; i < 60; i++) CH.petals.push(mkPetal(true));
-    window.addEventListener('resize', resizeCH);
-    requestAnimationFrame(function(){
-        resizeCH();
-        if (!CH.run) { CH.run = true; cherryLoop(); }
-    });
+    var d = setupCvs(CH.cvs, 800, 600); CH.ctx = d.ctx; CH.W = d.W; CH.H = d.H;
+    if (!CH.run) { CH.run = true; cherryLoop(); }
 }
-function resizeCH() {
-    if (!CH.cvs) return;
-    var d = hiDPI(CH.cvs); CH.ctx = d.ctx; CH.W = d.W; CH.H = d.H;
-}
-function stopCherry() { CH.run = false; if (CH.aid) cancelAnimationFrame(CH.aid); window.removeEventListener('resize', resizeCH); }
+function stopCherry() { CH.run = false; if (CH.aid) cancelAnimationFrame(CH.aid); }
 
 function mkPetal(rand) {
     return { x: Math.random(), y: rand ? Math.random() : -0.03 - Math.random() * 0.05,
@@ -152,7 +136,7 @@ function drawCTree(c, x, baseY, scale, t, seed, W, H) {
 // =============================================
 // 2. TULIP GARDEN
 // =============================================
-var TU = { cvs:null,ctx:null,W:0,H:0,tulips:[],butterflies:[],mx:-1,my:-1,t:0,run:false,aid:null };
+var TU = { cvs:null,ctx:null,W:800,H:640,tulips:[],butterflies:[],mx:-1,my:-1,t:0,run:false,aid:null };
 
 function initTulips() {
     TU.cvs = document.getElementById('tulip-cvs');
@@ -188,14 +172,10 @@ function initTulips() {
         TU.tulips.forEach(function(tp) { if (tp.plucked) return; var d = Math.hypot(tp.x - cx, (tp.y - tp.h / 2) - cy); if (d < bestD) { bestD = d; best = tp; } });
         if (best) { best.plucked = true; best.regrowAt = Date.now() + 5000; }
     };
-    window.addEventListener('resize', resizeTU);
-    requestAnimationFrame(function(){
-        resizeTU();
-        if (!TU.run) { TU.run = true; tulipLoop(); }
-    });
+    var d = setupCvs(TU.cvs, 800, 640); TU.ctx = d.ctx; TU.W = d.W; TU.H = d.H;
+    if (!TU.run) { TU.run = true; tulipLoop(); }
 }
-function resizeTU() { if (!TU.cvs) return; var d = hiDPI(TU.cvs); TU.ctx = d.ctx; TU.W = d.W; TU.H = d.H; }
-function stopTulips() { TU.run = false; if (TU.aid) cancelAnimationFrame(TU.aid); window.removeEventListener('resize', resizeTU); }
+function stopTulips() { TU.run = false; if (TU.aid) cancelAnimationFrame(TU.aid); }
 
 function tulipLoop() {
     if (!TU.run) return; TU.t++;
@@ -297,7 +277,7 @@ function dkCol(hex) { if(hex.length===4)hex='#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[
 // =============================================
 // 3. POND — fullscreen with DPR
 // =============================================
-var PD = { cvs:null,ctx:null,W:0,H:0,run:false,aid:null,ducks:[],ripples:[],t:0 };
+var PD = { cvs:null,ctx:null,W:800,H:600,run:false,aid:null,ducks:[],ripples:[],t:0 };
 
 function initPond() {
     PD.cvs = document.getElementById('pond-cvs');
@@ -312,14 +292,10 @@ function initPond() {
         PD.ducks.forEach(function(d) { var dx = d.x - cx, dy = d.y - cy, dist = Math.hypot(dx, dy);
             if (dist < .25 && dist > 0) { d.vx += dx / dist * .008; d.vy += dy / dist * .005; } });
     };
-    window.addEventListener('resize', resizePD);
-    requestAnimationFrame(function(){
-        resizePD();
-        if (!PD.run) { PD.run = true; pondLoop(); }
-    });
+    var d = setupCvs(PD.cvs, 800, 600); PD.ctx = d.ctx; PD.W = d.W; PD.H = d.H;
+    if (!PD.run) { PD.run = true; pondLoop(); }
 }
-function resizePD() { if (!PD.cvs) return; var d = hiDPI(PD.cvs); PD.ctx = d.ctx; PD.W = d.W; PD.H = d.H; }
-function stopPond() { PD.run = false; if (PD.aid) cancelAnimationFrame(PD.aid); window.removeEventListener('resize', resizePD); }
+function stopPond() { PD.run = false; if (PD.aid) cancelAnimationFrame(PD.aid); }
 
 function pondLoop() {
     if (!PD.run) return; PD.t++;
