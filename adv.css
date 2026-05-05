@@ -209,3 +209,13 @@ body.dark .drink-desc{color:#a090a0;}
 .float-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--lpink);background:var(--card);font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;transition:all .2s;}
 .float-btn:active{transform:scale(.9);}
 body.dark .float-btn{border-color:#3a3058;background:#252540;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+
+/* Food stall menu items */
+#fs-panel .menu-item{background:var(--card);border:2px solid var(--lpink);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+#fs-panel .menu-item:hover{border-color:var(--dpink);transform:translateY(-1px);box-shadow:0 3px 8px var(--shadow);}
+body.dark #fs-panel .menu-item{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+body.dark #fs-panel .menu-item:hover{border-color:#5a4070;}
+
+/* Commons dark mode */
+body.dark #cherry-scene,body.dark #tulip-scene{filter:brightness(.85);}
+body.dark #pond-msg{color:#808090;}
