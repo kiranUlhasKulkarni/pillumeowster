@@ -112,8 +112,8 @@
     <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🌸 Boston Common</span></div>
     <div class="panel-title">Boston Common — est. 1634</div>
     <div class="choices" style="max-width:400px;width:95vw;">
-        <button class="choice-btn" onclick="show('screen-cherry')"><span class="ce">🌸</span>Cherry Blossoms</button>
-        <button class="choice-btn" onclick="show('screen-tulips')"><span class="ce">🌷</span>Tulip Garden</button>
+        <button class="choice-btn" onclick="show('screen-cherry');initCherry()"><span class="ce">🌸</span>Cherry Blossoms</button>
+        <button class="choice-btn" onclick="show('screen-tulips');initTulips()"><span class="ce">🌷</span>Tulip Garden</button>
         <button class="choice-btn" onclick="show('screen-pond');initPond()"><span class="ce">🦆</span>Pond & Bridge</button>
         <button class="choice-btn" onclick="show('screen-foodstall')"><span class="ce">🌭</span>Food Stalls</button>
         <button class="choice-btn" onclick="goMap()"><span class="ce">🗺️</span>Back to Map</button>
@@ -122,7 +122,7 @@
 
 <!-- ===== CHERRY BLOSSOMS ===== -->
 <div class="screen" id="screen-cherry">
-    <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌸 Cherry Blossoms</span></div>
+    <div class="top-bar"><button class="back-btn" onclick="stopCherry();show('screen-commons')">← Common</button><span class="loc-name">🌸 Cherry Blossoms</span></div>
     <div class="panel" style="padding:0;overflow:hidden;">
         <div id="cherry-scene"></div>
     </div>
@@ -130,7 +130,7 @@
 
 <!-- ===== TULIP GARDEN ===== -->
 <div class="screen" id="screen-tulips">
-    <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌷 Tulip Garden</span></div>
+    <div class="top-bar"><button class="back-btn" onclick="stopTulips();show('screen-commons')">← Common</button><span class="loc-name">🌷 Tulip Garden</span></div>
     <div class="panel" style="padding:0;overflow:hidden;">
         <div id="tulip-scene"></div>
     </div>
