@@ -188,9 +188,9 @@ function skDraw(){
 
     // Characters
     var cf=typeof crowFound!=='undefined'&&crowFound;
-    c.font=(H*0.05)+'px sans-serif';c.textAlign='center';
-    c.fillText('⚡',W*0.35,H*0.95);
-    if(cf)c.fillText('🐦‍⬛',W*0.55,H*0.95);
+    var csz=H*0.07;
+    drawChar(c,pikaImg,W*0.35,H*0.95,csz);
+    if(cf)drawChar(c,crowImg,W*0.55,H*0.95,csz);
 
     // Telescope
     c.fillStyle='#555';c.fillRect(W*0.78,H*0.88,2,H*0.06);c.fillRect(W*0.78-6,H*0.87,14,5);
@@ -404,8 +404,7 @@ function sgDraw(){
 
     // Chars
     var cf=typeof crowFound!=='undefined'&&crowFound;
-    c.font=(H*.045)+'px sans-serif';c.textAlign='center';
-    c.fillText('⚡',W*.55,H*.92);if(cf)c.fillText('🐦‍⬛',W*.65,H*.91);
+    var csz2=H*.06;drawChar(c,pikaImg,W*.55,H*.92,csz2);if(cf)drawChar(c,crowImg,W*.65,H*.91,csz2);
 
     // Telescope
     c.fillStyle='#3a3a48';c.save();c.translate(W*.38,H*.88);c.rotate(-.55);
