@@ -5,7 +5,7 @@
 // =============================================
 // 1. SKYWALK — 4 directional views, fullscreen
 // =============================================
-var SK={cvs:null,ctx:null,W:0,H:0,run:false,aid:null,t:0,dir:'N'};
+var SK={cvs:null,ctx:null,W:800,H:600,run:false,aid:null,t:0,dir:'N'};
 
 var SKY_VIEWS={
     N:{label:'North — Cambridge & Charles River',sky:['#4090d0','#70b0e0','#a0d0f0'],
@@ -57,8 +57,10 @@ var SKY_VIEWS={
 function initSkywalk(){
     SK.cvs=document.getElementById('skywalk-cvs');
     if(!SK.cvs)return;
+    SK.cvs.width=800;SK.cvs.height=600;
+    SK.ctx=SK.cvs.getContext('2d');
+    SK.W=800;SK.H=600;
     SK.t=0;SK.dir='N';
-    // Direction buttons
     var dd=document.getElementById('sky-dir');
     dd.innerHTML='';
     ['N','E','S','W'].forEach(function(d){
@@ -68,18 +70,9 @@ function initSkywalk(){
         b.onclick=function(){SK.dir=d;dd.querySelectorAll('.dir-btn').forEach(function(bb){bb.classList.toggle('active',bb===b);});};
         dd.appendChild(b);
     });
-    window.addEventListener('resize',resizeSK);
-    // Delay resize to ensure DOM layout is computed
-    requestAnimationFrame(function(){
-        resizeSK();
-        if(!SK.run){SK.run=true;skLoop();}
-    });
+    if(!SK.run){SK.run=true;skLoop();}
 }
-function resizeSK(){
-    if(!SK.cvs)return;
-    var d=hiDPI(SK.cvs);SK.ctx=d.ctx;SK.W=d.W;SK.H=d.H;
-}
-function stopSkywalk(){SK.run=false;if(SK.aid)cancelAnimationFrame(SK.aid);window.removeEventListener('resize',resizeSK);}
+function stopSkywalk(){SK.run=false;if(SK.aid)cancelAnimationFrame(SK.aid);}
 function skLoop(){if(!SK.run)return;SK.t++;skDraw();SK.aid=requestAnimationFrame(skLoop);}
 
 function skDraw(){
@@ -226,7 +219,7 @@ function dc(h,n){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];var r=parse
 // =============================================
 // 2. STARGAZING — fullscreen, rich nebula, click-to-fall
 // =============================================
-var SG={cvs:null,ctx:null,W:0,H:0,run:false,aid:null,t:0,
+var SG={cvs:null,ctx:null,W:800,H:640,run:false,aid:null,t:0,
     stars:[],fallers:[],nebulae:[],traced:[],tracing:null,selected:[]};
 
 var CONSTELLATIONS=[
@@ -241,6 +234,9 @@ var CONSTELLATIONS=[
 function initStargaze(){
     SG.cvs=document.getElementById('star-cvs');
     if(!SG.cvs)return;
+    SG.cvs.width=800;SG.cvs.height=640;
+    SG.ctx=SG.cvs.getContext('2d');
+    SG.W=800;SG.H=640;
     SG.t=0;SG.traced=[];SG.tracing=null;SG.selected=[];SG.fallers=[];
 
     SG.nebulae=[];
@@ -303,14 +299,9 @@ function initStargaze(){
             }
         }
     };
-    window.addEventListener('resize',resizeSG);
-    requestAnimationFrame(function(){
-        resizeSG();
-        if(!SG.run){SG.run=true;sgLoop();}
-    });
+    if(!SG.run){SG.run=true;sgLoop();}
 }
-function resizeSG(){if(!SG.cvs)return;var d=hiDPI(SG.cvs);SG.ctx=d.ctx;SG.W=d.W;SG.H=d.H;}
-function stopStargaze(){SG.run=false;if(SG.aid)cancelAnimationFrame(SG.aid);window.removeEventListener('resize',resizeSG);}
+function stopStargaze(){SG.run=false;if(SG.aid)cancelAnimationFrame(SG.aid);}
 
 function sgLoop(){
     if(!SG.run)return;SG.t++;
