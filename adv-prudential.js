@@ -75,9 +75,7 @@ function initSkywalk(){
 }
 function resizeSK(){
     if(!SK.cvs)return;
-    var p=SK.cvs.parentElement;
-    SK.W=p.clientWidth||440;SK.H=p.clientHeight||500;
-    SK.cvs.width=SK.W;SK.cvs.height=SK.H;
+    var d=hiDPI(SK.cvs);SK.ctx=d.ctx;SK.W=d.W;SK.H=d.H;
 }
 function stopSkywalk(){SK.run=false;if(SK.aid)cancelAnimationFrame(SK.aid);window.removeEventListener('resize',resizeSK);}
 function skLoop(){if(!SK.run)return;SK.t++;skDraw();SK.aid=requestAnimationFrame(skLoop);}
@@ -308,7 +306,7 @@ function initStargaze(){
     window.addEventListener('resize',resizeSG);
     if(!SG.run){SG.run=true;sgLoop();}
 }
-function resizeSG(){if(!SG.cvs)return;var p=SG.cvs.parentElement;SG.W=p.clientWidth||440;SG.H=p.clientHeight||500;SG.cvs.width=SG.W;SG.cvs.height=SG.H;}
+function resizeSG(){if(!SG.cvs)return;var d=hiDPI(SG.cvs);SG.ctx=d.ctx;SG.W=d.W;SG.H=d.H;}
 function stopStargaze(){SG.run=false;if(SG.aid)cancelAnimationFrame(SG.aid);window.removeEventListener('resize',resizeSG);}
 
 function sgLoop(){
