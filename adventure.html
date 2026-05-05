@@ -166,20 +166,22 @@
 
 <!-- ===== SKYWALK ===== -->
 <div class="screen" id="screen-skywalk">
-    <div class="top-bar"><button class="back-btn" onclick="stopSkywalk();show('screen-prudential')">← Prudential</button><span class="loc-name">🔭 Skywalk Observatory</span></div>
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <canvas id="skywalk-cvs" width="440" height="400" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:10px;"></canvas>
-        <div class="msg-box" id="sky-msg">Drag to pan the panoramic view! 🏙️</div>
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.5);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopSkywalk();show('screen-prudential')">← Back</button>
+        <span class="loc-name" style="color:#fff;">🔭 Skywalk Observatory</span>
     </div>
+    <canvas id="skywalk-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+    <div id="sky-dir" style="position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20;"></div>
 </div>
 
 <!-- ===== STARGAZING ===== -->
 <div class="screen" id="screen-stargaze">
-    <div class="top-bar"><button class="back-btn" onclick="stopStargaze();show('screen-prudential')">← Prudential</button><span class="loc-name">🌌 Stargazing</span></div>
-    <div class="panel" style="padding:0;overflow:hidden;">
-        <canvas id="star-cvs" width="440" height="420" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:10px;cursor:crosshair;"></canvas>
-        <div class="msg-box" id="star-msg">Tap stars to trace constellations! ✨</div>
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.5);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopStargaze();show('screen-prudential')">← Back</button>
+        <span class="loc-name" style="color:#fff;">🌌 Stargazing</span>
     </div>
+    <canvas id="star-cvs" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;"></canvas>
+    <div id="star-info" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.65rem;font-weight:800;color:rgba(255,255,255,.5);z-index:20;text-align:center;pointer-events:none;"></div>
 </div>
 
 <!-- ===== PRUDENTIAL MALL ===== -->
