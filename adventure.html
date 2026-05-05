@@ -40,8 +40,9 @@
         <div class="dest-pin" style="left:220px;top:100px;" onclick="travelTo('neu')"><div class="pin-icon" id="ic-neu">🎓</div><div class="pin-label">Northeastern</div></div>
         <div class="dest-pin" style="left:100px;top:240px;" onclick="travelTo('dunkin')"><div class="pin-icon" id="ic-dunkin">☕</div><div class="pin-label">Dunkin'</div></div>
         <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera</div></div>
+        <div class="dest-pin" style="left:450px;top:30px;" onclick="travelTo('commons')"><div class="pin-icon" id="ic-commons">🌸</div><div class="pin-label">Boston Common</div></div>
         <div class="scooter-map" id="map-scoot" style="left:50px;top:100px;">🛴</div>
-        <div class="map-legend">🗺️ Fenway — Nubian Sq — NEU</div>
+        <div class="map-legend">🗺️ Fenway — Nubian Sq — NEU — Boston Common</div>
     </div>
     <div class="msg-box" id="map-hint">Tap a destination to scoot there! 🛴</div>
 </div>
@@ -106,6 +107,50 @@
     <div class="panel" id="pn-panel"></div>
 </div>
 
+<!-- ===== BOSTON COMMON HUB ===== -->
+<div class="screen" id="screen-commons">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🌸 Boston Common</span></div>
+    <div class="panel-title">Boston Common — est. 1634</div>
+    <div class="choices" style="max-width:400px;width:95vw;">
+        <button class="choice-btn" onclick="show('screen-cherry')"><span class="ce">🌸</span>Cherry Blossoms</button>
+        <button class="choice-btn" onclick="show('screen-tulips')"><span class="ce">🌷</span>Tulip Garden</button>
+        <button class="choice-btn" onclick="show('screen-pond');initPond()"><span class="ce">🦆</span>Pond & Bridge</button>
+        <button class="choice-btn" onclick="show('screen-foodstall')"><span class="ce">🌭</span>Food Stalls</button>
+        <button class="choice-btn" onclick="goMap()"><span class="ce">🗺️</span>Back to Map</button>
+    </div>
+</div>
+
+<!-- ===== CHERRY BLOSSOMS ===== -->
+<div class="screen" id="screen-cherry">
+    <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌸 Cherry Blossoms</span></div>
+    <div class="panel" style="padding:0;overflow:hidden;">
+        <div id="cherry-scene"></div>
+    </div>
+</div>
+
+<!-- ===== TULIP GARDEN ===== -->
+<div class="screen" id="screen-tulips">
+    <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌷 Tulip Garden</span></div>
+    <div class="panel" style="padding:0;overflow:hidden;">
+        <div id="tulip-scene"></div>
+    </div>
+</div>
+
+<!-- ===== POND & BRIDGE ===== -->
+<div class="screen" id="screen-pond">
+    <div class="top-bar"><button class="back-btn" onclick="stopPond();show('screen-commons')">← Common</button><span class="loc-name">🦆 Pond & Bridge</span></div>
+    <div class="panel" style="padding:0;overflow:hidden;">
+        <canvas id="pond-cvs" width="400" height="360" style="width:100%;max-width:400px;display:block;margin:0 auto;border-radius:10px;"></canvas>
+        <div class="msg-box" id="pond-msg">Tap the water to scatter ducks! 🦆</div>
+    </div>
+</div>
+
+<!-- ===== FOOD STALLS ===== -->
+<div class="screen" id="screen-foodstall">
+    <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌭 Food Stalls</span></div>
+    <div class="panel" id="fs-panel"></div>
+</div>
+
 <!-- ===== SNELL ===== -->
 <div class="screen" id="screen-snell">
     <div class="top-bar"><button class="back-btn" onclick="show('screen-neu')">← NEU</button><span class="loc-name">📚 Snell</span><span id="snell-comp"></span></div>
@@ -125,12 +170,8 @@
 <div class="screen" id="screen-curry">
     <div class="top-bar"><button class="back-btn" onclick="stopGames();show('screen-neu')">← NEU</button><span class="loc-name">🏓 Curry Center</span><span id="curry-comp"></span></div>
     <div class="panel">
-        <div class="choices" style="margin-bottom:10px;">
-            <button class="choice-btn" onclick="showCurryGame('tt')"><span class="ce">🏓</span>Table Tennis</button>
-            <button class="choice-btn" onclick="showCurryGame('pool')"><span class="ce">🎱</span>8-Ball Pool</button>
-        </div>
         <!-- TABLE TENNIS -->
-        <div id="curry-tt" style="display:none;">
+        <div id="curry-tt" style="display:block;">
             <div class="diff-bar">
                 <button class="diff-btn sel" data-d="beginner" onclick="setTTDiff('beginner')">Beginner</button>
                 <button class="diff-btn" data-d="medium" onclick="setTTDiff('medium')">Medium</button>
@@ -145,23 +186,6 @@
             <div class="game-hint">Drag to move paddle • Tap to serve</div>
             <div class="msg-box" id="tt-msg">Tap to serve! 🏓</div>
             <button class="action-btn sec" onclick="resetTTScore()">Reset Match 🔄</button>
-        </div>
-        <!-- 8-BALL POOL -->
-        <div id="curry-pool" style="display:none;">
-            <div class="diff-bar">
-                <button class="diff-btn sel" data-d="beginner" onclick="setPoolDiff('beginner')">Beginner</button>
-                <button class="diff-btn" data-d="medium" onclick="setPoolDiff('medium')">Medium</button>
-                <button class="diff-btn" data-d="expert" onclick="setPoolDiff('expert')">Expert</button>
-            </div>
-            <div class="game-score pool-score">
-                <span id="pool-pinfo">⚡ Pika: —</span>
-                <span id="pool-turn">Your shot</span>
-                <span id="pool-binfo">Crow: — 🐦‍⬛</span>
-            </div>
-            <div class="game-canvas-wrap"><canvas id="pool-cvs" width="350" height="550" style="width:100%;max-width:350px;"></canvas></div>
-            <div class="game-hint">Drag from cue ball → aim & power</div>
-            <div class="msg-box" id="pool-msg">Drag from the white ball to shoot!</div>
-            <button class="action-btn sec" onclick="initPool()">New Game 🔄</button>
         </div>
     </div>
 </div>
@@ -234,6 +258,7 @@
 <script src="adv-games.js"></script>
 <script src="adv-shops.js"></script>
 <script src="adv-school.js"></script>
+<script src="adv-commons.js"></script>
 <script>
     // Boot everything up
     // Draw realistic map
@@ -412,6 +437,13 @@
 
         // ============ AREA LABELS ============
         lbl('Fenway', 12, 140, 0, 6.5, '#888');
+        // Boston Common park
+        c.fillStyle = dk ? '#1e3520' : '#b8dd8c';
+        c.beginPath(); c.roundRect(430, 18, 120, 55, 8); c.fill();
+        c.fillStyle = dk ? '#1a3018' : '#a8d07c';
+        c.beginPath(); c.ellipse(480, 42, 35, 18, 0, 0, Math.PI * 2); c.fill();
+        c.fillStyle = dk ? '#4a7838' : '#5a8830'; c.font = '700 7px sans-serif';
+        c.fillText('Boston Common', 438, 46);
         // Nubian Sq
         c.fillStyle = dk ? 'rgba(36,47,62,.75)' : 'rgba(242,239,233,.75)';
         c.beginPath(); c.roundRect(412, 396, 64, 13, 3); c.fill();
@@ -467,6 +499,7 @@
     travelTo = function(d) {
         moveScooterTo(d);
         _origTravel(d);
+        if (d === 'curry') setTimeout(initTT, 150);
     };
 </script>
 </body>
