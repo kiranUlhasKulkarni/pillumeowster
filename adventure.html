@@ -41,8 +41,9 @@
         <div class="dest-pin" style="left:100px;top:240px;" onclick="travelTo('dunkin')"><div class="pin-icon" id="ic-dunkin">☕</div><div class="pin-label">Dunkin'</div></div>
         <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera</div></div>
         <div class="dest-pin" style="left:450px;top:30px;" onclick="travelTo('commons')"><div class="pin-icon" id="ic-commons">🌸</div><div class="pin-label">Boston Common</div></div>
+        <div class="dest-pin" style="left:140px;top:70px;" onclick="travelTo('prudential')"><div class="pin-icon" id="ic-prudential">🏙️</div><div class="pin-label">Prudential</div></div>
         <div class="scooter-map" id="map-scoot" style="left:50px;top:100px;">🛴</div>
-        <div class="map-legend">🗺️ Fenway — Nubian Sq — NEU — Boston Common</div>
+        <div class="map-legend">🗺️ Fenway — NEU — Prudential — Boston Common</div>
     </div>
     <div class="msg-box" id="map-hint">Tap a destination to scoot there! 🛴</div>
 </div>
@@ -149,6 +150,42 @@
 <div class="screen" id="screen-foodstall">
     <div class="top-bar"><button class="back-btn" onclick="show('screen-commons')">← Common</button><span class="loc-name">🌭 Food Stalls</span></div>
     <div class="panel" id="fs-panel"></div>
+</div>
+
+<!-- ===== PRUDENTIAL HUB ===== -->
+<div class="screen" id="screen-prudential">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">🏙️ Prudential Center</span></div>
+    <div class="panel-title">Prudential Tower — 52 Floors</div>
+    <div class="choices" style="max-width:400px;width:95vw;">
+        <button class="choice-btn" onclick="show('screen-skywalk');initSkywalk()"><span class="ce">🔭</span>Skywalk Observatory</button>
+        <button class="choice-btn" onclick="show('screen-stargaze');initStargaze()"><span class="ce">🌌</span>Rooftop Stargazing</button>
+        <button class="choice-btn" onclick="show('screen-prumall')"><span class="ce">🛍️</span>Mall & Shops</button>
+        <button class="choice-btn" onclick="goMap()"><span class="ce">🗺️</span>Back to Map</button>
+    </div>
+</div>
+
+<!-- ===== SKYWALK ===== -->
+<div class="screen" id="screen-skywalk">
+    <div class="top-bar"><button class="back-btn" onclick="stopSkywalk();show('screen-prudential')">← Prudential</button><span class="loc-name">🔭 Skywalk Observatory</span></div>
+    <div class="panel" style="padding:0;overflow:hidden;">
+        <canvas id="skywalk-cvs" width="440" height="400" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:10px;"></canvas>
+        <div class="msg-box" id="sky-msg">Drag to pan the panoramic view! 🏙️</div>
+    </div>
+</div>
+
+<!-- ===== STARGAZING ===== -->
+<div class="screen" id="screen-stargaze">
+    <div class="top-bar"><button class="back-btn" onclick="stopStargaze();show('screen-prudential')">← Prudential</button><span class="loc-name">🌌 Stargazing</span></div>
+    <div class="panel" style="padding:0;overflow:hidden;">
+        <canvas id="star-cvs" width="440" height="420" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:10px;cursor:crosshair;"></canvas>
+        <div class="msg-box" id="star-msg">Tap stars to trace constellations! ✨</div>
+    </div>
+</div>
+
+<!-- ===== PRUDENTIAL MALL ===== -->
+<div class="screen" id="screen-prumall">
+    <div class="top-bar"><button class="back-btn" onclick="show('screen-prudential')">← Prudential</button><span class="loc-name">🛍️ Shops at Prudential</span></div>
+    <div class="panel" id="prumall-panel"></div>
 </div>
 
 <!-- ===== SNELL ===== -->
@@ -259,6 +296,7 @@
 <script src="adv-shops.js"></script>
 <script src="adv-school.js"></script>
 <script src="adv-commons.js"></script>
+<script src="adv-prudential.js"></script>
 <script>
     // Boot everything up
     // Draw realistic map
@@ -419,6 +457,14 @@
         c.fillRect(240, 132, 45, 22); // NEU
         c.fillRect(22, 60, 18, 14);   // near Pika
         c.fillRect(450, 375, 22, 18); // near Crow
+        // Prudential Tower (tall)
+        c.fillStyle = dk ? '#2a3a4a' : '#b8b4ac';
+        c.fillRect(142, 60, 14, 48);
+        c.fillStyle = dk ? '#3a4a5a' : '#c8c4bc';
+        c.fillRect(140, 55, 18, 8);
+        // antenna
+        c.strokeStyle = dk ? '#4a5a6a' : '#999'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(149, 55); c.lineTo(149, 44); c.stroke();
 
         // ============ TRANSIT (Orange Line) ============
         c.setLineDash([]);
