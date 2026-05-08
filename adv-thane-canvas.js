@@ -401,3 +401,308 @@ function nsDraw(){
     c.fillStyle='rgba(255,255,255,.5)';c.font='700 '+W*.017+'px Nunito';c.textAlign='center';
     c.fillText('🌃 Evening stroll at The Walk, Hiranandani Estate',W/2,H*.97);c.textAlign='left';
 }
+
+// =============================================
+// 4. SUNSET POINT — Animated sunset over Upvan Lake
+// =============================================
+var SS={cvs:null,ctx:null,W:800,H:600,run:false,aid:null,t:0,birds:[],clouds:[]};
+
+function initParkSunset(){
+    SS.cvs=document.getElementById('park-sunset-cvs');if(!SS.cvs)return;
+    SS.t=0;
+    SS.birds=[];for(var bi=0;bi<8;bi++)SS.birds.push({x:Math.random(),y:.08+Math.random()*.18,vx:.001+Math.random()*.002,wing:Math.random()*Math.PI*2,sz:.6+Math.random()*.6});
+    SS.clouds=[];for(var ci=0;ci<5;ci++)SS.clouds.push({x:Math.random(),y:.05+ci*.06,w:.08+Math.random()*.06,spd:.0001+Math.random()*.0002});
+    SS.cvs.width=800;SS.cvs.height=600;SS.ctx=SS.cvs.getContext('2d');SS.W=800;SS.H=600;
+    if(!SS.run){SS.run=true;ssLoop();}
+}
+function stopParkSunset(){SS.run=false;if(SS.aid)cancelAnimationFrame(SS.aid);}
+function ssLoop(){if(!SS.run)return;SS.t++;ssDraw();SS.aid=requestAnimationFrame(ssLoop);}
+
+function ssDraw(){
+    var c=SS.ctx,W=SS.W,H=SS.H,t=SS.t;if(!c)return;
+    // Animated sunset — sun slowly descends
+    var sunProgress=Math.min(1,(t%1800)/1800); // cycles every ~30s
+    var sunY=H*(.12+sunProgress*.25);
+    // Sky gradient shifts with sun position
+    var sky=c.createLinearGradient(0,0,0,H*.55);
+    var r1=Math.floor(255-sunProgress*80),g1=Math.floor(140+sunProgress*40),b1=Math.floor(60+sunProgress*100);
+    sky.addColorStop(0,'rgb('+Math.max(40,r1-100)+','+Math.max(20,g1-80)+','+(b1+80)+')');
+    sky.addColorStop(.3,'rgb('+r1+','+g1+','+b1+')');
+    sky.addColorStop(.6,'rgb(255,'+Math.floor(160-sunProgress*60)+','+Math.floor(80-sunProgress*30)+')');
+    sky.addColorStop(1,'rgb(255,'+Math.floor(200-sunProgress*50)+','+Math.floor(120-sunProgress*30)+')');
+    c.fillStyle=sky;c.fillRect(0,0,W,H*.55);
+    // Sun with glow layers
+    var sunX=W*.65;
+    c.fillStyle='rgba(255,200,60,.08)';c.beginPath();c.arc(sunX,sunY,W*.12,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(255,180,50,.12)';c.beginPath();c.arc(sunX,sunY,W*.08,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(255,220,100,.3)';c.beginPath();c.arc(sunX,sunY,W*.05,0,Math.PI*2);c.fill();
+    c.fillStyle='#ffe880';c.beginPath();c.arc(sunX,sunY,W*.032,0,Math.PI*2);c.fill();
+    c.fillStyle='#fff8e0';c.beginPath();c.arc(sunX,sunY,W*.02,0,Math.PI*2);c.fill();
+    // Sun reflection on water
+    c.globalAlpha=.15;
+    for(var ri=0;ri<12;ri++){
+        var rw=W*(.01+ri*.008),ry=H*(.56+ri*.03)+Math.sin(t*.03+ri)*3;
+        c.fillStyle='#ffe080';c.fillRect(sunX-rw/2,ry,rw,3);
+    }
+    c.globalAlpha=1;
+    // Clouds
+    SS.clouds.forEach(function(cl){
+        cl.x+=cl.spd;if(cl.x>1.2)cl.x=-.2;
+        c.fillStyle='rgba(255,180,120,.25)';
+        c.beginPath();c.ellipse(cl.x*W,cl.y*H,cl.w*W,H*.018,0,0,Math.PI*2);c.fill();
+        c.beginPath();c.ellipse(cl.x*W+W*.02,cl.y*H-H*.008,cl.w*W*.6,H*.012,0,0,Math.PI*2);c.fill();
+    });
+    // Distant hills
+    c.fillStyle='rgba(80,50,100,.5)';
+    c.beginPath();c.moveTo(0,H*.48);
+    for(var hx=0;hx<=W;hx+=W/10)c.lineTo(hx,H*(.42+Math.sin(hx*.008+.5)*.04));
+    c.lineTo(W,H*.55);c.lineTo(0,H*.55);c.fill();
+    c.fillStyle='rgba(60,40,80,.6)';
+    c.beginPath();c.moveTo(0,H*.5);
+    for(var hx=0;hx<=W;hx+=W/8)c.lineTo(hx,H*(.46+Math.sin(hx*.01+2)*.03));
+    c.lineTo(W,H*.55);c.lineTo(0,H*.55);c.fill();
+    // Trees on hills
+    for(var ti=0;ti<16;ti++){var tx=ti*(W/15),ty=H*(.46+Math.sin(tx*.009+1.5)*.03);
+        c.fillStyle='rgba(30,60,30,.7)';c.beginPath();c.ellipse(tx,ty-H*.015,W*.015,H*.025,0,0,Math.PI*2);c.fill();}
+    // Water
+    var wg=c.createLinearGradient(0,H*.53,0,H);
+    wg.addColorStop(0,'#4878a8');wg.addColorStop(.3,'#3868a0');wg.addColorStop(1,'#1a4060');
+    c.fillStyle=wg;c.fillRect(0,H*.53,W,H*.47);
+    // Animated water ripples
+    c.strokeStyle='rgba(255,255,255,.05)';c.lineWidth=1;
+    for(var wy=.56;wy<1;wy+=.03){c.beginPath();for(var wx=0;wx<W;wx+=3){var yo=Math.sin(wx*.03+t*.025+wy*20)*H*.003;if(wx===0)c.moveTo(wx,wy*H+yo);else c.lineTo(wx,wy*H+yo);}c.stroke();}
+    // Shore/bank edge
+    c.fillStyle='#5a8a40';
+    c.beginPath();c.moveTo(0,H*.53);c.quadraticCurveTo(W*.5,H*.51,W,H*.53);c.lineTo(W,H*.55);c.quadraticCurveTo(W*.5,H*.56,0,H*.55);c.fill();
+    // Park bench
+    var bx=W*.35,by=H*.50;
+    c.fillStyle='#5a3820';c.fillRect(bx-2,by-15,4,20);c.fillRect(bx+40,by-15,4,20);
+    c.fillStyle='#8a6840';c.fillRect(bx-5,by-18,52,4);c.fillRect(bx-5,by-10,52,3);
+    c.fillStyle='#7a5830';c.fillRect(bx-5,by+2,52,3);
+    // Railing along bank
+    c.strokeStyle='#666';c.lineWidth=1.5;
+    c.beginPath();c.moveTo(0,H*.51);c.lineTo(W,H*.51);c.stroke();
+    for(var rp=0;rp<W;rp+=30){c.beginPath();c.moveTo(rp,H*.51);c.lineTo(rp,H*.53);c.stroke();}
+    // Birds flying
+    SS.birds.forEach(function(b){
+        b.x+=b.vx;b.wing+=.08;if(b.x>1.1)b.x=-.1;
+        var bx2=b.x*W,by2=b.y*H+Math.sin(t*.02+b.x*10)*4;
+        var ws=Math.sin(b.wing)*6*b.sz;
+        c.strokeStyle='#222';c.lineWidth=1.5;
+        c.beginPath();c.moveTo(bx2-8*b.sz,by2+ws);c.quadraticCurveTo(bx2,by2-2,bx2+8*b.sz,by2+ws);c.stroke();
+    });
+    // Characters on bench
+    var cf=typeof crowFound!=='undefined'&&crowFound||typeof flightCrowFound!=='undefined'&&flightCrowFound;
+    if(pikaImg&&pikaImg.complete&&pikaImg.naturalWidth)c.drawImage(pikaImg,bx+5,by-50,32,32);
+    if(cf&&crowImg&&crowImg.complete&&crowImg.naturalWidth)c.drawImage(crowImg,bx+20,by-50,32,32);
+    if(cf){c.fillStyle='#ff69b4';c.globalAlpha=.6+Math.sin(t*.04)*.3;c.font='14px sans-serif';c.textAlign='center';c.fillText('💛',bx+24,by-55);c.globalAlpha=1;c.textAlign='left';}
+    // HUD
+    c.fillStyle='rgba(255,255,255,.5)';c.font='700 '+W*.017+'px Nunito';c.textAlign='center';
+    c.fillText('🌅 Sunset over Upvan Lake — NaMo Grand Central Park',W/2,H*.97);c.textAlign='left';
+}
+
+// =============================================
+// 5. FITNESS ZONE — Outdoor gym canvas, tap to exercise
+// =============================================
+var FZ={cvs:null,ctx:null,W:800,H:600,run:false,aid:null,t:0,curExercise:null,exTimer:0,reps:0,particles:[]};
+var FZ_EXERCISES=[
+    {name:'Push-Ups',icon:'💪',frames:2},
+    {name:'Pull-Ups',icon:'🏋️',frames:2},
+    {name:'Squats',icon:'🦵',frames:2},
+    {name:'Yoga',icon:'🧘',frames:2},
+    {name:'Stretching',icon:'🤸',frames:2},
+    {name:'Sprints',icon:'🏃',frames:2}
+];
+
+function initParkFitness(){
+    FZ.cvs=document.getElementById('park-fitness-cvs');if(!FZ.cvs)return;
+    FZ.t=0;FZ.curExercise=null;FZ.exTimer=0;FZ.reps=0;FZ.particles=[];
+    FZ.cvs.onclick=function(){
+        if(FZ.curExercise){
+            FZ.reps++;FZ.exTimer=20;
+            for(var pi=0;pi<8;pi++)FZ.particles.push({x:FZ.W*.5,y:FZ.H*.55,vx:(Math.random()-.5)*4,vy:-Math.random()*5-2,life:40,col:['#ffd700','#ff69b4','#32cd32','#87ceeb','#ffa500'][pi%5]});
+        } else {
+            FZ.curExercise=FZ_EXERCISES[~~(Math.random()*FZ_EXERCISES.length)];FZ.reps=0;FZ.exTimer=20;
+        }
+    };
+    FZ.cvs.width=800;FZ.cvs.height=600;FZ.ctx=FZ.cvs.getContext('2d');FZ.W=800;FZ.H=600;
+    if(!FZ.run){FZ.run=true;fzLoop();}
+}
+function stopParkFitness(){FZ.run=false;if(FZ.aid)cancelAnimationFrame(FZ.aid);}
+function fzLoop(){if(!FZ.run)return;FZ.t++;if(FZ.exTimer>0)FZ.exTimer--;FZ.particles=FZ.particles.filter(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=.15;p.life--;return p.life>0;});fzDraw();FZ.aid=requestAnimationFrame(fzLoop);}
+
+function fzDraw(){
+    var c=FZ.ctx,W=FZ.W,H=FZ.H,t=FZ.t;if(!c)return;
+    // Morning sky
+    var sky=c.createLinearGradient(0,0,0,H*.4);
+    sky.addColorStop(0,'#87ceeb');sky.addColorStop(1,'#b8e0a0');
+    c.fillStyle=sky;c.fillRect(0,0,W,H*.4);
+    // Clouds
+    c.fillStyle='rgba(255,255,255,.4)';
+    for(var ci=0;ci<4;ci++){var cx=(ci*W*.3+t*.1)%(W+100)-50;
+        c.beginPath();c.ellipse(cx,H*(.08+ci*.06),W*.07,H*.02,0,0,Math.PI*2);c.fill();}
+    // Grass
+    var gnd=c.createLinearGradient(0,H*.38,0,H);
+    gnd.addColorStop(0,'#5aaa40');gnd.addColorStop(.3,'#4a9a30');gnd.addColorStop(1,'#3a7a20');
+    c.fillStyle=gnd;c.fillRect(0,H*.38,W,H*.62);
+    // Grass texture
+    c.strokeStyle='rgba(60,120,30,.3)';c.lineWidth=1;
+    for(var gi=0;gi<40;gi++){var gx=gi*(W/39),sway=Math.sin(t*.02+gi)*.5;
+        c.beginPath();c.moveTo(gx,H*.4);c.lineTo(gx+sway,H*.37);c.stroke();}
+    // Track / path (running path)
+    c.fillStyle='rgba(180,140,100,.4)';
+    c.beginPath();c.moveTo(0,H*.65);c.quadraticCurveTo(W*.5,H*.6,W,H*.65);c.lineTo(W,H*.68);c.quadraticCurveTo(W*.5,H*.63,0,H*.68);c.fill();
+    // Trees
+    for(var ti=0;ti<6;ti++){var tx=W*(.02+ti*.19),tby=H*.38;
+        c.fillStyle='#5a3820';c.fillRect(tx-3,tby-H*.06,6,H*.06);
+        c.fillStyle='#3a8828';c.beginPath();c.ellipse(tx,tby-H*.08,W*.03,H*.035,0,0,Math.PI*2);c.fill();}
+    // Gym equipment — pull-up bar
+    c.strokeStyle='#555';c.lineWidth=5;
+    c.beginPath();c.moveTo(W*.15,H*.38);c.lineTo(W*.15,H*.52);c.stroke();
+    c.beginPath();c.moveTo(W*.3,H*.38);c.lineTo(W*.3,H*.52);c.stroke();
+    c.beginPath();c.moveTo(W*.15,H*.38);c.lineTo(W*.3,H*.38);c.stroke();
+    // Bench press
+    c.fillStyle='#666';c.fillRect(W*.55,H*.5,W*.12,H*.01);
+    c.fillRect(W*.56,H*.5,W*.01,H*.06);c.fillRect(W*.66,H*.5,W*.01,H*.06);
+    c.fillStyle='#888';c.fillRect(W*.54,H*.48,W*.02,H*.04);c.fillRect(W*.66,H*.48,W*.02,H*.04);
+    // Yoga mat area
+    c.fillStyle='rgba(200,100,150,.3)';c.fillRect(W*.75,H*.52,W*.15,H*.06);
+    c.strokeStyle='rgba(200,100,150,.5)';c.lineWidth=2;c.strokeRect(W*.75,H*.52,W*.15,H*.06);
+    // Pika exercising
+    var cf=typeof crowFound!=='undefined'&&crowFound||typeof flightCrowFound!=='undefined'&&flightCrowFound;
+    var bounce=FZ.exTimer>0?Math.sin(FZ.exTimer*.5)*8:0;
+    if(pikaImg&&pikaImg.complete&&pikaImg.naturalWidth)c.drawImage(pikaImg,W*.42-20,H*.48-40+bounce,40,40);
+    if(cf&&crowImg&&crowImg.complete&&crowImg.naturalWidth)c.drawImage(crowImg,W*.56-20,H*.48-40+bounce*.7,40,40);
+    // Rep counter / exercise indicator
+    if(FZ.curExercise){
+        c.fillStyle='rgba(0,0,0,.5)';c.beginPath();c.roundRect(W*.3,H*.72,W*.4,H*.1,8);c.fill();
+        c.fillStyle='#fff';c.font='700 '+W*.025+'px Nunito';c.textAlign='center';
+        c.fillText(FZ.curExercise.icon+' '+FZ.curExercise.name+' × '+FZ.reps,W*.5,H*.78);
+        c.font='700 '+W*.014+'px Nunito';c.fillStyle='rgba(255,255,255,.6)';
+        c.fillText('Tap to do reps!',W*.5,H*.81);c.textAlign='left';
+    } else {
+        c.fillStyle='rgba(0,0,0,.4)';c.beginPath();c.roundRect(W*.25,H*.72,W*.5,H*.08,8);c.fill();
+        c.fillStyle='#fff';c.font='700 '+W*.022+'px Nunito';c.textAlign='center';
+        c.fillText('💪 Tap anywhere to start working out!',W*.5,H*.77);c.textAlign='left';
+    }
+    // Particles
+    FZ.particles.forEach(function(p){
+        c.fillStyle=p.col;c.globalAlpha=p.life/40;
+        c.beginPath();c.arc(p.x,p.y,3,0,Math.PI*2);c.fill();
+    });
+    c.globalAlpha=1;
+    // HUD
+    c.fillStyle='rgba(255,255,255,.5)';c.font='700 '+W*.016+'px Nunito';c.textAlign='center';
+    c.fillText('💪 Outdoor Fitness Zone — NaMo Grand Central Park',W/2,H*.97);c.textAlign='left';
+}
+
+// =============================================
+// 6. BOAT RIDE — Paddle boat on Upvan Lake
+// =============================================
+var BR={cvs:null,ctx:null,W:800,H:600,run:false,aid:null,t:0,boatX:.5,boatY:.55,ripples:[],fish:[],dragonflies:[]};
+
+function initParkBoat(){
+    BR.cvs=document.getElementById('park-boat-cvs');if(!BR.cvs)return;
+    BR.t=0;BR.boatX=.5;BR.boatY=.55;BR.ripples=[];
+    BR.fish=[];for(var fi=0;fi<6;fi++)BR.fish.push({x:Math.random(),y:.4+Math.random()*.45,vx:(Math.random()-.5)*.003,phase:Math.random()*Math.PI*2,sz:.5+Math.random()*.5,col:['#e0a040','#c08030','#d09050','#b07020','#e8b060','#c09838'][fi]});
+    BR.dragonflies=[];for(var di=0;di<5;di++)BR.dragonflies.push({x:Math.random(),y:.2+Math.random()*.3,vx:(Math.random()-.5)*.003,vy:(Math.random()-.5)*.002,wing:Math.random()*Math.PI*2});
+    BR.cvs.onclick=function(e){
+        var r=BR.cvs.getBoundingClientRect(),cx=(e.clientX-r.left)/r.width,cy=(e.clientY-r.top)/r.height;
+        // Move boat toward click
+        var dx=cx-BR.boatX,dy=cy-BR.boatY,dist=Math.hypot(dx,dy);
+        if(dist>.01){BR.boatX+=dx*.15;BR.boatY+=dy*.15;}
+        BR.boatX=Math.max(.08,Math.min(.92,BR.boatX));BR.boatY=Math.max(.38,Math.min(.85,BR.boatY));
+        BR.ripples.push({x:BR.boatX,y:BR.boatY+.02,r:.01,life:1});
+    };
+    BR.cvs.width=800;BR.cvs.height=600;BR.ctx=BR.cvs.getContext('2d');BR.W=800;BR.H=600;
+    if(!BR.run){BR.run=true;brLoop();}
+}
+function stopParkBoat(){BR.run=false;if(BR.aid)cancelAnimationFrame(BR.aid);}
+function brLoop(){if(!BR.run)return;BR.t++;
+    BR.fish.forEach(function(f){f.x+=f.vx;f.phase+=.03;if(f.x<.02||f.x>.98)f.vx*=-1;if(Math.random()<.01)f.vx+=(Math.random()-.5)*.001;});
+    BR.dragonflies.forEach(function(d){d.x+=d.vx;d.y+=d.vy;d.wing+=.2;if(d.x<.02||d.x>.98)d.vx*=-1;if(d.y<.1||d.y>.5)d.vy*=-1;if(Math.random()<.02){d.vx+=(Math.random()-.5)*.002;d.vy+=(Math.random()-.5)*.001;}});
+    BR.ripples=BR.ripples.filter(function(r){r.r+=.0008;r.life-=.01;return r.life>0;});
+    if(BR.t%20===0)BR.ripples.push({x:BR.boatX,y:BR.boatY+.025,r:.005,life:.4});
+    brDraw();BR.aid=requestAnimationFrame(brLoop);
+}
+
+function brDraw(){
+    var c=BR.ctx,W=BR.W,H=BR.H,t=BR.t;if(!c)return;
+    // Afternoon sky
+    var sky=c.createLinearGradient(0,0,0,H*.32);
+    sky.addColorStop(0,'#70b8e8');sky.addColorStop(1,'#a0d0a0');
+    c.fillStyle=sky;c.fillRect(0,0,W,H*.32);
+    // Clouds
+    c.fillStyle='rgba(255,255,255,.4)';
+    for(var ci=0;ci<5;ci++){var cx=(ci*W*.22+t*.08)%(W+100)-50;
+        c.beginPath();c.ellipse(cx,H*(.06+ci*.04),W*.06,H*.016,0,0,Math.PI*2);c.fill();}
+    // Hills
+    c.fillStyle='#5a9a40';c.beginPath();c.moveTo(0,H*.3);
+    for(var hx=0;hx<=W;hx+=W/8)c.lineTo(hx,H*(.24+Math.sin(hx*.008)*.04));
+    c.lineTo(W,H*.33);c.lineTo(0,H*.33);c.fill();
+    // Trees on hills
+    for(var ti=0;ti<14;ti++){var tx=ti*(W/13),tby=H*(.24+Math.sin(tx*.008)*.04);
+        c.fillStyle='#4a7828';c.beginPath();c.ellipse(tx,tby-H*.012,W*.02+Math.sin(t*.01+ti)*1,H*.022,0,0,Math.PI*2);c.fill();}
+    // Bank
+    c.fillStyle='#5aaa40';c.beginPath();c.moveTo(0,H*.31);c.quadraticCurveTo(W*.5,H*.28,W,H*.31);c.lineTo(W,H*.35);c.quadraticCurveTo(W*.5,H*.37,0,H*.35);c.fill();
+    // Reeds on bank
+    c.strokeStyle='#3a7020';c.lineWidth=1.5;
+    for(var ri=0;ri<20;ri++){var rx=ri*(W/19),sway=Math.sin(t*.02+ri)*2;
+        c.beginPath();c.moveTo(rx,H*.33);c.quadraticCurveTo(rx+sway,H*.28,rx+sway*1.5,H*.24);c.stroke();}
+    // Water
+    var wg=c.createLinearGradient(0,H*.33,0,H);
+    wg.addColorStop(0,'#4898c0');wg.addColorStop(.5,'#3880a8');wg.addColorStop(1,'#206880');
+    c.fillStyle=wg;c.fillRect(0,H*.33,W,H*.67);
+    // Water ripple animation
+    c.strokeStyle='rgba(255,255,255,.05)';c.lineWidth=1;
+    for(var wy=.36;wy<1;wy+=.035){c.beginPath();for(var wx=0;wx<W;wx+=3){var yo=Math.sin(wx*.035+t*.02+wy*15)*H*.003;if(wx===0)c.moveTo(wx,wy*H+yo);else c.lineTo(wx,wy*H+yo);}c.stroke();}
+    // Lily pads
+    [[.1,.45],[.25,.7],[.6,.42],[.75,.65],[.9,.5],[.4,.82],[.15,.6],[.85,.78]].forEach(function(l){
+        c.fillStyle='rgba(50,130,40,.5)';c.beginPath();c.ellipse(l[0]*W,l[1]*H,12,8,.2,0,Math.PI*2);c.fill();
+        if(l[0]>.3&&l[0]<.8){c.fillStyle='rgba(255,130,170,.5)';c.beginPath();c.arc(l[0]*W+3,l[1]*H-2,3,0,Math.PI*2);c.fill();}
+    });
+    // Click ripples
+    BR.ripples.forEach(function(rp){c.beginPath();c.arc(rp.x*W,rp.y*H,rp.r*W,0,Math.PI*2);c.strokeStyle='rgba(255,255,255,'+rp.life*.35+')';c.lineWidth=1.5;c.stroke();});
+    // Fish (underwater shadows)
+    BR.fish.forEach(function(f){
+        var fx=f.x*W,fy=f.y*H+Math.sin(f.phase)*5;
+        c.globalAlpha=.3;c.fillStyle=f.col;
+        c.save();c.translate(fx,fy);c.scale(f.vx>0?1:-1,1);
+        c.beginPath();c.moveTo(8*f.sz,0);c.quadraticCurveTo(0,-4*f.sz,-8*f.sz,0);c.quadraticCurveTo(0,4*f.sz,8*f.sz,0);c.fill();
+        c.beginPath();c.moveTo(-8*f.sz,0);c.lineTo(-12*f.sz,-3*f.sz);c.lineTo(-12*f.sz,3*f.sz);c.fill();
+        c.restore();c.globalAlpha=1;
+    });
+    // Dragonflies
+    BR.dragonflies.forEach(function(d){
+        var dx2=d.x*W,dy2=d.y*H;
+        c.fillStyle='#4080c0';c.globalAlpha=.7;
+        c.fillRect(dx2-5,dy2-1,10,2);
+        var ws=Math.sin(d.wing)*5;
+        c.fillStyle='rgba(150,200,255,.4)';
+        c.beginPath();c.ellipse(dx2,dy2-ws,8,3,0,0,Math.PI*2);c.fill();
+        c.beginPath();c.ellipse(dx2,dy2+ws,8,3,0,0,Math.PI*2);c.fill();
+        c.globalAlpha=1;
+    });
+    // Paddle boat
+    var bx=BR.boatX*W,by=BR.boatY*H,rock=Math.sin(t*.04)*3;
+    c.save();c.translate(bx,by);c.rotate(rock*.01);
+    // Hull
+    c.fillStyle='#c04040';
+    c.beginPath();c.moveTo(-25,8);c.quadraticCurveTo(-28,0,-20,-6);c.lineTo(20,-6);c.quadraticCurveTo(28,0,25,8);c.quadraticCurveTo(0,12,-25,8);c.fill();
+    // Hull stripe
+    c.fillStyle='#e06060';c.beginPath();c.moveTo(-22,6);c.quadraticCurveTo(0,10,22,6);c.quadraticCurveTo(0,8,-22,6);c.fill();
+    // Hull edge
+    c.strokeStyle='#802020';c.lineWidth=1.5;c.beginPath();c.moveTo(-25,8);c.quadraticCurveTo(-28,0,-20,-6);c.lineTo(20,-6);c.quadraticCurveTo(28,0,25,8);c.stroke();
+    // Seats
+    c.fillStyle='#d08040';c.fillRect(-12,-4,10,5);c.fillRect(4,-4,10,5);
+    c.restore();
+    // Characters in boat
+    var cf=typeof crowFound!=='undefined'&&crowFound||typeof flightCrowFound!=='undefined'&&flightCrowFound;
+    if(pikaImg&&pikaImg.complete&&pikaImg.naturalWidth)c.drawImage(pikaImg,bx-18,by-38+rock,28,28);
+    if(cf&&crowImg&&crowImg.complete&&crowImg.naturalWidth)c.drawImage(crowImg,bx+2,by-38+rock,28,28);
+    // Boat shadow on water
+    c.globalAlpha=.08;c.fillStyle='#000';c.beginPath();c.ellipse(bx,by+18,28,6,0,0,Math.PI*2);c.fill();c.globalAlpha=1;
+    // HUD
+    c.fillStyle='rgba(255,255,255,.5)';c.font='700 '+W*.017+'px Nunito';c.textAlign='center';
+    c.fillText('🚣 Tap anywhere to paddle! — Upvan Lake, NaMo Park',W/2,H*.97);c.textAlign='left';
+}
