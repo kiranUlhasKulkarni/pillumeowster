@@ -42,8 +42,9 @@
         <div class="dest-pin" style="left:340px;top:200px;" onclick="travelTo('panera')"><div class="pin-icon" id="ic-panera">🥤</div><div class="pin-label">Panera</div></div>
         <div class="dest-pin" style="left:450px;top:30px;" onclick="travelTo('commons')"><div class="pin-icon" id="ic-commons">🌸</div><div class="pin-label">Boston Common</div></div>
         <div class="dest-pin" style="left:140px;top:70px;" onclick="travelTo('prudential')"><div class="pin-icon" id="ic-prudential">🏙️</div><div class="pin-label">Prudential</div></div>
+        <div class="dest-pin" style="left:300px;top:10px;" onclick="travelTo('flight')"><div class="pin-icon" id="ic-flight" style="background:linear-gradient(135deg,#87ceeb,#e0f0ff);border-color:#4a90d9;font-size:1.1rem;">✈️</div><div class="pin-label">BOS Airport</div></div>
         <div class="scooter-map" id="map-scoot" style="left:50px;top:100px;">🛴</div>
-        <div class="map-legend">🗺️ Fenway — NEU — Prudential — Boston Common</div>
+        <div class="map-legend">🗺️ Fenway — NEU — Prudential — Boston Common — ✈️ Airport</div>
     </div>
     <div class="msg-box" id="map-hint">Tap a destination to scoot there! 🛴</div>
 </div>
@@ -283,6 +284,35 @@
     </div>
 </div>
 
+<!-- ===== FLIGHT ===== -->
+<div class="screen" id="screen-flight">
+    <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name">✈️ Boston Logan Airport</span><span id="flight-comp"></span></div>
+    <div class="panel" id="flight-panel"></div>
+</div>
+
+<!-- ===== THANE MAP ===== -->
+<div class="screen" id="screen-thane">
+    <div class="top-bar"><span class="loc-name">🗺️ Thane Map</span><span id="thane-comp"></span></div>
+    <div class="thane-map-wrap" style="position:relative;" id="thane-bg">
+        <canvas id="thane-canvas" width="600" height="480" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+        <div class="dest-pin" style="left:95px;top:100px;" onclick="showThaneLocation('viviana')"><div class="pin-icon">🛍️</div><div class="pin-label">Viviana Mall</div></div>
+        <div class="dest-pin" style="left:425px;top:70px;" onclick="showThaneLocation('grandcentral')"><div class="pin-icon">🌳</div><div class="pin-label">Grand Central Park</div></div>
+        <div class="dest-pin" style="left:355px;top:260px;" onclick="showThaneLocation('thewalk')"><div class="pin-icon">🚶</div><div class="pin-label">The Walk</div></div>
+        <div class="dest-pin" style="left:435px;top:330px;" onclick="showThaneLocation('apollo')"><div class="pin-icon" style="border-color:#555;">🏡</div><div class="pin-label">Crow's House</div></div>
+        <div class="dest-pin" style="left:75px;top:340px;" onclick="showThaneLocation('lodha')"><div class="pin-icon" style="border-color:#9b59b6;">🏠</div><div class="pin-label">Pika's House</div></div>
+        <div class="scooter-map" id="thane-scoot" style="left:280px;top:200px;">🛴</div>
+        <div class="map-legend">🗺️ Thane — Ghodbunder — Hiranandani — Lodha Amara</div>
+    </div>
+    <div style="text-align:center;margin-top:8px;">
+        <button class="action-btn sec" onclick="goMap()" style="max-width:300px;display:inline-block;">✈️ Back to Boston</button>
+    </div>
+</div>
+
+<!-- ===== THANE LOCATION ===== -->
+<div class="screen" id="screen-thane-loc">
+    <div class="panel" id="thane-loc-panel" style="width:95vw;max-width:600px;"></div>
+</div>
+
 <!-- ===== FOUND CROW ===== -->
 <div class="screen" id="screen-found">
     <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name" id="found-loc">📍</span><span class="companion-found">🐦‍⬛ Together!</span></div>
@@ -301,6 +331,8 @@
 <script src="adv-school.js"></script>
 <script src="adv-commons.js"></script>
 <script src="adv-prudential.js"></script>
+<script src="adv-flight.js"></script>
+<script src="adv-thane.js"></script>
 <script>
     // Boot everything up
     // Draw realistic map
@@ -534,7 +566,10 @@
         });
         var mbg = document.getElementById('map-bg');
         if (mbg) mbg.style.background = dk ? '#242f3e' : '#f2efe9';
+        var tbg = document.getElementById('thane-bg');
+        if (tbg) tbg.style.background = dk ? '#242f3e' : '#f2efe9';
         drawMap();
+        if (typeof drawThaneMap === 'function') drawThaneMap();
     };
 
 
