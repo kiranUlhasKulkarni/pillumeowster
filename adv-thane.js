@@ -225,9 +225,9 @@ function buildPark(){
     h+='<div class="choices">';
     h+='<button class="choice-btn" onclick="show(\'screen-park-pond\');initParkPond()"><span class="ce">🦆</span>Feed Ducks</button>';
     h+='<button class="choice-btn" onclick="show(\'screen-park-garden\');initParkGarden()"><span class="ce">🌺</span>Flower Garden</button>';
-    h+='<button class="choice-btn" onclick="parkGo(\'fitness\')"><span class="ce">💪</span>Fitness Zone</button>';
-    h+='<button class="choice-btn" onclick="parkGo(\'sunset\')"><span class="ce">🌅</span>Sunset Point</button>';
-    h+='<button class="choice-btn" onclick="parkGo(\'boat\')"><span class="ce">🚣</span>Boat Ride</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-park-fitness\');initParkFitness()"><span class="ce">💪</span>Fitness Zone</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-park-sunset\');initParkSunset()"><span class="ce">🌅</span>Sunset Point</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-park-boat\');initParkBoat()"><span class="ce">🚣</span>Boat Ride</button>';
     h+='<button class="choice-btn" onclick="parkGo(\'kulfi\')"><span class="ce">🍦</span>Kulfi Vendor</button>';
     h+='</div>';
     h+='<div class="msg-box" style="margin-top:8px">'+(withCrow()?'⚡ & 🐦‍⬛ Evening park date! 🌅💛':'⚡ Peaceful evening~ 🌅')+'</div></div>';
