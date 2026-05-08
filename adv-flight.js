@@ -30,7 +30,7 @@ function initFlight() {
 function renderAirlineSelect() {
     var p = document.getElementById('flight-panel');
     var h = '<div class="panel-title">✈️ Choose Your Airline</div>';
-    h += '<div style="text-align:center;font-size:.75rem;font-weight:700;color:#888;margin-bottom:12px;">Boston (BOS) → Mumbai (BOM) • Crow might be on one of these flights! 🐦‍⬛</div>';
+    h += '<div style="text-align:center;font-size:.75rem;font-weight:700;color:#888;margin-bottom:12px;">Boston (BOS) → Mumbai (BOM) • Crow is hiding on ONE random flight! 🐦‍⬛✨<br><span style="font-size:.6rem;color:#aaa;">(Hint: She\'ll never take IndiGo!)</span></div>';
     h += '<div class="airline-grid">';
     for (var i = 0; i < AIRLINES.length; i++) {
         var a = AIRLINES[i];
