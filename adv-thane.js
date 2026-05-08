@@ -223,8 +223,8 @@ function buildPark(){
     h+='<div class="panel" style="margin-top:10px"><div class="panel-title">🌳 NaMo Grand Central Park</div>';
     h+='<div style="font-size:.65rem;font-weight:700;color:#888;text-align:center;margin-bottom:8px">By Upvan Lake — sunsets, joggers & serenity 🌅</div>';
     h+='<div class="choices">';
-    h+='<button class="choice-btn" onclick="parkGo(\'lake\')"><span class="ce">🦆</span>Feed Ducks</button>';
-    h+='<button class="choice-btn" onclick="parkGo(\'garden\')"><span class="ce">🌺</span>Flower Garden</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-park-pond\');initParkPond()"><span class="ce">🦆</span>Feed Ducks</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-park-garden\');initParkGarden()"><span class="ce">🌺</span>Flower Garden</button>';
     h+='<button class="choice-btn" onclick="parkGo(\'fitness\')"><span class="ce">💪</span>Fitness Zone</button>';
     h+='<button class="choice-btn" onclick="parkGo(\'sunset\')"><span class="ce">🌅</span>Sunset Point</button>';
     h+='<button class="choice-btn" onclick="parkGo(\'boat\')"><span class="ce">🚣</span>Boat Ride</button>';
@@ -294,7 +294,7 @@ function buildTheWalk(){
     h+='<button class="choice-btn" onclick="walkGo(\'cafe\')"><span class="ce">☕</span>Starbucks</button>';
     h+='<button class="choice-btn" onclick="walkGo(\'icecream\')"><span class="ce">🍦</span>Ice Cream Builder</button>';
     h+='<button class="choice-btn" onclick="walkGo(\'boba\')"><span class="ce">🧋</span>Boba Tea</button>';
-    h+='<button class="choice-btn" onclick="walkGo(\'stroll\')"><span class="ce">🌃</span>Night Stroll</button>';
+    h+='<button class="choice-btn" onclick="show(\'screen-walk-stroll\');initWalkStroll()"><span class="ce">🌃</span>Night Stroll</button>';
     h+='<button class="choice-btn" onclick="walkGo(\'pani\')"><span class="ce">💧</span>Pani Puri</button>';
     h+='<button class="choice-btn" onclick="walkGo(\'photo\')"><span class="ce">📸</span>Photo Booth</button>';
     h+='</div>';
