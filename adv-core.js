@@ -110,12 +110,17 @@ function show(id) { document.querySelectorAll('.screen').forEach(s => s.classLis
 function goMap() { show('screen-map'); }
 
 function travelTo(d) {
-    const names = { pikaHouse:"Pika's House", crowHouse:"Crow's Encore", neu:"Northeastern", dunkin:"Dunkin'", panera:"Panera", snell:"Snell Library", curry:"Curry Center", classroom:"Classroom", commons:"Boston Common", prudential:"Prudential Center" };
-    document.getElementById('travel-text').innerText = 'Scooting to ' + (names[d]||d) + '...';
+    const names = { pikaHouse:"Pika's House", crowHouse:"Crow's Encore", neu:"Northeastern", dunkin:"Dunkin'", panera:"Panera", snell:"Snell Library", curry:"Curry Center", classroom:"Classroom", commons:"Boston Common", prudential:"Prudential Center", flight:"Boston Logan Airport", thane:"Thane, Mumbai" };
+    document.getElementById('travel-text').innerText = (d === 'flight' ? 'Driving to ' : d === 'thane' ? 'Landing in ' : 'Scooting to ') + (names[d]||d) + '...';
+    if (d === 'flight') document.querySelector('.travel-scooter').innerText = '✈️';
+    else if (d === 'thane') document.querySelector('.travel-scooter').innerText = '🛬';
+    else document.querySelector('.travel-scooter').innerText = '🛴';
     document.getElementById('travel-overlay').classList.add('active');
     setTimeout(() => {
         document.getElementById('travel-overlay').classList.remove('active');
         if (d === 'neu') { show('screen-neu'); }
+        else if (d === 'flight') { show('screen-flight'); initFlight(); }
+        else if (d === 'thane') { show('screen-thane'); drawThaneMap(); }
         else { show('screen-'+d); if(d==='curry'){if(typeof initTT==='function')initTT();if(typeof initPool==='function')initPool();} checkCrowAt(d); }
     }, 1300);
 }
@@ -183,7 +188,8 @@ var PIN_POS = {
     curry: { x: 245, y: 120 },
     classroom: { x: 245, y: 120 },
     commons: { x: 475, y: 50 },
-    prudential: { x: 165, y: 90 }
+    prudential: { x: 165, y: 90 },
+    flight: { x: 325, y: 30 }
 };
 
 function moveScooterTo(loc) {
