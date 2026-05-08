@@ -31,7 +31,7 @@ function initParkGarden(){
     FG.cvs.onmousemove=function(e){var r=FG.cvs.getBoundingClientRect();FG.mx=(e.clientX-r.left)/r.width;FG.my=(e.clientY-r.top)/r.height;};
     FG.cvs.ontouchmove=function(e){e.preventDefault();var r=FG.cvs.getBoundingClientRect();FG.mx=(e.touches[0].clientX-r.left)/r.width;FG.my=(e.touches[0].clientY-r.top)/r.height;};
     FG.cvs.onmouseleave=function(){FG.mx=-1;FG.my=-1;};
-    FG.cvs.width=800;FG.cvs.height=600;FG.ctx=FG.cvs.getContext('2d');FG.W=800;FG.H=600;
+    var _d=setupCvs(FG.cvs,800,600);FG.ctx=_d.ctx;FG.W=_d.W;FG.H=_d.H;
     if(!FG.run){FG.run=true;fgLoop();}
 }
 function stopParkGarden(){FG.run=false;if(FG.aid)cancelAnimationFrame(FG.aid);}
@@ -177,7 +177,7 @@ function initParkPond(){
             if(dist>0&&dist<.5){d.vx+=dx/dist*.004;d.vy+=dy/dist*.003;}
         });
     };
-    PP.cvs.width=800;PP.cvs.height=600;PP.ctx=PP.cvs.getContext('2d');PP.W=800;PP.H=600;
+    var _d=setupCvs(PP.cvs,800,600);PP.ctx=_d.ctx;PP.W=_d.W;PP.H=_d.H;
     if(!PP.run){PP.run=true;ppLoop();}
 }
 function stopParkPond(){PP.run=false;if(PP.aid)cancelAnimationFrame(PP.aid);}
@@ -299,7 +299,7 @@ function initWalkStroll(){
     NS.lanterns=[];for(var li=0;li<10;li++)NS.lanterns.push({x:.08+li*.09,glow:Math.random()*Math.PI*2});
     NS.walkers=[];
     for(var wi=0;wi<6;wi++)NS.walkers.push({x:Math.random(),y:.72+Math.random()*.06,vx:(Math.random()-.5)*.001,sz:.6+Math.random()*.4,col:['#d0c0b0','#a0a0c0','#c0b0a0','#90a0b0','#b0a0c0','#a0b0a0'][wi]});
-    NS.cvs.width=800;NS.cvs.height=600;NS.ctx=NS.cvs.getContext('2d');NS.W=800;NS.H=600;
+    var _d=setupCvs(NS.cvs,800,600);NS.ctx=_d.ctx;NS.W=_d.W;NS.H=_d.H;
     if(!NS.run){NS.run=true;nsLoop();}
 }
 function stopWalkStroll(){NS.run=false;if(NS.aid)cancelAnimationFrame(NS.aid);}
@@ -412,7 +412,7 @@ function initParkSunset(){
     SS.t=0;
     SS.birds=[];for(var bi=0;bi<8;bi++)SS.birds.push({x:Math.random(),y:.08+Math.random()*.18,vx:.001+Math.random()*.002,wing:Math.random()*Math.PI*2,sz:.6+Math.random()*.6});
     SS.clouds=[];for(var ci=0;ci<5;ci++)SS.clouds.push({x:Math.random(),y:.05+ci*.06,w:.08+Math.random()*.06,spd:.0001+Math.random()*.0002});
-    SS.cvs.width=800;SS.cvs.height=600;SS.ctx=SS.cvs.getContext('2d');SS.W=800;SS.H=600;
+    var _d=setupCvs(SS.cvs,800,600);SS.ctx=_d.ctx;SS.W=_d.W;SS.H=_d.H;
     if(!SS.run){SS.run=true;ssLoop();}
 }
 function stopParkSunset(){SS.run=false;if(SS.aid)cancelAnimationFrame(SS.aid);}
@@ -525,7 +525,7 @@ function initParkFitness(){
             FZ.curExercise=FZ_EXERCISES[~~(Math.random()*FZ_EXERCISES.length)];FZ.reps=0;FZ.exTimer=20;
         }
     };
-    FZ.cvs.width=800;FZ.cvs.height=600;FZ.ctx=FZ.cvs.getContext('2d');FZ.W=800;FZ.H=600;
+    var _d=setupCvs(FZ.cvs,800,600);FZ.ctx=_d.ctx;FZ.W=_d.W;FZ.H=_d.H;
     if(!FZ.run){FZ.run=true;fzLoop();}
 }
 function stopParkFitness(){FZ.run=false;if(FZ.aid)cancelAnimationFrame(FZ.aid);}
@@ -614,7 +614,7 @@ function initParkBoat(){
         BR.boatX=Math.max(.08,Math.min(.92,BR.boatX));BR.boatY=Math.max(.38,Math.min(.85,BR.boatY));
         BR.ripples.push({x:BR.boatX,y:BR.boatY+.02,r:.01,life:1});
     };
-    BR.cvs.width=800;BR.cvs.height=600;BR.ctx=BR.cvs.getContext('2d');BR.W=800;BR.H=600;
+    var _d=setupCvs(BR.cvs,800,600);BR.ctx=_d.ctx;BR.W=_d.W;BR.H=_d.H;
     if(!BR.run){BR.run=true;brLoop();}
 }
 function stopParkBoat(){BR.run=false;if(BR.aid)cancelAnimationFrame(BR.aid);}
