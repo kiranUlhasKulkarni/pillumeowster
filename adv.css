@@ -400,3 +400,86 @@ body.dark .alcohol-title{color:#e880c0;}.alcohol-msg{color:var(--text);}
 /* ===== THANE MAP ===== */
 .thane-map-wrap{width:95vw;max-width:600px;height:480px;border-radius:18px;overflow:hidden;border:4px solid var(--lpink);box-shadow:0 8px 30px var(--shadow);position:relative;background:#f2efe9;}
 body.dark .thane-map-wrap{border-color:#3a3058;background:#242f3e;}
+
+/* ===== CINEMA THEATRE ===== */
+.cinema-theatre{position:relative;background:linear-gradient(180deg,#8b2020,#5a1010);border-radius:14px;padding:10px;overflow:hidden;min-height:160px;}
+.cinema-curtain-l,.cinema-curtain-r{position:absolute;top:0;width:30px;height:100%;z-index:2;}
+.cinema-curtain-l{left:0;background:linear-gradient(90deg,#8b1a1a,#a02020,#6a0e0e);border-radius:14px 0 0 14px;}
+.cinema-curtain-r{right:0;background:linear-gradient(270deg,#8b1a1a,#a02020,#6a0e0e);border-radius:0 14px 14px 0;}
+.cinema-screen-box{margin:0 36px;background:#fff;border-radius:6px;padding:20px;text-align:center;box-shadow:0 0 30px rgba(255,255,255,.3);min-height:60px;display:flex;align-items:center;justify-content:center;}
+.cinema-screen-glow{font-size:.9rem;font-weight:900;color:#8b005d;animation:screenGlow 2s ease infinite;}
+@keyframes screenGlow{0%,100%{text-shadow:0 0 8px rgba(255,105,180,.3);}50%{text-shadow:0 0 20px rgba(255,105,180,.6);}}
+.cinema-stage{height:10px;background:linear-gradient(180deg,#c8a060,#a08040);margin:6px 30px 0;border-radius:0 0 4px 4px;}
+.cinema-seats{display:flex;flex-direction:column;gap:3px;margin:6px 40px 0;}.cinema-seat-row{display:flex;gap:3px;justify-content:center;}
+.cinema-seat{width:28px;height:22px;background:linear-gradient(180deg,#a02030,#801828);border-radius:4px 4px 2px 2px;border:1px solid #601020;position:relative;}
+.cinema-seat::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:6px;background:rgba(255,215,0,.3);border-radius:2px;}
+body.dark .cinema-theatre{background:linear-gradient(180deg,#3a1020,#2a0810);}
+body.dark .cinema-screen-box{background:#252540;}body.dark .cinema-screen-glow{color:#e880c0;}
+
+/* Movie player */
+.movie-player{margin:8px 0;border-radius:12px;overflow:hidden;}
+
+/* ===== SHOPPING & FOOD GRID ===== */
+.shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+.shop-card{background:var(--card);border:2px solid var(--lpink);border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .2s;font-size:.6rem;color:#8b005d;}
+.shop-card:hover{border-color:var(--dpink);transform:translateY(-1px);}
+.shop-card:active{transform:scale(.95);}
+body.dark .shop-card{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+.food-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:8px;}
+.food-stall{background:var(--card);border:2px solid var(--lpink);border-radius:10px;padding:8px 4px;text-align:center;font-family:inherit;transition:all .2s;}
+.food-stall:hover{border-color:var(--dpink);transform:translateY(-1px);}
+.food-stall:active{transform:scale(.95);}
+body.dark .food-stall{background:#2a2a48;border-color:#3a3058;color:#c0a0b0;}
+
+/* ===== ARCADE ===== */
+.arcade-score{text-align:center;font-size:1.2rem;font-weight:900;color:var(--dpink);font-family:'Baloo 2',cursive;margin-bottom:6px;}
+.arcade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:240px;margin:0 auto 8px;}
+.arcade-hole{width:70px;height:70px;background:linear-gradient(180deg,#f0e8e0,#d8c8b8);border:3px solid #c0b0a0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.arcade-mole{font-size:2rem;cursor:pointer;animation:molePopUp .2s ease;transition:transform .1s;}
+@keyframes molePopUp{0%{transform:scale(0) translateY(10px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.arcade-timer{text-align:center;font-size:1rem;font-weight:900;color:#888;margin-bottom:6px;}
+body.dark .arcade-hole{background:linear-gradient(180deg,#2a2a48,#222240);border-color:#3a3058;}
+
+/* ===== PARK SCENES ===== */
+.park-lake-scene{background:linear-gradient(180deg,#e8f4fc,#c0dce8);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;min-height:120px;}
+.lake-water{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(180deg,#80bcd8,#60a0c0);border-radius:0 0 14px 14px;}
+.lake-ripple{position:absolute;bottom:20%;left:50%;width:60px;height:8px;border:1px solid rgba(255,255,255,.3);border-radius:50%;transform:translateX(-50%);}
+.lake-ripple.r1{animation:ripple 2s ease infinite;}.lake-ripple.r2{animation:ripple 2s .5s ease infinite;bottom:30%;}.lake-ripple.r3{animation:ripple 2s 1s ease infinite;bottom:10%;}
+@keyframes ripple{0%{width:20px;opacity:.8;}100%{width:80px;opacity:0;}}
+.lake-ducks{position:relative;z-index:1;font-size:1.5rem;letter-spacing:6px;margin:8px 0;}.lake-lilies{position:relative;z-index:1;font-size:1.2rem;letter-spacing:8px;}
+body.dark .park-lake-scene{background:linear-gradient(180deg,#1a2a38,#152030);}body.dark .lake-water{background:linear-gradient(180deg,#17263c,#102030);}
+
+.park-garden{background:linear-gradient(180deg,#e8f8e0,#c8e8b8);border-radius:14px;padding:16px;text-align:center;}
+.garden-row{font-size:1.5rem;letter-spacing:6px;margin:4px 0;}.garden-butterflies{font-size:1.3rem;letter-spacing:8px;margin-top:8px;animation:butterflyFloat 3s ease infinite;}
+@keyframes butterflyFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+body.dark .park-garden{background:linear-gradient(180deg,#1a2a18,#152518);}
+
+.park-sunset{background:linear-gradient(180deg,#ff8040,#ff6040,#d04080,#4040a0);border-radius:14px;padding:16px;text-align:center;min-height:140px;position:relative;}
+.sunset-sky{position:relative;z-index:1;}.sunset-sun{font-size:2.5rem;animation:sunsetPulse 3s ease infinite;}
+@keyframes sunsetPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
+.sunset-clouds{font-size:1.2rem;opacity:.6;margin-top:-4px;letter-spacing:10px;}
+.sunset-water{font-size:1.2rem;margin:8px 0;opacity:.5;letter-spacing:4px;}
+.sunset-bench{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;}
+
+.boat-scene{background:linear-gradient(180deg,#90c8e8,#70b0d0);border-radius:14px;padding:16px;display:inline-block;min-width:200px;}
+.boat-water{font-size:1.5rem;letter-spacing:4px;opacity:.5;animation:boatWave 2s ease infinite;}
+@keyframes boatWave{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+.boat-emoji{font-size:2.5rem;animation:boatRock 2s ease infinite;}
+@keyframes boatRock{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg);}}
+body.dark .boat-scene{background:linear-gradient(180deg,#17263c,#102030);}
+
+/* ===== NIGHT STROLL ===== */
+.night-stroll{background:linear-gradient(180deg,#0a0a2e,#1a1040,#2a1850);border-radius:14px;padding:16px;text-align:center;overflow:hidden;}
+.stroll-sky{font-size:1rem;letter-spacing:4px;animation:twinkle 2s ease infinite;}
+@keyframes twinkle{0%,100%{opacity:.7;}50%{opacity:1;}}
+.stroll-lights{font-size:1.2rem;letter-spacing:10px;margin:8px 0;animation:lanternGlow 1.5s ease infinite;}
+@keyframes lanternGlow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
+.stroll-path{margin:10px 0;}.stroll-chars{display:flex;align-items:center;justify-content:center;gap:6px;}
+.stroll-shops{font-size:1.2rem;letter-spacing:8px;opacity:.4;margin-top:8px;}
+
+/* Photo Booth */
+.photo-booth{text-align:center;margin:8px 0;}
+.photo-frame{background:linear-gradient(135deg,#fff8fa,#fff0f5);border:4px solid var(--gold);border-radius:14px;padding:16px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(255,215,0,.3);}
+.photo-props{font-size:2.5rem;margin-top:8px;animation:propBounce .5s ease infinite alternate;}
+@keyframes propBounce{0%{transform:scale(1);}100%{transform:scale(1.1) rotate(5deg);}}
+body.dark .photo-frame{background:linear-gradient(135deg,#2a2a48,#252540);border-color:#c8a020;}
