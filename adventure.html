@@ -313,6 +313,33 @@
     <div class="panel" id="thane-loc-panel" style="width:95vw;max-width:600px;"></div>
 </div>
 
+<!-- ===== NAMO PARK — FLOWER GARDEN (fullscreen canvas) ===== -->
+<div class="screen" id="screen-park-garden">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.35);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopParkGarden();showThaneLocation('grandcentral')">← Park</button>
+        <span class="loc-name" style="color:#fff;">🌺 Flower Garden</span>
+    </div>
+    <canvas id="park-garden-cvs" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;"></canvas>
+</div>
+
+<!-- ===== NAMO PARK — DUCK POND (fullscreen canvas) ===== -->
+<div class="screen" id="screen-park-pond">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.35);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopParkPond();showThaneLocation('grandcentral')">← Park</button>
+        <span class="loc-name" style="color:#fff;">🦆 Upvan Lake</span>
+    </div>
+    <canvas id="park-pond-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+</div>
+
+<!-- ===== THE WALK — NIGHT STROLL (fullscreen canvas) ===== -->
+<div class="screen" id="screen-walk-stroll">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.5);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopWalkStroll();showThaneLocation('thewalk')">← The Walk</button>
+        <span class="loc-name" style="color:#fff;">🌃 Night Stroll</span>
+    </div>
+    <canvas id="walk-stroll-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+</div>
+
 <!-- ===== FOUND CROW ===== -->
 <div class="screen" id="screen-found">
     <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name" id="found-loc">📍</span><span class="companion-found">🐦‍⬛ Together!</span></div>
@@ -333,6 +360,7 @@
 <script src="adv-prudential.js"></script>
 <script src="adv-flight.js"></script>
 <script src="adv-thane.js"></script>
+<script src="adv-thane-canvas.js"></script>
 <script>
     // Boot everything up
     // Draw realistic map
