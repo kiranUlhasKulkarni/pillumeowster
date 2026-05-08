@@ -228,3 +228,175 @@ body.dark #pond-msg{color:#808090;}
 .dir-btn:active{transform:scale(.95);}
 body.dark .dir-btn{border-color:rgba(255,255,255,.2);background:rgba(0,0,0,.5);}
 body.dark .dir-btn.active{background:rgba(200,80,160,.4);border-color:#c850a0;}
+
+/* ===== FLIGHT SYSTEM ===== */
+.airline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+.airline-card{background:var(--card);border:3px solid var(--lpink);border-radius:14px;padding:14px 8px;text-align:center;font-family:inherit;transition:all .2s;position:relative;overflow:hidden;}
+.airline-card:hover{border-color:var(--dpink);transform:translateY(-2px);box-shadow:0 6px 16px var(--shadow);}
+.airline-card:active{transform:scale(.96);}
+.airline-card:nth-child(5){grid-column:1/-1;}
+.airline-logo{width:48px;height:48px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.airline-name{font-weight:900;font-size:.8rem;color:#8b005d;margin-bottom:2px;}
+.airline-flight{font-size:.6rem;font-weight:700;color:#888;}
+.airline-time{font-size:.6rem;font-weight:800;color:var(--dpink);margin-top:2px;}
+body.dark .airline-card{background:#2a2a48;border-color:#3a3058;}.airline-name{color:var(--text);}
+body.dark .airline-card:hover{border-color:#5a4070;background:#353560;}
+body.dark .airline-flight{color:#808090;}
+
+/* Boarding Pass */
+.boarding-pass{margin:6px 0;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.15);background:var(--card);border:2px solid #e0d8d0;}
+.bp-header{padding:12px 16px;display:flex;align-items:center;gap:10px;position:relative;}
+.bp-plane{font-size:2rem;filter:brightness(0) invert(1);opacity:.8;}
+.bp-title{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:900;letter-spacing:2px;}
+.bp-airline-name{position:absolute;right:14px;font-size:.6rem;font-weight:800;opacity:.8;}
+.bp-body{display:flex;}
+.bp-main{flex:1;padding:12px 16px;}
+.bp-row{margin-bottom:6px;}.bp-label{font-size:.55rem;font-weight:900;color:#999;display:block;}.bp-value{font-size:.85rem;font-weight:900;color:#333;}
+.bp-row-2{display:flex;gap:20px;margin-bottom:6px;}.bp-row-2>div{flex:1;}
+.bp-row-3{display:flex;gap:10px;margin:10px 0;}.bp-row-3>div{flex:1;text-align:center;background:#f8f4f0;border-radius:6px;padding:6px 4px;}
+.bp-barcode{display:flex;gap:1px;justify-content:center;margin-top:10px;opacity:.6;}
+.bp-stub{width:120px;border-left:2px dashed #ccc;padding:10px 8px;font-size:.5rem;display:flex;flex-direction:column;gap:4px;}
+.bp-stub-title{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:900;letter-spacing:1px;}
+.bp-stub-row{font-weight:800;color:#666;display:flex;justify-content:space-between;}
+body.dark .boarding-pass{background:#2a2a48;border-color:#3a3058;}
+body.dark .bp-value{color:#d0a0c0;}body.dark .bp-label{color:#808090;}
+body.dark .bp-row-3>div{background:#252540;}body.dark .bp-stub{border-left-color:#3a3058;}
+body.dark .bp-stub-row{color:#a090a0;}
+
+/* Flight Result */
+.flight-result{text-align:center;padding:20px 10px;border-radius:16px;margin:10px 0;}
+.found-result{background:linear-gradient(135deg,#fff8e0,#fff0f5);border:3px solid #ffd700;}
+.solo-result{background:linear-gradient(135deg,#f0f0f0,#e8e0e8);border:3px solid #ccc;}
+.fr-confetti-text{font-size:1.5rem;margin-bottom:6px;animation:bounce .6s ease infinite alternate;}
+@keyframes bounce{0%{transform:translateY(0);}100%{transform:translateY(-8px);}}
+.fr-title{font-family:'Baloo 2',cursive;font-size:1.6rem;margin:6px 0;}
+.found-title{color:#ff1493;}
+.solo-title{color:#888;}
+.fr-chars{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;}
+.fr-sprite{width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);}
+.pika-bounce{animation:pikaBounce 1s ease infinite alternate;}
+.crow-bounce{animation:crowBounce 1s ease .3s infinite alternate;}
+@keyframes pikaBounce{0%{transform:translateY(0) rotate(-5deg);}100%{transform:translateY(-10px) rotate(5deg);}}
+@keyframes crowBounce{0%{transform:translateY(0) rotate(5deg);}100%{transform:translateY(-10px) rotate(-5deg);}}
+.pika-sad{animation:pikaSad 2s ease infinite;}
+@keyframes pikaSad{0%,100%{transform:translateY(0);}50%{transform:translateY(3px);}}
+.fr-heart{font-size:2rem;animation:heartPulse 1s ease infinite;}
+@keyframes heartPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+.fr-empty{font-size:2rem;opacity:.5;}
+.fr-msg{font-size:.85rem;font-weight:800;color:#666;line-height:1.6;margin:8px 0;}
+.solo-msg{color:#999;}
+.fr-sub{font-size:.7rem;font-weight:700;color:#aaa;}
+body.dark .found-result{background:linear-gradient(135deg,#2a2818,#2a2040);border-color:#c8a020;}
+body.dark .solo-result{background:linear-gradient(135deg,#222230,#1a1a28);border-color:#444;}
+body.dark .fr-msg{color:#c0a0b0;}body.dark .solo-msg{color:#808090;}
+
+/* Confetti */
+.flight-confetti-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;top:-10px;animation:confettiFall linear forwards;}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+/* Plane Cabin */
+.plane-cabin{background:linear-gradient(180deg,#e8e4dc,#d8d0c8);border:3px solid #c0b8b0;border-radius:14px;padding:12px 8px;position:relative;overflow:hidden;}
+.cabin-overhead{display:flex;justify-content:space-around;margin-bottom:8px;}
+.overhead-bin{width:60px;height:14px;background:linear-gradient(180deg,#c8c0b8,#b0a8a0);border-radius:0 0 4px 4px;border:1px solid #a8a098;border-top:none;}
+.cabin-aisle{display:flex;flex-direction:column;gap:3px;}
+.seat-row{display:flex;justify-content:center;gap:2px;align-items:center;}
+.aisle-gap{width:20px;}
+.seat{width:34px;height:38px;border-radius:4px 4px 2px 2px;position:relative;display:flex;align-items:center;justify-content:center;}
+.seat.taken{background:linear-gradient(180deg,#6080b0,#5070a0);border:1px solid #4060a0;}
+.seat.taken::after{content:'';position:absolute;top:2px;left:5px;right:5px;height:10px;background:rgba(255,255,255,.4);border-radius:2px;}
+.seat.empty-seat{background:linear-gradient(180deg,#6080b0,#5070a0);border:1px solid #4060a0;opacity:.5;}
+.seat.pika-seat,.seat.crow-seat{background:linear-gradient(180deg,#5878a8,#4868a0);border:2px solid #ffd700;box-shadow:0 0 8px rgba(255,215,0,.4);}
+.seat-sprite{width:28px;height:28px;border-radius:50%;object-fit:cover;}
+.highlight-row{background:rgba(255,215,0,.1);border-radius:6px;padding:2px 4px;}
+.cabin-carpet{height:8px;background:repeating-linear-gradient(90deg,#8b6050 0px,#8b6050 4px,#7a5040 4px,#7a5040 8px);border-radius:0 0 10px 10px;margin-top:4px;}
+body.dark .plane-cabin{background:linear-gradient(180deg,#2a2a40,#222238);border-color:#3a3058;}
+body.dark .overhead-bin{background:linear-gradient(180deg,#3a3858,#2a2848);border-color:#4a4868;}
+body.dark .seat.taken{background:linear-gradient(180deg,#3a4868,#2a3858);border-color:#4a5878;}
+body.dark .cabin-carpet{background:repeating-linear-gradient(90deg,#4a3030 0px,#4a3030 4px,#3a2828 4px,#3a2828 8px);}
+
+/* Meal Menu */
+.meal-grid{display:flex;flex-direction:column;gap:8px;}
+.meal-card{background:var(--card);border:3px solid var(--lpink);border-radius:14px;padding:14px;text-align:center;font-family:inherit;transition:all .2s;}
+.meal-card:hover{border-color:var(--dpink);transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow);}
+.meal-card:active{transform:scale(.97);}
+.meal-emojis{font-size:1.8rem;letter-spacing:6px;margin-bottom:4px;}
+.meal-name{font-weight:900;font-size:.85rem;color:#8b005d;}
+.meal-desc{font-size:.65rem;font-weight:700;color:#888;margin-top:2px;}
+body.dark .meal-card{background:#2a2a48;border-color:#3a3058;}
+body.dark .meal-card:hover{border-color:#5a4070;background:#353560;}
+body.dark .meal-name{color:#d0a0c0;}body.dark .meal-desc{color:#808090;}
+
+/* Food Tray */
+.food-tray{background:linear-gradient(135deg,#f0e8e0,#e8dcd0);border:3px solid #d0c4b8;border-radius:14px;padding:14px;margin:10px 0;}
+.tray-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
+.tray-item{background:rgba(255,255,255,.7);border:2px solid #e0d4c8;border-radius:10px;padding:8px 4px;text-align:center;}
+.tray-item.main-dish{grid-column:1/-1;background:rgba(255,255,255,.9);border-color:#d0b898;}
+.tray-emoji{font-size:1.8rem;}.tray-name{font-size:.6rem;font-weight:800;color:#888;margin-top:2px;}
+.tray-cutlery{text-align:right;font-size:.9rem;letter-spacing:4px;opacity:.6;margin-top:4px;}
+.tray-napkin{text-align:center;font-size:.55rem;font-weight:800;color:#b0a090;margin-top:4px;}
+body.dark .food-tray{background:linear-gradient(135deg,#2a2840,#252538);border-color:#3a3058;}
+body.dark .tray-item{background:rgba(50,50,80,.5);border-color:#3a3058;}
+body.dark .tray-name{color:#a090a0;}
+
+/* Drink Menu */
+.drink-menu{display:flex;flex-direction:column;gap:10px;}
+.drink-category{margin-bottom:4px;}
+.drink-cat-title{font-size:.7rem;font-weight:900;color:#8b005d;margin-bottom:4px;padding-left:4px;}
+.drink-cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+.drink-option{background:var(--card);border:2px solid var(--lpink);border-radius:8px;padding:8px 4px;text-align:center;font-family:inherit;font-size:.6rem;font-weight:700;transition:all .15s;}
+.drink-option:hover{border-color:var(--dpink);transform:translateY(-1px);}
+.drink-option:active{transform:scale(.95);}
+.drink-emoji{display:block;font-size:1.1rem;margin-bottom:2px;}
+.drink-label{color:#8b005d;font-weight:800;}
+body.dark .drink-option{background:#2a2a48;border-color:#3a3058;}
+body.dark .drink-option:hover{border-color:#5a4070;}
+body.dark .drink-cat-title{color:#d0a0c0;}
+body.dark .drink-label{color:#c0a0b0;}
+
+/* Drink Served Visual */
+.drink-served{text-align:center;padding:16px;border-radius:14px;margin:10px 0;}
+.normal-served{background:linear-gradient(135deg,#f8f0e8,#fff0f5);border:2px solid var(--lpink);}
+.alcohol-served{background:linear-gradient(135deg,#fff0f5,#ffe0ec);border:3px solid #ff69b4;border-radius:16px;padding:20px;}
+.alcohol-reaction{margin-bottom:12px;}
+.alcohol-title{font-family:'Baloo 2',cursive;font-size:1.3rem;color:#ff1493;margin:8px 0;}
+.alcohol-msg{font-size:.8rem;font-weight:700;color:#8b005d;line-height:1.7;}
+.drink-visual{margin:10px 0;}
+.served-drink-icon{margin:0 auto;width:80px;height:100px;position:relative;}
+.served-drink-name{font-size:.8rem;font-weight:900;color:var(--dpink);margin-top:6px;}
+body.dark .normal-served{background:linear-gradient(135deg,#252540,#2a2048);border-color:#3a3058;}
+body.dark .alcohol-served{background:linear-gradient(135deg,#2a2040,#351840);border-color:#c850a0;}
+body.dark .alcohol-title{color:#e880c0;}.alcohol-msg{color:var(--text);}
+
+/* Drink cup visuals */
+.drink-cup{width:50px;height:70px;margin:0 auto;position:relative;display:flex;align-items:flex-end;justify-content:center;}
+.juice-cup{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.15));border:2px solid #d0c8c0;border-radius:4px 4px 8px 8px;overflow:hidden;}
+.juice-fill{position:absolute;bottom:0;left:2px;right:2px;height:70%;border-radius:0 0 6px 6px;transition:height .3s;}
+.juice-label{position:relative;z-index:1;font-size:1.2rem;margin-bottom:6px;}
+.soda-cup{background:linear-gradient(180deg,#f8f4f0,#e8e0d8);border:2px solid #d0c0b0;border-radius:3px 3px 6px 6px;overflow:hidden;}
+.soda-fill{position:absolute;bottom:0;left:2px;right:2px;height:75%;border-radius:0 0 4px 4px;}
+.pepsi-fill{background:linear-gradient(180deg,#1a0a00,#3a2010);}
+.cola-fill{background:linear-gradient(180deg,#2a0a00,#4a1810);}
+.fanta-fill{background:linear-gradient(180deg,#e88020,#d06010);}
+.soda-bubbles{position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:.5rem;color:rgba(255,255,255,.5);letter-spacing:2px;}
+.hot-cup{background:#f0e8e0;border:2px solid #c8b8a8;border-radius:3px;overflow:hidden;position:relative;}
+.hot-steam{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:#ccc;animation:steamFloat 1.5s ease infinite;}
+@keyframes steamFloat{0%{opacity:.3;transform:translateX(-50%) translateY(0);}100%{opacity:0;transform:translateX(-50%) translateY(-8px);}}
+.hot-fill{position:absolute;bottom:0;left:2px;right:2px;height:70%;border-radius:0 0 2px 2px;}
+.tea-tag{position:absolute;right:-8px;top:15px;font-size:.6rem;}
+.wine-glass{background:transparent;border:none;display:flex;flex-direction:column;align-items:center;}
+.wine-glass::before{content:'';display:block;width:40px;height:45px;border:2px solid #d0c0b0;border-radius:0 0 50% 50%;overflow:hidden;position:relative;background:rgba(255,255,255,.1);}
+.wine-fill{width:36px;height:25px;border-radius:0 0 50% 50%;margin-top:auto;}
+
+/* Landing Screen */
+.landing-screen{text-align:center;padding:20px;position:relative;}
+.landing-plane{font-size:3rem;animation:landingPlane 2s ease-out forwards;}
+@keyframes landingPlane{0%{transform:translateX(-80px) translateY(-30px) rotate(-10deg);opacity:0;}100%{transform:translateX(0) translateY(0) rotate(0deg);opacity:1;}}
+.landing-city{font-size:2rem;margin:6px 0;}
+.landing-title{font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--dpink);}
+.landing-chars{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0;}
+.landing-sprite{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);}
+
+/* ===== THANE MAP ===== */
+.thane-map-wrap{width:95vw;max-width:600px;height:480px;border-radius:18px;overflow:hidden;border:4px solid var(--lpink);box-shadow:0 8px 30px var(--shadow);position:relative;background:#f2efe9;}
+body.dark .thane-map-wrap{border-color:#3a3058;background:#242f3e;}
