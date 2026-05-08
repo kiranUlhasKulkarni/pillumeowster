@@ -12,9 +12,15 @@ function drawChar(c, img, x, y, sz) {
 }
 
 function setupCvs(cvs, w, h) {
-    cvs.width = w; cvs.height = h;
+    // DPR-aware: size canvas to fill its container at full pixel resolution
+    var rect = cvs.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var rw = rect.width || w, rh = rect.height || h;
+    cvs.width = Math.round(rw * dpr);
+    cvs.height = Math.round(rh * dpr);
     var ctx = cvs.getContext('2d');
-    return { ctx: ctx, W: w, H: h };
+    ctx.scale(dpr, dpr);
+    return { ctx: ctx, W: Math.round(rw), H: Math.round(rh) };
 }
 
 // =============================================
