@@ -58,8 +58,9 @@ function initSkywalk(){
     SK.cvs=document.getElementById('skywalk-cvs');
     if(!SK.cvs)return;
     SK.cvs.width=800;SK.cvs.height=600;
-    SK.ctx=SK.cvs.getContext('2d');
-    SK.W=800;SK.H=600;
+    var _sk=setupCvs(SK.cvs,800,600);
+    SK.ctx=_sk.ctx;
+    SK.W=_sk.W;SK.H=_sk.H;
     SK.t=0;SK.dir='N';
     var dd=document.getElementById('sky-dir');
     dd.innerHTML='';
@@ -235,8 +236,9 @@ function initStargaze(){
     SG.cvs=document.getElementById('star-cvs');
     if(!SG.cvs)return;
     SG.cvs.width=800;SG.cvs.height=640;
-    SG.ctx=SG.cvs.getContext('2d');
-    SG.W=800;SG.H=640;
+    var _sg=setupCvs(SG.cvs,800,640);
+    SG.ctx=_sg.ctx;
+    SG.W=_sg.W;SG.H=_sg.H;
     SG.t=0;SG.traced=[];SG.tracing=null;SG.selected=[];SG.fallers=[];
 
     SG.nebulae=[];
