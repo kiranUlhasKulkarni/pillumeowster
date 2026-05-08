@@ -340,6 +340,33 @@
     <canvas id="walk-stroll-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
 </div>
 
+<!-- ===== NAMO PARK — SUNSET POINT (fullscreen canvas) ===== -->
+<div class="screen" id="screen-park-sunset">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.25);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopParkSunset();showThaneLocation('grandcentral')">← Park</button>
+        <span class="loc-name" style="color:#fff;">🌅 Sunset Point</span>
+    </div>
+    <canvas id="park-sunset-cvs" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+</div>
+
+<!-- ===== NAMO PARK — FITNESS ZONE (fullscreen canvas) ===== -->
+<div class="screen" id="screen-park-fitness">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.3);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopParkFitness();showThaneLocation('grandcentral')">← Park</button>
+        <span class="loc-name" style="color:#fff;">💪 Fitness Zone</span>
+    </div>
+    <canvas id="park-fitness-cvs" style="position:absolute;inset:0;width:100%;height:100%;cursor:pointer;"></canvas>
+</div>
+
+<!-- ===== NAMO PARK — BOAT RIDE (fullscreen canvas) ===== -->
+<div class="screen" id="screen-park-boat">
+    <div class="top-bar" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(0,0,0,.3);border:none;">
+        <button class="back-btn" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff;" onclick="stopParkBoat();showThaneLocation('grandcentral')">← Park</button>
+        <span class="loc-name" style="color:#fff;">🚣 Boat Ride</span>
+    </div>
+    <canvas id="park-boat-cvs" style="position:absolute;inset:0;width:100%;height:100%;cursor:pointer;"></canvas>
+</div>
+
 <!-- ===== FOUND CROW ===== -->
 <div class="screen" id="screen-found">
     <div class="top-bar"><button class="back-btn" onclick="goMap()">← Map</button><span class="loc-name" id="found-loc">📍</span><span class="companion-found">🐦‍⬛ Together!</span></div>
