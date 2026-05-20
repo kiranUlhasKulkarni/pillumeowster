@@ -177,7 +177,10 @@ var G = {
     dice: [0,0],
     rolled: false,
     builtThisTurn: false,
-    log: []
+    log: [],
+    // FLAT BUILDING REGISTRY — the single source of truth for resource distribution
+    // Each entry: {vertIdx, player, type, adjacentHexes:[hexIdx,...]}
+    buildings: []
 };
 
 var cvs, ctx, CW, CH, hexSize;
@@ -196,9 +199,7 @@ function initGame() {
         var n = 0;
         if (t !== 'desert') { n = nums[ni]; ni++; }
         else { G.robber = i; }
-        G.hexes.push({ q: HEX_LAYOUT[i].q, r: HEX_LAYOUT[i].r, type: t, num: n, idx: i,
-            slots: [{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null}] // p=player, b=building type
-        });
+        G.hexes.push({ q: HEX_LAYOUT[i].q, r: HEX_LAYOUT[i].r, type: t, num: n, idx: i });
     }
     // Generate vertices and edges
     generateGraph();
@@ -222,6 +223,7 @@ function initGame() {
     G.dice = [0,0];
     G.rolled = false;
     G.log = [];
+    G.buildings = [];
     log('🏝️ Welcome to Pika-tan! Place your first settlement.');
     setupCanvas();
     render();
@@ -347,39 +349,61 @@ function setupCanvasSize() {
     hexSize = Math.min(CW / 10.5, CH / 8.5);
 }
 
-// Called whenever a building is placed or upgraded on a vertex
-// Updates ALL adjacent hexes' slot arrays
-function updateHexSlots(vertIdx, player, buildingType) {
+// Register a building — finds ALL adjacent hexes by brute-force distance check
+function registerBuilding(vertIdx, player, buildingType) {
     var v = G.verts[vertIdx];
     v.building = buildingType;
     v.player = player;
-    // For every hex this vertex touches, find which corner it is and update the slot
-    for (var hi = 0; hi < v.hexes.length; hi++) {
-        var hexIdx = v.hexes[hi];
-        var hex = G.hexes[hexIdx];
-        for (var ci = 0; ci < 6; ci++) {
-            if (hex.corners[ci] === vertIdx) {
-                hex.slots[ci] = { p: player, b: buildingType };
-                break;
-            }
-        }
-    }
-}
 
-// Distribute resources for a given dice sum — uses hex.slots directly
-function distributeResources(sum) {
+    // Find which hexes this vertex touches
+    var adjHexes = [];
     for (var hi = 0; hi < G.hexes.length; hi++) {
         var hex = G.hexes[hi];
-        if (hex.num !== sum || G.robber === hi || hex.type === 'desert') continue;
+        var hc = hexCenter(hex.q, hex.r);
         for (var ci = 0; ci < 6; ci++) {
-            var slot = hex.slots[ci];
-            if (slot.b && slot.p >= 0) {
-                var amt = slot.b === 'city' ? 2 : 1;
-                G.players[slot.p].res[hex.type] += amt;
-                log(pName(slot.p) + ' got ' + amt + '× ' + RES_E[hex.type] + ' from ' + slot.b + ' on ' + hex.num);
+            var pt = hexCorner(hc.x, hc.y, ci);
+            if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
+                adjHexes.push(hi);
+                break; // found match for this hex, move to next
             }
         }
     }
+
+    // Check if building already exists for this vertex (upgrade case)
+    var existing = null;
+    for (var bi = 0; bi < G.buildings.length; bi++) {
+        if (G.buildings[bi].vertIdx === vertIdx) { existing = G.buildings[bi]; break; }
+    }
+
+    if (existing) {
+        existing.type = buildingType;
+        existing.player = player;
+        existing.adjacentHexes = adjHexes;
+    } else {
+        G.buildings.push({ vertIdx: vertIdx, player: player, type: buildingType, adjacentHexes: adjHexes });
+    }
+
+    log('📍 ' + pName(player) + ' ' + buildingType + ' registered on ' + adjHexes.length + ' hexes: ' +
+        adjHexes.map(function(hi) { return RES_E[G.hexes[hi].type] + G.hexes[hi].num; }).join(', '));
+}
+
+// DISTRIBUTE RESOURCES — dead simple, loops flat buildings list
+function distributeResources(sum) {
+    var gave = false;
+    for (var bi = 0; bi < G.buildings.length; bi++) {
+        var b = G.buildings[bi];
+        for (var ai = 0; ai < b.adjacentHexes.length; ai++) {
+            var hi = b.adjacentHexes[ai];
+            var hex = G.hexes[hi];
+            if (hex.num === sum && hex.type !== 'desert' && G.robber !== hi) {
+                var amt = b.type === 'city' ? 2 : 1;
+                G.players[b.player].res[hex.type] += amt;
+                log(pName(b.player) + ' +' + amt + ' ' + RES_E[hex.type] + ' (from ' + hex.num + ')');
+                gave = true;
+            }
+        }
+    }
+    if (!gave) log('No buildings on ' + sum + ' — no resources.');
 }
 
 function setupCanvas() {
@@ -600,7 +624,7 @@ function handleSetupClick(mx, my) {
         // Place settlement
         var best = findClosestVert(mx, my, hexSize * .3);
         if (best >= 0 && canPlaceSetup(best)) {
-            updateHexSlots(best, G.turn, 'settlement');
+            registerBuilding(best, G.turn, 'settlement');
             G.players[G.turn].settlements++;
             log(pName(G.turn) + ' placed a settlement.');
             // In setup2, give resources from adjacent hexes
@@ -730,7 +754,7 @@ function handleRobberClick(mx, my) {
             log('🥷 Robber moved to ' + RES_E[h.type] + ' ' + h.num);
             // Steal from opponent if they have a building there
             var opp = 1 - G.turn;
-            var canSteal = h.slots && h.slots.some(function(s) { return s.p === opp && s.b; });
+            var canSteal = G.buildings.some(function(b) { return b.adjacentHexes.indexOf(hi) >= 0 && b.player === opp; });
             if (canSteal && totalRes(opp) > 0) {
                 var owned = RES.filter(function(r) { return G.players[opp].res[r] > 0; });
                 if (owned.length > 0) {
@@ -782,7 +806,7 @@ function buildSettlement() {
         var vi = findClosestVert(mx, my, hexSize * .3);
         if (vi >= 0 && canBuildSettlement(vi, 0)) {
             pay(0, BUILD_COST.settlement);
-            updateHexSlots(vi, 0, 'settlement');
+            registerBuilding(vi, 0, 'settlement');
             G.players[0].settlements++;
             log('⚡ Pika built a settlement!');
             G.phase = 'build';
@@ -805,7 +829,7 @@ function buildCity() {
         var vi = findClosestVert(mx, my, hexSize * .3);
         if (vi >= 0 && G.verts[vi].building === 'settlement' && G.verts[vi].player === 0) {
             pay(0, BUILD_COST.city);
-            updateHexSlots(vi, 0, 'city');
+            registerBuilding(vi, 0, 'city');
             G.players[0].settlements--;
             G.players[0].cities++;
             log('⚡ Pika upgraded to a city!');
@@ -1121,8 +1145,8 @@ function botTurn() {
         for (var hi = 0; hi < G.hexes.length; hi++) {
             if (hi === G.robber || G.hexes[hi].type === 'desert') continue;
             var score = 0;
-            if (G.hexes[hi].slots) G.hexes[hi].slots.forEach(function(s) {
-                if (s.p === 0 && s.b) score += probDots(G.hexes[hi].num) + 1;
+            G.buildings.forEach(function(b) {
+                if (b.player === 0 && b.adjacentHexes.indexOf(hi) >= 0) score += probDots(G.hexes[hi].num) + 1;
             });
             if (score > bestScore) { bestScore = score; bestHex = hi; }
         }
@@ -1165,7 +1189,7 @@ function botBuild() {
         for (var vi = 0; vi < G.verts.length; vi++) {
             if (G.verts[vi].player === p && G.verts[vi].building === 'settlement') {
                 pay(p, BUILD_COST.city);
-                updateHexSlots(vi, p, 'city');
+                registerBuilding(vi, p, 'city');
                 G.players[p].settlements--; G.players[p].cities++;
                 log('🐦‍⬛ Crow upgraded to a city!');
                 break;
@@ -1177,7 +1201,7 @@ function botBuild() {
         for (var vi = 0; vi < G.verts.length; vi++) {
             if (canBuildSettlement(vi, p)) {
                 pay(p, BUILD_COST.settlement);
-                updateHexSlots(vi, p, 'settlement');
+                registerBuilding(vi, p, 'settlement');
                 G.players[p].settlements++;
                 log('🐦‍⬛ Crow built a settlement!');
                 break;
@@ -1228,7 +1252,7 @@ function botSetup() {
         if (score > bestScore) { bestScore = score; bestV = vi; }
     }
     if (bestV >= 0) {
-        updateHexSlots(bestV, 1, 'settlement');
+        registerBuilding(bestV, 1, 'settlement');
         G.players[1].settlements++;
         log('🐦‍⬛ Crow placed a settlement.');
         if (G.phase === 'setup2') {
