@@ -54,6 +54,25 @@ body.dark .log-box{background:rgba(255,255,255,.03);color:#888;}
 .score-bar{display:flex;gap:8px;justify-content:center;margin:6px 0;font-weight:800;font-size:.7rem;}
 .score-item{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);}
 .score-item.active{border-color:var(--accent);background:rgba(212,136,58,.08);box-shadow:0 0 8px rgba(212,136,58,.2);}
+/* VP detail panel */
+.vp-panel{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px;margin:6px 0;width:min(95vw,420px);box-shadow:0 2px 8px var(--shadow);}
+.vp-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:.6rem;font-weight:700;border-bottom:1px solid rgba(0,0,0,.04);}
+.vp-row:last-child{border-bottom:none;}
+.vp-row .vp-label{color:#888;}.vp-row .vp-val{font-weight:900;color:var(--accent);}
+.vp-total{font-size:.8rem;font-weight:900;color:var(--accent);text-align:center;margin-top:4px;padding-top:4px;border-top:2px solid var(--border);}
+/* Start screen */
+.start-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;}
+.start-screen h1{font-family:'Baloo 2',cursive;font-size:2rem;color:var(--accent);}
+.start-screen p{font-size:.75rem;font-weight:700;color:#888;max-width:300px;}
+.mode-btn{padding:14px 24px;border-radius:14px;border:3px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;transition:all .2s;color:var(--text);min-width:200px;}
+.mode-btn:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow);}
+.mode-btn:active{transform:scale(.97);}
+.mode-btn .me{display:block;font-size:1.5rem;margin-bottom:4px;}
+/* Special cards */
+.special-card{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-size:.55rem;font-weight:800;color:#888;flex:1;min-width:140px;}
+.special-card.owned-p1{border-color:var(--gold);background:rgba(212,160,32,.08);}.special-card.owned-p1 .sc-val{color:var(--gold);}
+.special-card.owned-p2{border-color:#666;background:rgba(100,100,100,.08);}.special-card.owned-p2 .sc-val{color:#666;}
+.sc-val{font-weight:900;font-size:.55rem;color:#aaa;text-align:right;}
 /* Dev cards */
 .dev-cards{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin:4px 0;}
 .dev-card{padding:4px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-size:.55rem;font-weight:800;cursor:pointer;transition:all .15s;}
@@ -81,11 +100,60 @@ body.dark .log-box{background:rgba(255,255,255,.03);color:#888;}
     </div>
 </div>
 
-<div class="game-wrap">
+<!-- Start Screen -->
+<div class="start-screen" id="start-screen">
+    <h1>🏝️ Pika-tan</h1>
+    <p>Settlers of Catan — Pillu & Crow Edition!<br>First to <b>10 Victory Points</b> wins!</p>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+        <img src="pikachu.png" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);">
+        <span style="font-size:1.5rem;align-self:center;">⚔️</span>
+        <img src="crow.png" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid #666;">
+    </div>
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <button class="mode-btn" onclick="startGame(false)"><span class="me">🤖</span>vs Crow Bot</button>
+        <button class="mode-btn" onclick="startGame(true)"><span class="me">👥</span>Pass & Play (2 Players)</button>
+    </div>
+    <div style="font-size:.55rem;color:#aaa;margin-top:12px;">
+        <button onclick="toggleDark()" style="padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.6rem;cursor:pointer;color:var(--text);">🌙 Theme</button>
+        <button onclick="showRules()" style="padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.6rem;cursor:pointer;color:var(--text);">📖 Rules</button>
+    </div>
+</div>
+
+<div class="game-wrap" id="game-wrap" style="display:none;">
     <!-- Score -->
     <div class="score-bar">
         <div class="score-item" id="score-p1"><img src="pikachu.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover;"> ⚡ <span id="vp-p1">0</span>/10</div>
         <div class="score-item" id="score-p2"><img src="crow.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover;"> 🐦‍⬛ <span id="vp-p2">0</span>/10</div>
+        <span id="mode-label" style="font-size:.5rem;font-weight:800;color:#aaa;align-self:center;">🤖 vs Bot</span>
+    </div>
+
+    <!-- Special Cards -->
+    <div class="panel" style="padding:6px 10px;">
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;" id="special-cards">
+            <div class="special-card" id="sc-road"><span>🛤️ Longest Road</span><span id="sc-road-val" class="sc-val">— (need 5+)</span></div>
+            <div class="special-card" id="sc-army"><span>🥷 Largest Army</span><span id="sc-army-val" class="sc-val">— (need 3+)</span></div>
+        </div>
+    </div>
+
+    <!-- VP Detail (collapsible) -->
+    <div class="vp-panel">
+        <div class="panel-title" style="cursor:pointer;" onclick="document.getElementById('vp-detail').style.display=document.getElementById('vp-detail').style.display==='none'?'block':'none'">🏆 Victory Points Breakdown <span style="font-size:.55rem;color:#aaa;">(tap)</span></div>
+        <div id="vp-detail" style="display:none;">
+            <div style="display:flex;gap:8px;">
+                <div style="flex:1;">
+                    <div style="text-align:center;font-weight:900;font-size:.65rem;color:var(--gold);margin-bottom:4px;">⚡ Pika</div>
+                    <div id="vp-detail-p1"></div>
+                    <div class="vp-total" id="vp-total-p1">0 / 10 VP</div>
+                </div>
+                <div style="width:1px;background:var(--border);"></div>
+                <div style="flex:1;">
+                    <div style="text-align:center;font-weight:900;font-size:.65rem;color:#888;margin-bottom:4px;">🐦‍⬛ Crow</div>
+                    <div id="vp-detail-p2"></div>
+                    <div class="vp-total" id="vp-total-p2">0 / 10 VP</div>
+                </div>
+            </div>
+            <div style="text-align:center;font-size:.55rem;color:#aaa;margin-top:6px;">🏆 First to <b>10 VP</b> wins!</div>
+        </div>
     </div>
 
     <!-- Board -->
@@ -115,8 +183,38 @@ body.dark .log-box{background:rgba(255,255,255,.03);color:#888;}
 
     <!-- Dev cards -->
     <div class="panel" id="dev-panel" style="display:none;">
-        <div class="panel-title">🃏 Development Cards</div>
+        <div class="panel-title">🃏 Your Development Cards</div>
         <div class="dev-cards" id="dev-cards"></div>
+    </div>
+
+    <!-- Dev Card Guide -->
+    <div class="panel">
+        <div class="panel-title" style="cursor:pointer;" onclick="document.getElementById('dev-guide').style.display=document.getElementById('dev-guide').style.display==='none'?'block':'none'">🃏 Dev Card Guide <span style="font-size:.6rem;color:#aaa;">(tap to expand)</span></div>
+        <div id="dev-guide" style="display:none;font-size:.6rem;line-height:1.8;color:#888;">
+            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
+                <b style="color:var(--accent);">🥷 Knight × 14</b><br>
+                Move the robber to any hex. Block that hex's production and steal 1 random resource from a player with a building there. Playing 3+ Knights (most of any player) earns <b>Largest Army = 2 VP</b>.
+            </div>
+            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
+                <b style="color:var(--accent);">🎉 Victory Point × 5</b><br>
+                Worth 1 VP each. Kept secret until you win. Auto-counted in your score — no need to play them.
+            </div>
+            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
+                <b style="color:var(--accent);">🛤️ Road Building × 2</b><br>
+                Build 2 roads for free immediately. Great for racing toward Longest Road (5+ continuous roads = 2 VP).
+            </div>
+            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
+                <b style="color:var(--accent);">🎁 Year of Plenty × 2</b><br>
+                Take any 2 resources of your choice from the bank. Can pick 2 of the same or 2 different.
+            </div>
+            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
+                <b style="color:var(--accent);">💰 Monopoly × 2</b><br>
+                Name 1 resource type. ALL other players must give you every card of that type they own. Devastating if timed right!
+            </div>
+            <div style="margin-top:8px;font-size:.55rem;color:#aaa;text-align:center;">
+                <b>Cost to buy:</b> ⛰️ Ore + 🐑 Sheep + 🌾 Wheat &nbsp;|&nbsp; <b>25 cards total in deck</b>
+            </div>
+        </div>
     </div>
 
     <!-- Log -->
@@ -186,6 +284,15 @@ var G = {
 var cvs, ctx, CW, CH, hexSize;
 var pikaImg = new Image(), crowImg = new Image();
 pikaImg.src = 'pikachu.png'; crowImg.src = 'crow.png';
+var passAndPlay = false;
+
+function startGame(isPassAndPlay) {
+    passAndPlay = isPassAndPlay;
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('game-wrap').style.display = '';
+    document.getElementById('mode-label').innerText = isPassAndPlay ? '👥 Pass & Play' : '🤖 vs Bot';
+    initGame();
+}
 
 // ---- INIT ----
 function initGame() {
@@ -217,6 +324,8 @@ function initGame() {
         G.players[p].largestArmy = false;
         G.players[p].vp = 0;
     }
+    G.players[0].isBot = false;
+    G.players[1].isBot = !passAndPlay;
     G.phase = 'setup1';
     G.turn = 0;
     G.setupPlacements = 0;
@@ -607,7 +716,7 @@ function probDots(n) { return [0, 0, 1, 2, 3, 4, 5, 0, 5, 4, 3, 2, 1][n] || 0; }
 
 // ---- CLICK HANDLING ----
 function handleClick(mx, my) {
-    if (G.turn === 1 && G.players[1].isBot) return; // Bot's turn
+    if (G.turn === 1 && G.players[1].isBot) return; // Bot's turn, ignore clicks
     
     if (G.phase === 'setup1' || G.phase === 'setup2') {
         handleSetupClick(mx, my);
@@ -704,7 +813,8 @@ function canPlaceSetup(vi) {
 
 // ---- MAIN GAME ACTIONS ----
 function rollDice() {
-    if (G.phase !== 'roll' || G.turn !== 0) return;
+    if (G.phase !== 'roll') return;
+    if (G.players[G.turn].isBot) return; // bot rolls in botTurn
     var d1 = 1 + ~~(Math.random() * 6), d2 = 1 + ~~(Math.random() * 6);
     G.dice = [d1, d2]; G.rolled = true;
     var sum = d1 + d2;
@@ -773,8 +883,8 @@ function handleRobberClick(mx, my) {
 }
 
 function buildRoad() {
-    if (G.phase !== 'build' || G.turn !== 0) return;
-    if (!canAfford(0, BUILD_COST.road)) { log('❌ Not enough resources for a road.'); return; }
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
+    if (!canAfford(G.turn, BUILD_COST.road)) { log('❌ Not enough resources for a road.'); return; }
     // Check if any valid edge exists
     var hasValid = G.edges.some(function(e) { return e.player < 0 && isConnected(e.idx, 0); });
     if (!hasValid) { log('❌ No valid road spots! Build more settlements first.'); return; }
@@ -784,10 +894,10 @@ function buildRoad() {
         var rect = cvs.getBoundingClientRect();
         var mx = e.clientX - rect.left, my = e.clientY - rect.top;
         var ei = findClosestEdge(mx, my, hexSize * .25);
-        if (ei >= 0 && G.edges[ei].player < 0 && isConnected(ei, 0)) {
-            pay(0, BUILD_COST.road);
-            G.edges[ei].player = 0;
-            G.players[0].roads++;
+        if (ei >= 0 && G.edges[ei].player < 0 && isConnected(ei, G.turn)) {
+            pay(G.turn, BUILD_COST.road);
+            G.edges[ei].player = G.turn;
+            G.players[G.turn].roads++;
             log('⚡ Pika built a road.');
             checkLongestRoad();
             G.phase = 'build';
@@ -803,12 +913,12 @@ function buildRoad() {
 }
 
 function buildSettlement() {
-    if (G.phase !== 'build' || G.turn !== 0) return;
-    if (!canAfford(0, BUILD_COST.settlement)) { log('❌ Not enough resources.'); return; }
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
+    if (!canAfford(G.turn, BUILD_COST.settlement)) { log('❌ Not enough resources.'); return; }
     // Check if any valid vertex exists
     var hasValid = false;
     for (var vi = 0; vi < G.verts.length; vi++) {
-        if (canBuildSettlement(vi, 0)) { hasValid = true; break; }
+        if (canBuildSettlement(vi, G.turn)) { hasValid = true; break; }
     }
     if (!hasValid) { log('❌ No valid settlement spots! You need connected roads with open intersections.'); return; }
     log('🏠 Click a vertex to build. (Click empty to cancel)');
@@ -817,10 +927,10 @@ function buildSettlement() {
         var rect = cvs.getBoundingClientRect();
         var mx = e.clientX - rect.left, my = e.clientY - rect.top;
         var vi = findClosestVert(mx, my, hexSize * .3);
-        if (vi >= 0 && canBuildSettlement(vi, 0)) {
-            pay(0, BUILD_COST.settlement);
-            registerBuilding(vi, 0, 'settlement');
-            G.players[0].settlements++;
+        if (vi >= 0 && canBuildSettlement(vi, G.turn)) {
+            pay(G.turn, BUILD_COST.settlement);
+            registerBuilding(vi, G.turn, 'settlement');
+            G.players[G.turn].settlements++;
             log('⚡ Pika built a settlement!');
             G.phase = 'build';
             restoreClickHandler();
@@ -834,8 +944,8 @@ function buildSettlement() {
 }
 
 function buildCity() {
-    if (G.phase !== 'build' || G.turn !== 0) return;
-    if (!canAfford(0, BUILD_COST.city)) { log('❌ Not enough resources.'); return; }
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
+    if (!canAfford(G.turn, BUILD_COST.city)) { log('❌ Not enough resources.'); return; }
     // Check if player has any settlements to upgrade
     var hasSettlement = G.verts.some(function(v) { return v.building === 'settlement' && v.player === 0; });
     if (!hasSettlement) { log('❌ No settlements to upgrade! Build a settlement first.'); return; }
@@ -845,11 +955,11 @@ function buildCity() {
         var rect = cvs.getBoundingClientRect();
         var mx = e.clientX - rect.left, my = e.clientY - rect.top;
         var vi = findClosestVert(mx, my, hexSize * .3);
-        if (vi >= 0 && G.verts[vi].building === 'settlement' && G.verts[vi].player === 0) {
-            pay(0, BUILD_COST.city);
-            registerBuilding(vi, 0, 'city');
-            G.players[0].settlements--;
-            G.players[0].cities++;
+        if (vi >= 0 && G.verts[vi].building === 'settlement' && G.verts[vi].player === G.turn) {
+            pay(G.turn, BUILD_COST.city);
+            registerBuilding(vi, G.turn, 'city');
+            G.players[G.turn].settlements--;
+            G.players[G.turn].cities++;
             log('⚡ Pika upgraded to a city!');
             G.phase = 'build';
             restoreClickHandler();
@@ -870,12 +980,12 @@ function cancelPlacement() {
 }
 
 function buyDevCard() {
-    if (G.phase !== 'build' || G.turn !== 0) return;
-    if (!canAfford(0, BUILD_COST.devcard)) { log('❌ Not enough resources.'); return; }
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
+    if (!canAfford(G.turn, BUILD_COST.devcard)) { log('❌ Not enough resources.'); return; }
     if (G.devDeck.length === 0) { log('❌ No dev cards left!'); return; }
-    pay(0, BUILD_COST.devcard);
+    pay(G.turn, BUILD_COST.devcard);
     var card = G.devDeck.pop();
-    G.players[0].devCards.push(card);
+    G.players[G.turn].devCards.push(card);
     if (card === 'vp') {
         log('⚡ Pika got a Victory Point card! 🎉');
     } else {
@@ -886,21 +996,21 @@ function buyDevCard() {
 }
 
 function playDevCard(idx) {
-    if (G.phase !== 'build' || G.turn !== 0) return;
-    var card = G.players[0].devCards[idx];
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
+    var card = G.players[G.turn].devCards[idx];
     if (card === 'vp') { log('VP cards are auto-counted!'); return; }
-    G.players[0].devCards.splice(idx, 1);
+    G.players[G.turn].devCards.splice(idx, 1);
     
     if (card === 'knight') {
-        G.players[0].usedKnights++;
+        G.players[G.turn].usedKnights++;
         log('⚡ Pika played a Knight! 🥷 Move the robber.');
         checkLargestArmy();
         G.phase = 'robber';
         render();
     } else if (card === 'roadbuild') {
         // Give 2 free roads
-        G.players[0].res.wood += 2;
-        G.players[0].res.brick += 2;
+        G.players[G.turn].res.wood += 2;
+        G.players[G.turn].res.brick += 2;
         log('⚡ Road Building! Got 2 free road resources.');
         render();
     } else if (card === 'yearofplenty') {
@@ -913,22 +1023,23 @@ function playDevCard(idx) {
 
 function endTurn() {
     if (G.phase !== 'build') return;
-    G.turn = 1;
+    var nextPlayer = 1 - G.turn;
+    G.turn = nextPlayer;
     G.phase = 'roll';
     G.rolled = false;
-    log('🐦‍⬛ Crow\'s turn...');
+    log(pName(G.turn) + '\'s turn' + (G.players[G.turn].isBot ? '...' : ' — roll the dice!'));
     render();
-    setTimeout(botTurn, 800);
+    if (G.players[G.turn].isBot) setTimeout(botTurn, 800);
 }
 
 // ---- TRADING ----
 function openTrade() {
-    if (G.phase !== 'build' || G.turn !== 0) return;
+    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
     var m = document.getElementById('modal');
     var h = '<h2>🤝 Trade with Bank</h2>';
     h += '<p>4:1 exchange (or 3:1 if you have a port)</p>';
     h += '<div class="trade-row">Give: <select id="trade-give">';
-    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + ' (' + G.players[0].res[r] + ')</option>'; });
+    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + ' (' + G.players[G.turn].res[r] + ')</option>'; });
     h += '</select></div>';
     h += '<div class="trade-row">Get: <select id="trade-get">';
     RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + '</option>'; });
@@ -942,9 +1053,9 @@ function executeTrade() {
     var give = document.getElementById('trade-give').value;
     var get = document.getElementById('trade-get').value;
     if (give === get) { alert('Can\'t trade same resource!'); return; }
-    if (G.players[0].res[give] < 4) { alert('Need 4 ' + give + ' to trade!'); return; }
-    G.players[0].res[give] -= 4;
-    G.players[0].res[get] += 1;
+    if (G.players[G.turn].res[give] < 4) { alert('Need 4 ' + give + ' to trade!'); return; }
+    G.players[G.turn].res[give] -= 4;
+    G.players[G.turn].res[get] += 1;
     log('⚡ Traded 4 ' + RES_E[give] + ' → 1 ' + RES_E[get]);
     closeModal();
     render();
@@ -965,8 +1076,8 @@ function showYearOfPlenty() {
 }
 
 function doYOP() {
-    G.players[0].res[document.getElementById('yop1').value]++;
-    G.players[0].res[document.getElementById('yop2').value]++;
+    G.players[G.turn].res[document.getElementById('yop1').value]++;
+    G.players[G.turn].res[document.getElementById('yop2').value]++;
     log('⚡ Year of Plenty: gained 2 resources!');
     closeModal(); render();
 }
@@ -984,7 +1095,7 @@ function showMonopoly() {
 function doMonopoly(r) {
     var stolen = G.players[1].res[r];
     G.players[1].res[r] = 0;
-    G.players[0].res[r] += stolen;
+    G.players[G.turn].res[r] += stolen;
     log('⚡ Monopoly! Stole ' + stolen + ' ' + RES_E[r] + ' from Crow!');
     closeModal(); render();
 }
@@ -1232,71 +1343,313 @@ function botTurn() {
 
 function botBuild() {
     var p = 1;
-    // Try city
-    if (canAfford(p, BUILD_COST.city)) {
-        for (var vi = 0; vi < G.verts.length; vi++) {
-            if (G.verts[vi].player === p && G.verts[vi].building === 'settlement') {
-                pay(p, BUILD_COST.city);
-                registerBuilding(vi, p, 'city');
-                G.players[p].settlements--; G.players[p].cities++;
-                log('🐦‍⬛ Crow upgraded to a city!');
-                break;
+    var res = G.players[p].res;
+
+    // ---- STRATEGY: Evaluate what to prioritize ----
+    var myVP = calcVP(p);
+    var oppVP = calcVP(0);
+    var roadLen = calcLongestRoad(p);
+    var oppRoadLen = calcLongestRoad(0);
+
+    // Score all valid settlement spots
+    function scoreSettlementSpot(vi) {
+        var v = G.verts[vi];
+        var score = 0;
+        var types = {};
+        for (var hi = 0; hi < G.hexes.length; hi++) {
+            var hex = G.hexes[hi];
+            if (hex.type === 'desert') continue;
+            var hc = hexCenter(hex.q, hex.r);
+            for (var ci = 0; ci < 6; ci++) {
+                var pt = hexCorner(hc.x, hc.y, ci);
+                if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
+                    score += probDots(hex.num) * 2;
+                    types[hex.type] = (types[hex.type] || 0) + probDots(hex.num);
+                    break;
+                }
             }
         }
+        // Diversity bonus
+        score += Object.keys(types).length * 3;
+        // Prefer ore+wheat if we need cities
+        if (types.ore) score += 3;
+        if (types.wheat) score += 2;
+        return score;
     }
-    // Try settlement
-    if (canAfford(p, BUILD_COST.settlement)) {
+
+    // Find best settlement spot
+    function findBestSettlement() {
+        var best = -1, bestS = -1;
         for (var vi = 0; vi < G.verts.length; vi++) {
             if (canBuildSettlement(vi, p)) {
-                pay(p, BUILD_COST.settlement);
-                registerBuilding(vi, p, 'settlement');
-                G.players[p].settlements++;
-                log('🐦‍⬛ Crow built a settlement!');
-                break;
+                var s = scoreSettlementSpot(vi);
+                if (s > bestS) { bestS = s; best = vi; }
             }
         }
+        return best;
     }
-    // Try road
-    if (canAfford(p, BUILD_COST.road)) {
+
+    // Find road that expands toward best future settlement spot
+    function findBestRoad() {
+        var bestEdge = -1, bestScore = -1;
         for (var ei = 0; ei < G.edges.length; ei++) {
-            if (G.edges[ei].player < 0 && isConnected(ei, p)) {
-                pay(p, BUILD_COST.road);
-                G.edges[ei].player = p;
-                G.players[p].roads++;
-                log('🐦‍⬛ Crow built a road.');
+            if (G.edges[ei].player >= 0 || !isConnected(ei, p)) continue;
+            var e = G.edges[ei];
+            var va = G.verts[e.a], vb = G.verts[e.b];
+            // Score: how good are the settlement spots this road leads to?
+            var score = 0;
+            // Check if either endpoint could become a settlement spot (or lead toward one)
+            for (var vi = 0; vi < G.verts.length; vi++) {
+                if (G.verts[vi].building) continue;
+                var v = G.verts[vi];
+                var dA = Math.hypot(v.x - va.x, v.y - va.y);
+                var dB = Math.hypot(v.x - vb.x, v.y - vb.y);
+                var minD = Math.min(dA, dB);
+                if (minD < hexSize * 3) {
+                    var spotScore = scoreSettlementSpot(vi);
+                    score += spotScore / (1 + minD / hexSize);
+                }
+            }
+            // Bonus for extending longest road
+            score += 2;
+            if (score > bestScore) { bestScore = score; bestEdge = ei; }
+        }
+        return bestEdge;
+    }
+
+    // ---- PHASE 1: Play dev cards strategically ----
+    var playedCard = false;
+    for (var di = G.players[p].devCards.length - 1; di >= 0; di--) {
+        var card = G.players[p].devCards[di];
+        if (card === 'vp') continue; // keep VP cards
+
+        if (card === 'knight') {
+            // Play knight if: chasing largest army OR opponent has good hex to block
+            var shouldPlayKnight = G.players[p].usedKnights < 3 || 
+                (G.players[p].usedKnights >= G.players[0].usedKnights && myVP >= 7);
+            if (shouldPlayKnight) {
+                G.players[p].devCards.splice(di, 1);
+                G.players[p].usedKnights++;
+                checkLargestArmy();
+                // Move robber to hurt opponent most
+                var bestHex = -1, bestHS = -1;
+                for (var hi = 0; hi < G.hexes.length; hi++) {
+                    if (hi === G.robber || G.hexes[hi].type === 'desert') continue;
+                    var hs = 0;
+                    G.buildings.forEach(function(b) {
+                        if (b.player === 0 && b.adjacentHexes.indexOf(hi) >= 0) hs += probDots(G.hexes[hi].num) * (b.type === 'city' ? 3 : 1);
+                    });
+                    // Avoid blocking own buildings
+                    G.buildings.forEach(function(b) {
+                        if (b.player === p && b.adjacentHexes.indexOf(hi) >= 0) hs -= probDots(G.hexes[hi].num) * 2;
+                    });
+                    if (hs > bestHS) { bestHS = hs; bestHex = hi; }
+                }
+                if (bestHex >= 0) G.robber = bestHex;
+                // Steal the resource opponent has most of
+                if (totalRes(0) > 0) {
+                    var maxR = '', maxAmt = 0;
+                    RES.forEach(function(r) { if (G.players[0].res[r] > maxAmt) { maxAmt = G.players[0].res[r]; maxR = r; } });
+                    if (maxR) { G.players[0].res[maxR]--; G.players[p].res[maxR]++; }
+                }
+                log('🐦‍⬛ Crow played Knight! 🥷');
+                playedCard = true;
                 break;
+            }
+        } else if (card === 'roadbuild') {
+            // Play if we need roads for longest road or expansion
+            if (roadLen >= 3 || findBestSettlement() < 0) {
+                G.players[p].devCards.splice(di, 1);
+                for (var rb = 0; rb < 2; rb++) {
+                    var re = findBestRoad();
+                    if (re >= 0) { G.edges[re].player = p; G.players[p].roads++; }
+                }
+                checkLongestRoad();
+                log('🐦‍⬛ Crow played Road Building! 🛤️');
+                playedCard = true;
+                break;
+            }
+        } else if (card === 'yearofplenty') {
+            // Get resources we need most for next build
+            G.players[p].devCards.splice(di, 1);
+            var need = [];
+            if (canAlmostAfford(p, BUILD_COST.city)) need = getMissing(p, BUILD_COST.city);
+            else if (canAlmostAfford(p, BUILD_COST.settlement)) need = getMissing(p, BUILD_COST.settlement);
+            else need = ['ore', 'wheat'];
+            G.players[p].res[need[0] || 'ore']++;
+            G.players[p].res[need[1] || 'wheat']++;
+            log('🐦‍⬛ Crow played Year of Plenty! 🎁');
+            playedCard = true;
+            break;
+        } else if (card === 'monopoly') {
+            // Steal the resource opponent has most of
+            G.players[p].devCards.splice(di, 1);
+            var maxR = '', maxAmt = 0;
+            RES.forEach(function(r) { if (G.players[0].res[r] > maxAmt) { maxAmt = G.players[0].res[r]; maxR = r; } });
+            if (maxR && maxAmt >= 2) {
+                var stolen = G.players[0].res[maxR];
+                G.players[0].res[maxR] = 0;
+                G.players[p].res[maxR] += stolen;
+                log('🐦‍⬛ Crow played Monopoly! Stole ' + stolen + ' ' + RES_E[maxR] + '! 💰');
+            }
+            playedCard = true;
+            break;
+        }
+    }
+
+    // ---- PHASE 2: Trading (4:1 with bank if it helps) ----
+    // Trade excess resources toward what we need
+    for (var attempts = 0; attempts < 3; attempts++) {
+        var targetCost = null;
+        if (canAlmostAfford(p, BUILD_COST.city)) targetCost = BUILD_COST.city;
+        else if (canAlmostAfford(p, BUILD_COST.settlement)) targetCost = BUILD_COST.settlement;
+        else if (canAlmostAfford(p, BUILD_COST.devcard)) targetCost = BUILD_COST.devcard;
+        else if (canAlmostAfford(p, BUILD_COST.road)) targetCost = BUILD_COST.road;
+        if (!targetCost) break;
+
+        var missing = getMissing(p, targetCost);
+        if (missing.length === 0) break;
+
+        // Find resource we have 4+ excess of
+        var traded = false;
+        RES.forEach(function(r) {
+            if (traded) return;
+            var needed = targetCost[r] || 0;
+            if (res[r] >= needed + 4) {
+                res[r] -= 4;
+                res[missing[0]]++;
+                log('🐦‍⬛ Crow traded 4 ' + RES_E[r] + ' → 1 ' + RES_E[missing[0]]);
+                traded = true;
+            }
+        });
+        if (!traded) break;
+    }
+
+    // ---- PHASE 3: Build (prioritized) ----
+    // Priority: City > Settlement > Road toward expansion > Dev card
+
+    // Try city first (best VP per resource)
+    if (canAfford(p, BUILD_COST.city)) {
+        var bestCity = -1, bestCS = -1;
+        for (var vi = 0; vi < G.verts.length; vi++) {
+            if (G.verts[vi].player === p && G.verts[vi].building === 'settlement') {
+                var s = scoreSettlementSpot(vi);
+                if (s > bestCS) { bestCS = s; bestCity = vi; }
+            }
+        }
+        if (bestCity >= 0) {
+            pay(p, BUILD_COST.city);
+            registerBuilding(bestCity, p, 'city');
+            G.players[p].settlements--; G.players[p].cities++;
+            log('🐦‍⬛ Crow upgraded to a city! 🏰');
+        }
+    }
+
+    // Try settlement
+    if (canAfford(p, BUILD_COST.settlement)) {
+        var bestS = findBestSettlement();
+        if (bestS >= 0) {
+            pay(p, BUILD_COST.settlement);
+            registerBuilding(bestS, p, 'settlement');
+            G.players[p].settlements++;
+            log('🐦‍⬛ Crow built a settlement! 🏠');
+        }
+    }
+
+    // Build roads (up to 2 per turn for expansion)
+    for (var rr = 0; rr < 2; rr++) {
+        if (!canAfford(p, BUILD_COST.road)) break;
+        var bestR = findBestRoad();
+        if (bestR >= 0) {
+            pay(p, BUILD_COST.road);
+            G.edges[bestR].player = p;
+            G.players[p].roads++;
+            log('🐦‍⬛ Crow built a road. 🛤️');
+        } else break;
+    }
+
+    // Buy dev card if close to largest army or have spare resources
+    if (canAfford(p, BUILD_COST.devcard) && G.devDeck.length > 0) {
+        var wantDev = G.players[p].usedKnights >= 2 || // close to largest army
+            (totalRes(p) >= 8) || // lots of resources, diversify
+            (myVP >= 7); // close to winning, VP cards help
+        if (wantDev) {
+            pay(p, BUILD_COST.devcard);
+            var card = G.devDeck.pop();
+            G.players[p].devCards.push(card);
+            if (card === 'knight') {
+                // Auto-play immediately if beneficial
+                G.players[p].devCards.pop();
+                G.players[p].usedKnights++;
+                checkLargestArmy();
+                log('🐦‍⬛ Crow played a Knight! 🥷');
+            } else {
+                log('🐦‍⬛ Crow bought a dev card.');
             }
         }
     }
-    // Try dev card
-    if (canAfford(p, BUILD_COST.devcard) && G.devDeck.length > 0) {
-        pay(p, BUILD_COST.devcard);
-        var card = G.devDeck.pop();
-        G.players[p].devCards.push(card);
-        // Auto-play knight
-        if (card === 'knight') {
-            G.players[p].usedKnights++;
-            checkLargestArmy();
-            log('🐦‍⬛ Crow played a Knight!');
-        }
-    }
+
     checkLongestRoad();
+    checkLargestArmy();
+}
+
+// Helper: can almost afford (missing 1-2 resources)
+function canAlmostAfford(p, cost) {
+    var missing = 0;
+    for (var r in cost) missing += Math.max(0, cost[r] - G.players[p].res[r]);
+    return missing > 0 && missing <= 2;
+}
+
+// Helper: get list of missing resources for a cost
+function getMissing(p, cost) {
+    var m = [];
+    for (var r in cost) {
+        var need = cost[r] - G.players[p].res[r];
+        for (var i = 0; i < need; i++) m.push(r);
+    }
+    return m;
 }
 
 function botSetup() {
     if (G.turn !== 1) return;
-    // Find best vertex (most production value)
+    // Score ALL valid vertices by production value + diversity + resource balance
     var bestV = -1, bestScore = -1;
     for (var vi = 0; vi < G.verts.length; vi++) {
         if (!canPlaceSetup(vi)) continue;
+        var v = G.verts[vi];
         var score = 0;
-        G.verts[vi].hexes.forEach(function(hi) {
-            if (G.hexes[hi].type !== 'desert') score += probDots(G.hexes[hi].num) + 1;
-        });
-        // Prefer diverse resources
         var types = {};
-        G.verts[vi].hexes.forEach(function(hi) { types[G.hexes[hi].type] = true; });
-        score += Object.keys(types).length * 2;
+        // Check all hexes by distance
+        for (var hi = 0; hi < G.hexes.length; hi++) {
+            var hex = G.hexes[hi];
+            if (hex.type === 'desert') continue;
+            var hc = hexCenter(hex.q, hex.r);
+            for (var ci = 0; ci < 6; ci++) {
+                var pt = hexCorner(hc.x, hc.y, ci);
+                if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
+                    var dots = probDots(hex.num);
+                    score += dots * 2;
+                    types[hex.type] = (types[hex.type] || 0) + dots;
+                    // 6 and 8 are the best numbers
+                    if (hex.num === 6 || hex.num === 8) score += 3;
+                    break;
+                }
+            }
+        }
+        // Diversity bonus (touching different resource types)
+        score += Object.keys(types).length * 4;
+        // Ore and wheat enable cities — high value
+        if (types.ore) score += 3;
+        if (types.wheat) score += 3;
+        // Brick and wood enable roads/settlements — early game value
+        if (types.brick) score += 2;
+        if (types.wood) score += 2;
+        // In setup2, prefer spots that fill gaps from first settlement
+        if (G.phase === 'setup2') {
+            RES.forEach(function(r) {
+                if (!types[r] && G.players[1].res[r] === 0) score += 3; // fills a gap
+            });
+        }
         if (score > bestScore) { bestScore = score; bestV = vi; }
     }
     if (bestV >= 0) {
@@ -1304,25 +1657,45 @@ function botSetup() {
         G.players[1].settlements++;
         log('🐦‍⬛ Crow placed a settlement.');
         if (G.phase === 'setup2') {
-            G.verts[bestV].hexes.forEach(function(hi) {
-                if (G.hexes[hi].type !== 'desert') G.players[1].res[G.hexes[hi].type]++;
-            });
+            // Give starting resources from adjacent hexes
+            for (var hi = 0; hi < G.hexes.length; hi++) {
+                var hex = G.hexes[hi];
+                if (hex.type === 'desert') continue;
+                var hc = hexCenter(hex.q, hex.r);
+                for (var ci = 0; ci < 6; ci++) {
+                    var pt = hexCorner(hc.x, hc.y, ci);
+                    if (Math.hypot(pt.x - G.verts[bestV].x, pt.y - G.verts[bestV].y) < hexSize * 0.3) {
+                        G.players[1].res[hex.type]++;
+                        break;
+                    }
+                }
+            }
         }
         render();
-        // Place road
+        // Place road toward best expansion direction
         setTimeout(function() {
+            var bestEdge = -1, bestES = -1;
             for (var ei = 0; ei < G.edges.length; ei++) {
                 var e = G.edges[ei];
                 if (e.player >= 0) continue;
-                if (e.a === bestV || e.b === bestV) {
-                    e.player = 1;
-                    G.players[1].roads++;
-                    log('🐦‍⬛ Crow placed a road.');
-                    G.setupPlacements++;
-                    advanceSetup();
-                    render();
-                    break;
-                }
+                var va = G.verts[e.a], vb = G.verts[e.b];
+                // Check if either end is near our settlement
+                var dA = Math.hypot(va.x - G.verts[bestV].x, va.y - G.verts[bestV].y);
+                var dB = Math.hypot(vb.x - G.verts[bestV].x, vb.y - G.verts[bestV].y);
+                if (dA > hexSize * 0.3 && dB > hexSize * 0.3) continue;
+                // Score: direction toward center of board is better
+                var farEnd = dA < dB ? vb : va;
+                var distToCenter = Math.hypot(farEnd.x - CW / 2, farEnd.y - CH / 2);
+                var es = 100 - distToCenter; // closer to center = better
+                if (es > bestES) { bestES = es; bestEdge = ei; }
+            }
+            if (bestEdge >= 0) {
+                G.edges[bestEdge].player = 1;
+                G.players[1].roads++;
+                log('🐦‍⬛ Crow placed a road.');
+                G.setupPlacements++;
+                advanceSetup();
+                render();
             }
         }, 500);
     }
@@ -1347,16 +1720,19 @@ function handleHover(mx, my) {
 
 // ---- UI UPDATE ----
 function updateUI() {
-    // Resources
+    var cp = G.turn;
+    var isHuman = !G.players[cp].isBot;
+    // Resources - show current player's
     var rb = document.getElementById('res-bar');
-    rb.innerHTML = RES.map(function(r) {
-        return '<div class="res-item"><span class="ri">' + RES_E[r] + '</span>' + G.players[0].res[r] + '</div>';
-    }).join('');
+    rb.innerHTML = '<div style="font-size:.55rem;font-weight:900;color:var(--accent);margin-right:4px;">' + pName(cp) + ':</div>' +
+        RES.map(function(r) {
+            return '<div class="res-item"><span class="ri">' + RES_E[r] + '</span>' + G.players[cp].res[r] + '</div>';
+        }).join('');
     // Actions
     var ag = document.getElementById('act-grid');
-    var inBuild = G.phase === 'build' && G.turn === 0;
-    var inRoll = G.phase === 'roll' && G.turn === 0;
-    var inPlacing = (G.phase === 'placeroad' || G.phase === 'placesettlement' || G.phase === 'placecity') && G.turn === 0;
+    var inBuild = G.phase === 'build' && isHuman;
+    var inRoll = G.phase === 'roll' && isHuman;
+    var inPlacing = (G.phase === 'placeroad' || G.phase === 'placesettlement' || G.phase === 'placecity') && isHuman;
     
     if (inPlacing) {
         var what = G.phase === 'placeroad' ? '🛤️ Road' : G.phase === 'placesettlement' ? '🏠 Settlement' : '🏰 City';
@@ -1364,19 +1740,19 @@ function updateUI() {
             '<button class="act-btn" onclick="cancelPlacement()" style="grid-column:1/-1;border-color:#c05030;color:#c05030;"><span class="ae">❌</span>Cancel</button>';
     } else {
         ag.innerHTML = '<button class="act-btn" onclick="rollDice()" ' + (inRoll ? '' : 'disabled') + '><span class="ae">🎲</span>Roll</button>' +
-            '<button class="act-btn" onclick="buildRoad()" ' + (inBuild && canAfford(0, BUILD_COST.road) ? '' : 'disabled') + '><span class="ae">🛤️</span>Road<br><span style="font-size:.5rem;color:#aaa;">🪵🧱</span></button>' +
-            '<button class="act-btn" onclick="buildSettlement()" ' + (inBuild && canAfford(0, BUILD_COST.settlement) ? '' : 'disabled') + '><span class="ae">🏠</span>Settle<br><span style="font-size:.5rem;color:#aaa;">🪵🧱🐑🌾</span></button>' +
-            '<button class="act-btn" onclick="buildCity()" ' + (inBuild && canAfford(0, BUILD_COST.city) ? '' : 'disabled') + '><span class="ae">🏰</span>City<br><span style="font-size:.5rem;color:#aaa;">⛰️⛰️⛰️🌾🌾</span></button>' +
-            '<button class="act-btn" onclick="buyDevCard()" ' + (inBuild && canAfford(0, BUILD_COST.devcard) ? '' : 'disabled') + '><span class="ae">🃏</span>Dev Card<br><span style="font-size:.5rem;color:#aaa;">⛰️🐑🌾</span></button>' +
+            '<button class="act-btn" onclick="buildRoad()" ' + (inBuild && canAfford(cp, BUILD_COST.road) ? '' : 'disabled') + '><span class="ae">🛤️</span>Road<br><span style="font-size:.5rem;color:#aaa;">🪵🧱</span></button>' +
+            '<button class="act-btn" onclick="buildSettlement()" ' + (inBuild && canAfford(cp, BUILD_COST.settlement) ? '' : 'disabled') + '><span class="ae">🏠</span>Settle<br><span style="font-size:.5rem;color:#aaa;">🪵🧱🐑🌾</span></button>' +
+            '<button class="act-btn" onclick="buildCity()" ' + (inBuild && canAfford(cp, BUILD_COST.city) ? '' : 'disabled') + '><span class="ae">🏰</span>City<br><span style="font-size:.5rem;color:#aaa;">⛰️⛰️⛰️🌾🌾</span></button>' +
+            '<button class="act-btn" onclick="buyDevCard()" ' + (inBuild && canAfford(cp, BUILD_COST.devcard) ? '' : 'disabled') + '><span class="ae">🃏</span>Dev Card<br><span style="font-size:.5rem;color:#aaa;">⛰️🐑🌾</span></button>' +
             '<button class="act-btn" onclick="openTrade()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">🤝</span>Trade</button>' +
             '<button class="act-btn" onclick="endTurn()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">⏭️</span>End Turn</button>';
     }
-    // Dev cards
+    // Dev cards for current player
     var dp = document.getElementById('dev-panel');
     var dc = document.getElementById('dev-cards');
-    if (G.players[0].devCards.length > 0) {
+    if (G.players[cp].devCards.length > 0 && isHuman) {
         dp.style.display = '';
-        dc.innerHTML = G.players[0].devCards.map(function(c, i) {
+        dc.innerHTML = G.players[cp].devCards.map(function(c, i) {
             return '<div class="dev-card" onclick="playDevCard(' + i + ')">' + devCardName(c) + '</div>';
         }).join('');
     } else { dp.style.display = 'none'; }
@@ -1386,7 +1762,33 @@ function updateUI() {
         document.getElementById('vp-p' + (p + 1)).innerText = G.players[p].vp;
         document.getElementById('score-p' + (p + 1)).className = 'score-item' + (G.turn === p ? ' active' : '');
     }
+    // VP Detail breakdown
+    for (var p = 0; p < 2; p++) {
+        var det = document.getElementById('vp-detail-p' + (p + 1));
+        if (det) {
+            det.innerHTML =
+                '<div class="vp-row"><span class="vp-label">🏠 Settlements</span><span class="vp-val">' + G.players[p].settlements + ' × 1 = ' + G.players[p].settlements + '</span></div>' +
+                '<div class="vp-row"><span class="vp-label">🏰 Cities</span><span class="vp-val">' + G.players[p].cities + ' × 2 = ' + (G.players[p].cities * 2) + '</span></div>' +
+                '<div class="vp-row"><span class="vp-label">🛤️ Longest Road</span><span class="vp-val">' + (G.players[p].longestRoad ? '✅ 2' : '—') + '</span></div>' +
+                '<div class="vp-row"><span class="vp-label">🥷 Largest Army</span><span class="vp-val">' + (G.players[p].largestArmy ? '✅ 2' : '— (' + G.players[p].usedKnights + ' knights)') + '</span></div>' +
+                '<div class="vp-row"><span class="vp-label">🎉 VP Cards</span><span class="vp-val">' + G.players[p].devCards.filter(function(c) { return c === 'vp'; }).length + '</span></div>';
+        }
+        var tot = document.getElementById('vp-total-p' + (p + 1));
+        if (tot) tot.innerText = G.players[p].vp + ' / 10 VP';
+    }
+    // Special cards
+    var roadLen0 = calcLongestRoad(0), roadLen1 = calcLongestRoad(1);
+    var scRoad = document.getElementById('sc-road');
+    var scRoadVal = document.getElementById('sc-road-val');
+    scRoad.className = 'special-card' + (G.players[0].longestRoad ? ' owned-p1' : G.players[1].longestRoad ? ' owned-p2' : '');
+    scRoadVal.innerText = G.players[0].longestRoad ? '⚡ Pika (+2VP) • ' + roadLen0 : G.players[1].longestRoad ? '🐦‍⬛ Crow (+2VP) • ' + roadLen1 : '⚡' + roadLen0 + ' / 🐦‍⬛' + roadLen1;
+
+    var scArmy = document.getElementById('sc-army');
+    var scArmyVal = document.getElementById('sc-army-val');
+    scArmy.className = 'special-card' + (G.players[0].largestArmy ? ' owned-p1' : G.players[1].largestArmy ? ' owned-p2' : '');
+    scArmyVal.innerText = G.players[0].largestArmy ? '⚡ Pika (+2VP) • ' + G.players[0].usedKnights + '🥷' : G.players[1].largestArmy ? '🐦‍⬛ Crow (+2VP) • ' + G.players[1].usedKnights + '🥷' : '⚡' + G.players[0].usedKnights + ' / 🐦‍⬛' + G.players[1].usedKnights;
 }
+
 
 // ---- RULES MODAL ----
 function showRules() {
@@ -1415,8 +1817,8 @@ function showRules() {
 function toggleDark() { document.body.classList.toggle('dark'); render(); }
 
 // ---- START ----
-window.onload = initGame;
-window.onresize = function() { setupCanvas(); render(); };
+// Game starts when player picks a mode from start screen
+window.onresize = function() { if (cvs) { setupCanvas(); render(); } };
 </script>
 </body>
 </html>
