@@ -259,13 +259,36 @@ function hexCorner(cx, cy, i) {
 
 // ---- GRAPH: VERTICES & EDGES ----
 function generateGraph() {
+    // Save existing building data
+    var savedBuildings = {};
+    var savedEdges = {};
+    if (G.verts.length > 0) {
+        for (var vi = 0; vi < G.verts.length; vi++) {
+            var v = G.verts[vi];
+            if (v.building) {
+                // Key by old position rounded
+                var k = Math.round(v.x) + ',' + Math.round(v.y);
+                savedBuildings[k] = { building: v.building, player: v.player };
+            }
+        }
+    }
+    if (G.edges.length > 0) {
+        for (var ei = 0; ei < G.edges.length; ei++) {
+            var e = G.edges[ei];
+            if (e.player >= 0) {
+                var va = G.verts[e.a], vb = G.verts[e.b];
+                var k = Math.round(Math.min(va.x,vb.x)) + ',' + Math.round(Math.min(va.y,vb.y)) + '-' + Math.round(Math.max(va.x,vb.x)) + ',' + Math.round(Math.max(va.y,vb.y));
+                savedEdges[k] = e.player;
+            }
+        }
+    }
+
     var vertMap = {};
     G.verts = [];
     G.edges = [];
 
     function vKey(x, y) { return Math.round(x * 2) + ',' + Math.round(y * 2); }
 
-    // Get or create vertex
     function getVert(x, y, hexIdx) {
         var k = vKey(x, y);
         if (vertMap[k] !== undefined) {
@@ -274,13 +297,18 @@ function generateGraph() {
             return vertMap[k];
         }
         var vi = G.verts.length;
-        G.verts.push({ x: x, y: y, hexes: [hexIdx], building: null, player: -1, idx: vi });
+        var vert = { x: x, y: y, hexes: [hexIdx], building: null, player: -1, idx: vi };
+        // Restore building data
+        var posKey = Math.round(x) + ',' + Math.round(y);
+        if (savedBuildings[posKey]) {
+            vert.building = savedBuildings[posKey].building;
+            vert.player = savedBuildings[posKey].player;
+        }
+        G.verts.push(vert);
         vertMap[k] = vi;
         return vi;
     }
 
-    // Create hex corners as vertices
-    // Need to set up canvas first for coords
     setupCanvasSize();
 
     for (var hi = 0; hi < G.hexes.length; hi++) {
@@ -292,12 +320,18 @@ function generateGraph() {
             corners.push(getVert(pt.x, pt.y, hi));
         }
         h.corners = corners;
-        // Edges between adjacent corners
         for (var ci = 0; ci < 6; ci++) {
             var a = corners[ci], b = corners[(ci + 1) % 6];
             var ek = Math.min(a, b) + '-' + Math.max(a, b);
             var exists = G.edges.some(function(e) { return e.key === ek; });
-            if (!exists) G.edges.push({ a: a, b: b, key: ek, player: -1, idx: G.edges.length });
+            if (!exists) {
+                var edge = { a: a, b: b, key: ek, player: -1, idx: G.edges.length };
+                // Restore road data
+                var va = G.verts[a], vb = G.verts[b];
+                var edgeKey = Math.round(Math.min(va.x,vb.x)) + ',' + Math.round(Math.min(va.y,vb.y)) + '-' + Math.round(Math.max(va.x,vb.x)) + ',' + Math.round(Math.max(va.y,vb.y));
+                if (savedEdges[edgeKey] !== undefined) edge.player = savedEdges[edgeKey];
+                G.edges.push(edge);
+            }
         }
     }
 }
@@ -319,17 +353,20 @@ function setupCanvas() {
     setupCanvasSize();
     // Recalc vertex positions
     generateGraph();
-    // Click handler
-    cvs.onclick = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        handleClick(mx, my);
-    };
+    restoreClickHandler();
     // Tooltip
     cvs.onmousemove = function(e) {
         var rect = cvs.getBoundingClientRect();
         var mx = e.clientX - rect.left, my = e.clientY - rect.top;
         handleHover(mx, my);
+    };
+}
+
+function restoreClickHandler() {
+    cvs.onclick = function(e) {
+        var rect = cvs.getBoundingClientRect();
+        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        handleClick(mx, my);
     };
 }
 
@@ -707,7 +744,7 @@ function buildRoad() {
             log('⚡ Pika built a road.');
             checkLongestRoad();
             G.phase = 'build';
-            setupCanvas();
+            restoreClickHandler();
             checkWin();
             render();
         }
@@ -731,7 +768,7 @@ function buildSettlement() {
             G.players[0].settlements++;
             log('⚡ Pika built a settlement!');
             G.phase = 'build';
-            setupCanvas();
+            restoreClickHandler();
             checkWin();
             render();
         }
@@ -755,7 +792,7 @@ function buildCity() {
             G.players[0].cities++;
             log('⚡ Pika upgraded to a city!');
             G.phase = 'build';
-            setupCanvas();
+            restoreClickHandler();
             checkWin();
             render();
         }
