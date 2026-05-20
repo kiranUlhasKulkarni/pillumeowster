@@ -3,1822 +3,497 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Catan — Pillu & Crow's Hub</title>
+<title>Pika-tan — Catan</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--bg:#faf3eb;--card:#fff;--text:#4a3520;--accent:#d4883a;--accent2:#c05030;--gold:#d4a020;--green:#5a9a30;--blue:#3a78b0;--border:#e0d0c0;--shadow:rgba(180,150,100,.15);}
+:root{--bg:#faf3eb;--card:#fff;--text:#4a3520;--accent:#d4883a;--accent2:#c05030;--gold:#d4a020;--border:#e0d0c0;--shadow:rgba(180,150,100,.15);}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
 body.dark{--bg:#1a1410;--card:#2a2018;--text:#d8c8a8;--border:#3a3020;--shadow:rgba(0,0,0,.3);}
-/* Top bar */
 .top-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;}
 .top-bar h1{font-family:'Baloo 2',cursive;font-size:1rem;color:var(--accent);}
-.top-bar button{padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.65rem;cursor:pointer;color:var(--text);}
-.top-bar button:active{transform:scale(.95);}
-/* Layout */
+.tb{padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.65rem;cursor:pointer;color:var(--text);}
 .game-wrap{display:flex;flex-direction:column;align-items:center;padding:8px;}
 .board-area{position:relative;width:min(95vw,420px);aspect-ratio:1/1;margin:0 auto;}
 #board-cvs{width:100%;height:100%;border-radius:12px;border:3px solid var(--border);background:var(--card);box-shadow:0 4px 16px var(--shadow);}
-/* Panels */
 .panel{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px;margin:6px 0;width:min(95vw,420px);box-shadow:0 2px 8px var(--shadow);}
-.panel-title{font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--accent);margin-bottom:4px;}
-/* Resources bar */
+.panel-title{font-family:'Baloo 2',cursive;font-size:.8rem;color:var(--accent);margin-bottom:4px;}
 .res-bar{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;}
-.res-item{display:flex;align-items:center;gap:2px;padding:3px 7px;border-radius:8px;font-size:.65rem;font-weight:800;border:2px solid var(--border);background:var(--card);}
-.res-item .ri{font-size:.85rem;}
-/* Action buttons */
-.act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px;}
-.act-btn{padding:8px 4px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.6rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:center;}
-.act-btn:hover{border-color:var(--accent);background:rgba(212,136,58,.08);}
-.act-btn:active{transform:scale(.95);}
+.res-item{display:flex;align-items:center;gap:2px;padding:2px 6px;border-radius:6px;font-size:.6rem;font-weight:800;border:2px solid var(--border);background:var(--card);}
+.res-item .ri{font-size:.8rem;}
+.act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px;}
+.act-btn{padding:7px 4px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.58rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:center;}
+.act-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(212,136,58,.08);}
+.act-btn:active:not(:disabled){transform:scale(.95);}
 .act-btn:disabled{opacity:.35;cursor:default;}
-.act-btn .ae{display:block;font-size:1.1rem;margin-bottom:1px;}
-/* Log */
-.log-box{background:rgba(0,0,0,.03);border-radius:8px;padding:6px 8px;max-height:100px;overflow-y:auto;font-size:.55rem;line-height:1.6;color:#888;margin-top:4px;}
-body.dark .log-box{background:rgba(255,255,255,.03);color:#888;}
-.log-box div{border-bottom:1px solid rgba(0,0,0,.04);padding:1px 0;}
-/* Modal overlay */
+.act-btn .ae{display:block;font-size:1rem;margin-bottom:1px;}
+.log-box{background:rgba(0,0,0,.03);border-radius:8px;padding:6px 8px;max-height:90px;overflow-y:auto;font-size:.5rem;line-height:1.6;color:#888;margin-top:4px;}
+body.dark .log-box{background:rgba(255,255,255,.03);}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;}
 .modal-overlay.active{display:flex;}
-.modal{background:var(--card);border:3px solid var(--accent);border-radius:16px;padding:16px;max-width:340px;width:90%;text-align:center;}
-.modal h2{font-family:'Baloo 2',cursive;font-size:1.1rem;color:var(--accent);margin-bottom:8px;}
-.modal p{font-size:.7rem;font-weight:700;color:#888;margin-bottom:8px;}
-.modal button{padding:8px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-family:inherit;font-weight:800;font-size:.7rem;cursor:pointer;margin:3px;}
-.modal button:active{transform:scale(.95);}
+.modal{background:var(--card);border:3px solid var(--accent);border-radius:16px;padding:16px;max-width:360px;width:92%;text-align:center;max-height:85vh;overflow-y:auto;}
+.modal h2{font-family:'Baloo 2',cursive;font-size:1rem;color:var(--accent);margin-bottom:6px;}
+.modal p{font-size:.65rem;font-weight:700;color:#888;margin-bottom:6px;}
+.modal button{padding:7px 14px;border-radius:10px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-family:inherit;font-weight:800;font-size:.65rem;cursor:pointer;margin:3px;}
 .modal button.sec{background:transparent;color:var(--accent);}
-/* Trade modal */
-.trade-row{display:flex;align-items:center;gap:4px;margin:4px 0;justify-content:center;font-weight:800;font-size:.7rem;}
-.trade-row select{padding:4px;border-radius:6px;border:2px solid var(--border);font-family:inherit;font-weight:800;font-size:.65rem;background:var(--card);color:var(--text);}
-.trade-row input[type=number]{width:40px;padding:4px;border-radius:6px;border:2px solid var(--border);font-family:inherit;font-weight:800;font-size:.65rem;text-align:center;background:var(--card);color:var(--text);}
-/* Score */
-.score-bar{display:flex;gap:8px;justify-content:center;margin:6px 0;font-weight:800;font-size:.7rem;}
-.score-item{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);}
-.score-item.active{border-color:var(--accent);background:rgba(212,136,58,.08);box-shadow:0 0 8px rgba(212,136,58,.2);}
-/* VP detail panel */
-.vp-panel{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px;margin:6px 0;width:min(95vw,420px);box-shadow:0 2px 8px var(--shadow);}
-.vp-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:.6rem;font-weight:700;border-bottom:1px solid rgba(0,0,0,.04);}
-.vp-row:last-child{border-bottom:none;}
-.vp-row .vp-label{color:#888;}.vp-row .vp-val{font-weight:900;color:var(--accent);}
-.vp-total{font-size:.8rem;font-weight:900;color:var(--accent);text-align:center;margin-top:4px;padding-top:4px;border-top:2px solid var(--border);}
-/* Start screen */
-.start-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;}
-.start-screen h1{font-family:'Baloo 2',cursive;font-size:2rem;color:var(--accent);}
-.start-screen p{font-size:.75rem;font-weight:700;color:#888;max-width:300px;}
-.mode-btn{padding:14px 24px;border-radius:14px;border:3px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;transition:all .2s;color:var(--text);min-width:200px;}
-.mode-btn:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow);}
-.mode-btn:active{transform:scale(.97);}
-.mode-btn .me{display:block;font-size:1.5rem;margin-bottom:4px;}
-/* Special cards */
-.special-card{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-size:.55rem;font-weight:800;color:#888;flex:1;min-width:140px;}
-.special-card.owned-p1{border-color:var(--gold);background:rgba(212,160,32,.08);}.special-card.owned-p1 .sc-val{color:var(--gold);}
-.special-card.owned-p2{border-color:#666;background:rgba(100,100,100,.08);}.special-card.owned-p2 .sc-val{color:#666;}
-.sc-val{font-weight:900;font-size:.55rem;color:#aaa;text-align:right;}
-/* Dev cards */
-.dev-cards{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin:4px 0;}
-.dev-card{padding:4px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-size:.55rem;font-weight:800;cursor:pointer;transition:all .15s;}
-.dev-card:hover{border-color:var(--gold);transform:translateY(-2px);}
-.dev-card:active{transform:scale(.95);}
-/* Roll display */
-.dice-display{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0;}
-.dice{width:38px;height:38px;background:var(--card);border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:var(--accent);box-shadow:0 2px 6px var(--shadow);}
+.trade-row{display:flex;align-items:center;gap:4px;margin:4px 0;justify-content:center;font-weight:800;font-size:.65rem;}
+.trade-row select,.trade-row input[type=number]{padding:4px;border-radius:6px;border:2px solid var(--border);font-family:inherit;font-weight:800;font-size:.6rem;background:var(--card);color:var(--text);}
+.dice-display{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0;}
+.dice{width:34px;height:34px;background:var(--card);border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:var(--accent);box-shadow:0 2px 6px var(--shadow);}
 .dice.rolling{animation:diceRoll .5s ease;}
 @keyframes diceRoll{0%{transform:rotate(0)scale(1);}50%{transform:rotate(180deg)scale(1.2);}100%{transform:rotate(360deg)scale(1);}}
-/* Responsive */
-@media(max-width:400px){.act-grid{grid-template-columns:repeat(2,1fr);}.board-area{height:min(80vw,360px);}}
-/* Tooltip */
-.tooltip{position:absolute;background:rgba(0,0,0,.85);color:#fff;padding:4px 8px;border-radius:6px;font-size:.55rem;font-weight:800;pointer-events:none;z-index:50;white-space:nowrap;display:none;}
+.tooltip{position:absolute;background:rgba(0,0,0,.85);color:#fff;padding:4px 8px;border-radius:6px;font-size:.5rem;font-weight:800;pointer-events:none;z-index:50;white-space:nowrap;display:none;}
+/* Player panels */
+.pp{border-radius:10px;padding:6px 8px;margin:3px 0;border:2px solid var(--border);background:var(--card);transition:all .2s;}
+.pp.active-turn{border-color:var(--accent);box-shadow:0 0 8px rgba(212,136,58,.3);background:rgba(212,136,58,.04);}
+.pp-head{display:flex;align-items:center;gap:4px;margin-bottom:3px;}
+.pp-name{font-weight:900;font-size:.65rem;}
+.pp-vp{font-weight:900;font-size:.6rem;color:var(--accent);margin-left:auto;}
+.pp-badges{display:flex;gap:3px;margin-left:4px;}
+.pp-badge{font-size:.5rem;font-weight:800;padding:1px 4px;border-radius:4px;background:rgba(212,160,32,.15);color:var(--gold);border:1px solid rgba(212,160,32,.3);}
+.pp-res{display:flex;gap:2px;flex-wrap:wrap;margin-top:2px;}
+.pp-ri{font-size:.5rem;font-weight:800;padding:1px 4px;border-radius:4px;border:1px solid var(--border);background:var(--card);}
+.dev-cards{display:flex;gap:3px;flex-wrap:wrap;margin:4px 0;}
+.dev-card{padding:3px 6px;border-radius:6px;border:2px solid var(--border);background:var(--card);font-size:.5rem;font-weight:800;cursor:pointer;transition:all .15s;}
+.dev-card:hover{border-color:var(--gold);transform:translateY(-1px);}
+/* Start screen */
+.start-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:16px;}
+.start-screen h1{font-family:'Baloo 2',cursive;font-size:1.8rem;color:var(--accent);}
+.start-screen p{font-size:.7rem;font-weight:700;color:#888;max-width:300px;}
+.setup-box{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;width:min(90vw,340px);text-align:left;}
+.setup-box label{font-size:.65rem;font-weight:800;color:#888;display:block;margin:6px 0 2px;}
+.setup-box input,.setup-box select{width:100%;padding:6px;border-radius:8px;border:2px solid var(--border);font-family:inherit;font-weight:700;font-size:.7rem;background:var(--card);color:var(--text);}
+.setup-row{display:flex;gap:6px;align-items:center;margin:4px 0;}
+.setup-row input{flex:1;}
+.setup-row select{width:80px;}
+.sbtn{display:block;width:100%;padding:12px;border-radius:12px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-family:inherit;font-weight:900;font-size:.8rem;cursor:pointer;margin-top:10px;}
+.sbtn:active{transform:scale(.97);}
+@media(max-width:400px){.act-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
-
 <div class="top-bar">
     <a href="index.html" style="text-decoration:none;font-size:1rem;">🏠</a>
     <h1>🏝️ Pika-tan</h1>
-    <div>
-        <button onclick="toggleDark()">🌙</button>
-        <button onclick="showRules()">📖</button>
-    </div>
+    <div><button class="tb" onclick="toggleDark()">🌙</button> <button class="tb" onclick="showRules()">📖</button></div>
 </div>
 
-<!-- Start Screen -->
+<!-- START SCREEN -->
 <div class="start-screen" id="start-screen">
     <h1>🏝️ Pika-tan</h1>
-    <p>Settlers of Catan — Pillu & Crow Edition!<br>First to <b>10 Victory Points</b> wins!</p>
-    <div style="display:flex;gap:12px;margin-top:8px;">
-        <img src="pikachu.png" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);">
-        <span style="font-size:1.5rem;align-self:center;">⚔️</span>
-        <img src="crow.png" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid #666;">
+    <p>Settlers of Catan<br>First to <b>10 Victory Points</b> wins!</p>
+    <div class="setup-box">
+        <label>Number of Players (2–4)</label>
+        <select id="setup-count" onchange="updateSetupSlots()">
+            <option value="2" selected>2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4">4 Players</option>
+        </select>
+        <div id="setup-slots"></div>
+        <button class="sbtn" onclick="launchGame()">🏝️ Start Game!</button>
     </div>
-    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
-        <button class="mode-btn" onclick="startGame(false)"><span class="me">🤖</span>vs Crow Bot</button>
-        <button class="mode-btn" onclick="startGame(true)"><span class="me">👥</span>Pass & Play (2 Players)</button>
-    </div>
-    <div style="font-size:.55rem;color:#aaa;margin-top:12px;">
-        <button onclick="toggleDark()" style="padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.6rem;cursor:pointer;color:var(--text);">🌙 Theme</button>
-        <button onclick="showRules()" style="padding:4px 10px;border-radius:8px;border:2px solid var(--border);background:var(--card);font-family:inherit;font-weight:800;font-size:.6rem;cursor:pointer;color:var(--text);">📖 Rules</button>
-    </div>
+    <div style="margin-top:6px;"><button class="tb" onclick="toggleDark()">🌙 Theme</button> <button class="tb" onclick="showRules()">📖 Rules</button></div>
 </div>
 
+<!-- GAME -->
 <div class="game-wrap" id="game-wrap" style="display:none;">
-    <!-- Score -->
-    <div class="score-bar">
-        <div class="score-item" id="score-p1"><img src="pikachu.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover;"> ⚡ <span id="vp-p1">0</span>/10</div>
-        <div class="score-item" id="score-p2"><img src="crow.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover;"> 🐦‍⬛ <span id="vp-p2">0</span>/10</div>
-        <span id="mode-label" style="font-size:.5rem;font-weight:800;color:#aaa;align-self:center;">🤖 vs Bot</span>
-    </div>
-
-    <!-- Special Cards -->
-    <div class="panel" style="padding:6px 10px;">
-        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;" id="special-cards">
-            <div class="special-card" id="sc-road"><span>🛤️ Longest Road</span><span id="sc-road-val" class="sc-val">— (need 5+)</span></div>
-            <div class="special-card" id="sc-army"><span>🥷 Largest Army</span><span id="sc-army-val" class="sc-val">— (need 3+)</span></div>
-        </div>
-    </div>
-
-    <!-- VP Detail (collapsible) -->
-    <div class="vp-panel">
-        <div class="panel-title" style="cursor:pointer;" onclick="document.getElementById('vp-detail').style.display=document.getElementById('vp-detail').style.display==='none'?'block':'none'">🏆 Victory Points Breakdown <span style="font-size:.55rem;color:#aaa;">(tap)</span></div>
-        <div id="vp-detail" style="display:none;">
-            <div style="display:flex;gap:8px;">
-                <div style="flex:1;">
-                    <div style="text-align:center;font-weight:900;font-size:.65rem;color:var(--gold);margin-bottom:4px;">⚡ Pika</div>
-                    <div id="vp-detail-p1"></div>
-                    <div class="vp-total" id="vp-total-p1">0 / 10 VP</div>
-                </div>
-                <div style="width:1px;background:var(--border);"></div>
-                <div style="flex:1;">
-                    <div style="text-align:center;font-weight:900;font-size:.65rem;color:#888;margin-bottom:4px;">🐦‍⬛ Crow</div>
-                    <div id="vp-detail-p2"></div>
-                    <div class="vp-total" id="vp-total-p2">0 / 10 VP</div>
-                </div>
-            </div>
-            <div style="text-align:center;font-size:.55rem;color:#aaa;margin-top:6px;">🏆 First to <b>10 VP</b> wins!</div>
-        </div>
-    </div>
-
+    <!-- Player panels (generated dynamically) -->
+    <div id="player-panels" style="width:min(95vw,420px);"></div>
     <!-- Board -->
-    <div class="board-area">
-        <canvas id="board-cvs"></canvas>
-        <div class="tooltip" id="tooltip"></div>
-    </div>
-
+    <div class="board-area"><canvas id="board-cvs"></canvas><div class="tooltip" id="tooltip"></div></div>
     <!-- Dice -->
     <div class="dice-display">
-        <div class="dice" id="die1">?</div>
-        <div class="dice" id="die2">?</div>
-        <span style="font-weight:900;font-size:.7rem;color:#888;" id="roll-sum"></span>
+        <div class="dice" id="die1">?</div><div class="dice" id="die2">?</div>
+        <span style="font-weight:900;font-size:.65rem;color:#888;" id="roll-sum"></span>
     </div>
-
-    <!-- Resources -->
-    <div class="panel">
-        <div class="panel-title">📦 Your Resources</div>
-        <div class="res-bar" id="res-bar"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="panel">
-        <div class="panel-title">🎮 Actions</div>
-        <div class="act-grid" id="act-grid"></div>
-    </div>
-
-    <!-- Dev cards -->
-    <div class="panel" id="dev-panel" style="display:none;">
-        <div class="panel-title">🃏 Your Development Cards</div>
-        <div class="dev-cards" id="dev-cards"></div>
-    </div>
-
-    <!-- Dev Card Guide -->
-    <div class="panel">
-        <div class="panel-title" style="cursor:pointer;" onclick="document.getElementById('dev-guide').style.display=document.getElementById('dev-guide').style.display==='none'?'block':'none'">🃏 Dev Card Guide <span style="font-size:.6rem;color:#aaa;">(tap to expand)</span></div>
-        <div id="dev-guide" style="display:none;font-size:.6rem;line-height:1.8;color:#888;">
-            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
-                <b style="color:var(--accent);">🥷 Knight × 14</b><br>
-                Move the robber to any hex. Block that hex's production and steal 1 random resource from a player with a building there. Playing 3+ Knights (most of any player) earns <b>Largest Army = 2 VP</b>.
-            </div>
-            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
-                <b style="color:var(--accent);">🎉 Victory Point × 5</b><br>
-                Worth 1 VP each. Kept secret until you win. Auto-counted in your score — no need to play them.
-            </div>
-            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
-                <b style="color:var(--accent);">🛤️ Road Building × 2</b><br>
-                Build 2 roads for free immediately. Great for racing toward Longest Road (5+ continuous roads = 2 VP).
-            </div>
-            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
-                <b style="color:var(--accent);">🎁 Year of Plenty × 2</b><br>
-                Take any 2 resources of your choice from the bank. Can pick 2 of the same or 2 different.
-            </div>
-            <div style="margin:6px 0;padding:6px;border-radius:8px;border:2px solid var(--border);background:rgba(0,0,0,.02);">
-                <b style="color:var(--accent);">💰 Monopoly × 2</b><br>
-                Name 1 resource type. ALL other players must give you every card of that type they own. Devastating if timed right!
-            </div>
-            <div style="margin-top:8px;font-size:.55rem;color:#aaa;text-align:center;">
-                <b>Cost to buy:</b> ⛰️ Ore + 🐑 Sheep + 🌾 Wheat &nbsp;|&nbsp; <b>25 cards total in deck</b>
-            </div>
-        </div>
-    </div>
-
+    <!-- Actions for current human player -->
+    <div class="panel"><div class="panel-title" id="act-title">🎮 Actions</div><div class="act-grid" id="act-grid"></div></div>
+    <!-- Dev cards hand -->
+    <div class="panel" id="dev-panel" style="display:none;"><div class="panel-title">🃏 Your Dev Cards</div><div class="dev-cards" id="dev-cards"></div></div>
     <!-- Log -->
-    <div class="panel">
-        <div class="panel-title">📜 Game Log</div>
-        <div class="log-box" id="log-box"></div>
-    </div>
+    <div class="panel"><div class="panel-title">📜 Log</div><div class="log-box" id="log-box"></div></div>
 </div>
-
-<!-- Modals -->
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal" id="modal"></div>
-</div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal" id="modal"></div></div>
 
 <script>
-// =============================================
-// CATAN GAME ENGINE
-// =============================================
-
-// ---- CONSTANTS ----
+var PCOLORS = ['#d4a020','#5080c0','#c05030','#40a060'];
+var PCOLORS_DARK = ['#ffd060','#80b0e0','#e07050','#60c080'];
 var RES = ['wood','brick','sheep','ore','wheat'];
-var RES_E = {'wood':'🪵','brick':'🧱','sheep':'🐑','ore':'⛰️','wheat':'🌾','desert':'🏜️'};
-var RES_C = {'wood':'#2d8a4e','brick':'#c05030','sheep':'#7cba3a','ore':'#8090a0','wheat':'#d4a020','desert':'#d4c090'};
-var BUILD_COST = {
-    road: {wood:1,brick:1},
-    settlement: {wood:1,brick:1,sheep:1,wheat:1},
-    city: {ore:3,wheat:2},
-    devcard: {ore:1,sheep:1,wheat:1}
-};
-var DEV_TYPES = ['knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight',
-    'vp','vp','vp','vp','vp',
-    'roadbuild','roadbuild','yearofplenty','yearofplenty','monopoly','monopoly'];
-
-// ---- BOARD LAYOUT ----
-// Hex grid: 19 hexes (standard Catan 3-4-5-4-3)
-var HEX_LAYOUT = [
-    {q:0,r:0},{q:1,r:0},{q:2,r:0},
-    {q:-1,r:1},{q:0,r:1},{q:1,r:1},{q:2,r:1},
-    {q:-2,r:2},{q:-1,r:2},{q:0,r:2},{q:1,r:2},{q:2,r:2},
-    {q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},
-    {q:-2,r:4},{q:-1,r:4},{q:0,r:4}
-];
-var NUMBER_TOKENS = [5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11]; // 18 for non-desert
+var RES_E = {wood:'🪵',brick:'🧱',sheep:'🐑',ore:'⛰️',wheat:'🌾',desert:'🏜️'};
+var RES_C = {wood:'#2d8a4e',brick:'#c05030',sheep:'#7cba3a',ore:'#8090a0',wheat:'#d4a020',desert:'#d4c090'};
+var BUILD_COST = {road:{wood:1,brick:1},settlement:{wood:1,brick:1,sheep:1,wheat:1},city:{ore:3,wheat:2},devcard:{ore:1,sheep:1,wheat:1}};
+var DEV_TYPES = ['knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','knight','vp','vp','vp','vp','vp','roadbuild','roadbuild','yearofplenty','yearofplenty','monopoly','monopoly'];
+var HEX_LAYOUT = [{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:-1,r:1},{q:0,r:1},{q:1,r:1},{q:2,r:1},{q:-2,r:2},{q:-1,r:2},{q:0,r:2},{q:1,r:2},{q:2,r:2},{q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},{q:-2,r:4},{q:-1,r:4},{q:0,r:4}];
+var NUMBER_TOKENS = [5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11];
 var TERRAIN_POOL = ['wood','wood','wood','wood','brick','brick','brick','sheep','sheep','sheep','sheep','ore','ore','ore','wheat','wheat','wheat','wheat','desert'];
 
-// ---- STATE ----
-var G = {
-    phase: 'setup1', // setup1, setup2, roll, build, robber, discard, gameover
-    turn: 0, // 0=Pika, 1=Crow
-    hexes: [],
-    verts: [], // intersection points
-    edges: [], // roads between verts
-    players: [{res:{wood:0,brick:0,sheep:0,ore:0,wheat:0},devCards:[],usedKnights:0,roads:0,settlements:0,cities:0,longestRoad:false,largestArmy:false,vp:0,isBot:false},
-              {res:{wood:0,brick:0,sheep:0,ore:0,wheat:0},devCards:[],usedKnights:0,roads:0,settlements:0,cities:0,longestRoad:false,largestArmy:false,vp:0,isBot:true}],
-    devDeck: [],
-    robber: -1, // hex index
-    setupPlacements: 0,
-    dice: [0,0],
-    rolled: false,
-    builtThisTurn: false,
-    log: [],
-    // FLAT BUILDING REGISTRY — the single source of truth for resource distribution
-    // Each entry: {vertIdx, player, type, adjacentHexes:[hexIdx,...]}
-    buildings: []
-};
+var G = {phase:'setup1',turn:0,hexes:[],verts:[],edges:[],players:[],devDeck:[],robber:-1,setupPlacements:0,setupOrder:[],dice:[0,0],log:[],buildings:[]};
+var cvs,ctx,CW,CH,hexSize;
+var pikaImg=new Image(),crowImg=new Image();pikaImg.src='pikachu.png';crowImg.src='crow.png';
+var numPlayers=2;
 
-var cvs, ctx, CW, CH, hexSize;
-var pikaImg = new Image(), crowImg = new Image();
-pikaImg.src = 'pikachu.png'; crowImg.src = 'crow.png';
-var passAndPlay = false;
+// ===== SETUP SCREEN =====
+function updateSetupSlots(){
+    var n=+document.getElementById('setup-count').value;
+    var div=document.getElementById('setup-slots');
+    var defaults=['Pika ⚡','Crow 🐦‍⬛','Fox 🦊','Bear 🐻'];
+    var h='';
+    for(var i=0;i<n;i++){
+        h+='<div class="setup-row"><input id="pname-'+i+'" value="'+defaults[i]+'" placeholder="Player '+(i+1)+' name">';
+        h+='<select id="ptype-'+i+'"><option value="human">👤 Human</option><option value="bot"'+(i>=1?' selected':'')+'>🤖 Bot</option></select></div>';
+    }
+    div.innerHTML=h;
+}
+updateSetupSlots();
 
-function startGame(isPassAndPlay) {
-    passAndPlay = isPassAndPlay;
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('game-wrap').style.display = '';
-    document.getElementById('mode-label').innerText = isPassAndPlay ? '👥 Pass & Play' : '🤖 vs Bot';
+function launchGame(){
+    numPlayers=+document.getElementById('setup-count').value;
+    G.players=[];
+    for(var i=0;i<numPlayers;i++){
+        var name=document.getElementById('pname-'+i).value||('Player '+(i+1));
+        var isBot=document.getElementById('ptype-'+i).value==='bot';
+        G.players.push({name:name,isBot:isBot,color:PCOLORS[i],res:{wood:0,brick:0,sheep:0,ore:0,wheat:0},devCards:[],usedKnights:0,roads:0,settlements:0,cities:0,longestRoad:false,largestArmy:false,vp:0});
+    }
+    document.getElementById('start-screen').style.display='none';
+    document.getElementById('game-wrap').style.display='';
     initGame();
 }
 
-// ---- INIT ----
-function initGame() {
-    // Shuffle terrain
-    var terrains = shuffle(TERRAIN_POOL.slice());
-    var nums = NUMBER_TOKENS.slice();
-    var ni = 0;
-    G.hexes = [];
-    for (var i = 0; i < HEX_LAYOUT.length; i++) {
-        var t = terrains[i];
-        var n = 0;
-        if (t !== 'desert') { n = nums[ni]; ni++; }
-        else { G.robber = i; }
-        G.hexes.push({ q: HEX_LAYOUT[i].q, r: HEX_LAYOUT[i].r, type: t, num: n, idx: i });
+// ===== INIT =====
+function initGame(){
+    var terrains=shuffle(TERRAIN_POOL.slice()),nums=NUMBER_TOKENS.slice(),ni=0;
+    G.hexes=[];
+    for(var i=0;i<HEX_LAYOUT.length;i++){
+        var t=terrains[i],n=0;
+        if(t!=='desert'){n=nums[ni];ni++;}else G.robber=i;
+        G.hexes.push({q:HEX_LAYOUT[i].q,r:HEX_LAYOUT[i].r,type:t,num:n,idx:i});
     }
-    // Generate vertices and edges
     generateGraph();
-    // Dev deck
-    G.devDeck = shuffle(DEV_TYPES.slice());
-    // Reset players
-    for (var p = 0; p < 2; p++) {
-        G.players[p].res = {wood:0,brick:0,sheep:0,ore:0,wheat:0};
-        G.players[p].devCards = [];
-        G.players[p].usedKnights = 0;
-        G.players[p].roads = 0;
-        G.players[p].settlements = 0;
-        G.players[p].cities = 0;
-        G.players[p].longestRoad = false;
-        G.players[p].largestArmy = false;
-        G.players[p].vp = 0;
+    G.devDeck=shuffle(DEV_TYPES.slice());
+    for(var p=0;p<G.players.length;p++){
+        var pl=G.players[p];pl.res={wood:0,brick:0,sheep:0,ore:0,wheat:0};
+        pl.devCards=[];pl.usedKnights=0;pl.roads=0;pl.settlements=0;pl.cities=0;pl.longestRoad=false;pl.largestArmy=false;pl.vp=0;
     }
-    G.players[0].isBot = false;
-    G.players[1].isBot = !passAndPlay;
-    G.phase = 'setup1';
-    G.turn = 0;
-    G.setupPlacements = 0;
-    G.dice = [0,0];
-    G.rolled = false;
-    G.log = [];
-    G.buildings = [];
-    log('🏝️ Welcome to Pika-tan! Place your first settlement.');
-    setupCanvas();
-    render();
+    G.phase='setup1';G.turn=0;G.setupPlacements=0;G.dice=[0,0];G.log=[];G.buildings=[];
+    // Setup order: 0,1,...,N-1,N-1,...,1,0 (snake draft)
+    G.setupOrder=[];
+    for(var i=0;i<numPlayers;i++)G.setupOrder.push(i);
+    for(var i=numPlayers-1;i>=0;i--)G.setupOrder.push(i);
+    log('🏝️ Setup! '+G.players[G.setupOrder[0]].name+' places first.');
+    G.turn=G.setupOrder[0];
+    setupCanvas();render();
+    if(G.players[G.turn].isBot)setTimeout(botSetup,600);
 }
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=~~(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
-function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = ~~(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-
-// ---- HEX GEOMETRY ----
-function hexCenter(q, r) {
-    var rowSizes = [3, 4, 5, 4, 3];
-    var rowIdx = r;
-    var firstQ = HEX_LAYOUT.filter(function(h) { return h.r === r; })[0].q;
-    var colIdx = q - firstQ;
-    var rowW = rowSizes[rowIdx];
-    // Horizontal spacing between hex centers
-    var hSpacing = hexSize * 1.75;
-    // Vertical spacing
-    var vSpacing = hexSize * 1.52;
-    // Total board dimensions
-    var maxRowW = 5; // widest row
-    var totalW = (maxRowW - 1) * hSpacing;
-    var totalH = 4 * vSpacing;
-    // Center offset
-    var offX = CW / 2;
-    var offY = (CH - totalH) / 2 + hexSize * .1;
-    // Row offset: center each row
-    var rowOffX = (colIdx - (rowW - 1) / 2) * hSpacing;
-    var x = offX + rowOffX;
-    var y = offY + rowIdx * vSpacing;
-    return { x: x, y: y };
+// ===== HEX GEOMETRY =====
+function hexCenter(q,r){
+    var rowSizes=[3,4,5,4,3],rowIdx=r;
+    var firstQ=HEX_LAYOUT.filter(function(h){return h.r===r;})[0].q;
+    var colIdx=q-firstQ,rowW=rowSizes[rowIdx];
+    var hSpacing=hexSize*1.75,vSpacing=hexSize*1.52;
+    var offX=CW/2,offY=(CH-4*vSpacing)/2+hexSize*.1;
+    var x=offX+(colIdx-(rowW-1)/2)*hSpacing,y=offY+rowIdx*vSpacing;
+    return{x:x,y:y};
 }
+function hexCorner(cx,cy,i){var a=Math.PI/180*(60*i-30);return{x:cx+hexSize*Math.cos(a),y:cy+hexSize*Math.sin(a)};}
 
-function hexCorner(cx, cy, i) {
-    var angle = Math.PI / 180 * (60 * i - 30);
-    return { x: cx + hexSize * Math.cos(angle), y: cy + hexSize * Math.sin(angle) };
-}
-
-// ---- GRAPH: VERTICES & EDGES ----
-// Called ONCE at init — builds topology only
-function generateGraph() {
-    var vertMap = {};
-    G.verts = [];
-    G.edges = [];
-
-    // Use abstract hex-corner identity for dedup (not pixel coords)
-    // Each corner is identified by its set of adjacent hex indices
-    function cornerKey(hexIdx, cornerIdx) {
-        // Get the 3 hexes that share this corner
-        // For a flat-top hex, corner i is shared with specific neighbors
-        return hexIdx + ':' + cornerIdx;
-    }
-
-    // Build using abstract positions first, convert to pixels at render time
-    // For dedup: use pixel coords from a reference canvas size
+// ===== GRAPH =====
+function generateGraph(){
+    var vertMap={};G.verts=[];G.edges=[];
     setupCanvasSize();
-
-    function vKey(x, y) { return Math.round(x * 2) + ',' + Math.round(y * 2); }
-
-    function getVert(x, y, hexIdx) {
-        var k = vKey(x, y);
-        if (vertMap[k] !== undefined) {
-            var v = G.verts[vertMap[k]];
-            if (v.hexes.indexOf(hexIdx) < 0) v.hexes.push(hexIdx);
-            return vertMap[k];
-        }
-        var vi = G.verts.length;
-        G.verts.push({ x: x, y: y, hexes: [hexIdx], building: null, player: -1, idx: vi });
-        vertMap[k] = vi;
-        return vi;
+    function vKey(x,y){return Math.round(x*2)+','+Math.round(y*2);}
+    function getVert(x,y,hi){
+        var k=vKey(x,y);
+        if(vertMap[k]!==undefined){var v=G.verts[vertMap[k]];if(v.hexes.indexOf(hi)<0)v.hexes.push(hi);return vertMap[k];}
+        var vi=G.verts.length;G.verts.push({x:x,y:y,hexes:[hi],building:null,player:-1,idx:vi});vertMap[k]=vi;return vi;
     }
-
-    for (var hi = 0; hi < G.hexes.length; hi++) {
-        var h = G.hexes[hi];
-        var c = hexCenter(h.q, h.r);
-        var corners = [];
-        for (var ci = 0; ci < 6; ci++) {
-            var pt = hexCorner(c.x, c.y, ci);
-            corners.push(getVert(pt.x, pt.y, hi));
-        }
-        h.corners = corners;
-        for (var ci = 0; ci < 6; ci++) {
-            var a = corners[ci], b = corners[(ci + 1) % 6];
-            var ek = Math.min(a, b) + '-' + Math.max(a, b);
-            var exists = G.edges.some(function(e) { return e.key === ek; });
-            if (!exists) G.edges.push({ a: a, b: b, key: ek, player: -1, idx: G.edges.length });
-        }
+    for(var hi=0;hi<G.hexes.length;hi++){
+        var h=G.hexes[hi],c=hexCenter(h.q,h.r),corners=[];
+        for(var ci=0;ci<6;ci++){var pt=hexCorner(c.x,c.y,ci);corners.push(getVert(pt.x,pt.y,hi));}
+        h.corners=corners;
+        for(var ci=0;ci<6;ci++){var a=corners[ci],b=corners[(ci+1)%6],ek=Math.min(a,b)+'-'+Math.max(a,b);
+            if(!G.edges.some(function(e){return e.key===ek;}))G.edges.push({a:a,b:b,key:ek,player:-1,idx:G.edges.length});}
     }
 }
+function updateVertexPositions(){setupCanvasSize();for(var hi=0;hi<G.hexes.length;hi++){var h=G.hexes[hi],c=hexCenter(h.q,h.r);for(var ci=0;ci<6;ci++){var pt=hexCorner(c.x,c.y,ci);var vi=h.corners[ci];G.verts[vi].x=pt.x;G.verts[vi].y=pt.y;}}}
+function setupCanvasSize(){cvs=document.getElementById('board-cvs');var r=cvs.getBoundingClientRect(),dpr=window.devicePixelRatio||1;CW=r.width;CH=r.height;cvs.width=Math.round(CW*dpr);cvs.height=Math.round(CH*dpr);ctx=cvs.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);hexSize=Math.min(CW/10.5,CH/8.5);}
+function setupCanvas(){setupCanvasSize();updateVertexPositions();restoreClickHandler();cvs.onmousemove=function(e){var r=cvs.getBoundingClientRect();handleHover(e.clientX-r.left,e.clientY-r.top);};}
+function restoreClickHandler(){cvs.onclick=function(e){var r=cvs.getBoundingClientRect();handleClick(e.clientX-r.left,e.clientY-r.top);};}
 
-// Called on resize — updates pixel coordinates without touching buildings/roads
-function updateVertexPositions() {
-    setupCanvasSize();
-    var vertMap = {};
-    function vKey(x, y) { return Math.round(x * 2) + ',' + Math.round(y * 2); }
-
-    for (var hi = 0; hi < G.hexes.length; hi++) {
-        var h = G.hexes[hi];
-        var c = hexCenter(h.q, h.r);
-        for (var ci = 0; ci < 6; ci++) {
-            var pt = hexCorner(c.x, c.y, ci);
-            var k = vKey(pt.x, pt.y);
-            if (!vertMap[k]) {
-                // Find matching vertex in h.corners[ci]
-                var vi = h.corners[ci];
-                G.verts[vi].x = pt.x;
-                G.verts[vi].y = pt.y;
-                vertMap[k] = true;
-            }
-        }
-    }
+// ===== BUILDING REGISTRY =====
+function registerBuilding(vi,player,type){
+    var v=G.verts[vi];v.building=type;v.player=player;
+    var adj=[];
+    for(var hi=0;hi<G.hexes.length;hi++){var hex=G.hexes[hi],hc=hexCenter(hex.q,hex.r);
+        for(var ci=0;ci<6;ci++){var pt=hexCorner(hc.x,hc.y,ci);if(Math.hypot(pt.x-v.x,pt.y-v.y)<hexSize*.3){adj.push(hi);break;}}}
+    var existing=null;for(var bi=0;bi<G.buildings.length;bi++)if(G.buildings[bi].vertIdx===vi){existing=G.buildings[bi];break;}
+    if(existing){existing.type=type;existing.player=player;existing.adjacentHexes=adj;}
+    else G.buildings.push({vertIdx:vi,player:player,type:type,adjacentHexes:adj});
+}
+function distributeResources(sum){
+    var gave=false;
+    for(var bi=0;bi<G.buildings.length;bi++){var b=G.buildings[bi];
+        for(var ai=0;ai<b.adjacentHexes.length;ai++){var hi=b.adjacentHexes[ai],hex=G.hexes[hi];
+            if(hex.num===sum&&hex.type!=='desert'&&G.robber!==hi){var amt=b.type==='city'?2:1;G.players[b.player].res[hex.type]+=amt;
+                log(G.players[b.player].name+' +'+amt+' '+RES_E[hex.type]);gave=true;}}}
+    if(!gave)log('No buildings on '+sum+'.');
 }
 
-function setupCanvasSize() {
-    cvs = document.getElementById('board-cvs');
-    var rect = cvs.getBoundingClientRect();
-    var dpr = window.devicePixelRatio || 1;
-    CW = rect.width;
-    CH = rect.height;
-    cvs.width = Math.round(CW * dpr);
-    cvs.height = Math.round(CH * dpr);
-    ctx = cvs.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    hexSize = Math.min(CW / 10.5, CH / 8.5);
-}
-
-// Register a building — finds ALL adjacent hexes by brute-force distance check
-function registerBuilding(vertIdx, player, buildingType) {
-    var v = G.verts[vertIdx];
-    v.building = buildingType;
-    v.player = player;
-
-    // Find which hexes this vertex touches
-    var adjHexes = [];
-    for (var hi = 0; hi < G.hexes.length; hi++) {
-        var hex = G.hexes[hi];
-        var hc = hexCenter(hex.q, hex.r);
-        for (var ci = 0; ci < 6; ci++) {
-            var pt = hexCorner(hc.x, hc.y, ci);
-            if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
-                adjHexes.push(hi);
-                break; // found match for this hex, move to next
-            }
-        }
-    }
-
-    // Check if building already exists for this vertex (upgrade case)
-    var existing = null;
-    for (var bi = 0; bi < G.buildings.length; bi++) {
-        if (G.buildings[bi].vertIdx === vertIdx) { existing = G.buildings[bi]; break; }
-    }
-
-    if (existing) {
-        existing.type = buildingType;
-        existing.player = player;
-        existing.adjacentHexes = adjHexes;
-    } else {
-        G.buildings.push({ vertIdx: vertIdx, player: player, type: buildingType, adjacentHexes: adjHexes });
-    }
-
-    log('📍 ' + pName(player) + ' ' + buildingType + ' registered on ' + adjHexes.length + ' hexes: ' +
-        adjHexes.map(function(hi) { return RES_E[G.hexes[hi].type] + G.hexes[hi].num; }).join(', '));
-}
-
-// DISTRIBUTE RESOURCES — dead simple, loops flat buildings list
-function distributeResources(sum) {
-    var gave = false;
-    for (var bi = 0; bi < G.buildings.length; bi++) {
-        var b = G.buildings[bi];
-        for (var ai = 0; ai < b.adjacentHexes.length; ai++) {
-            var hi = b.adjacentHexes[ai];
-            var hex = G.hexes[hi];
-            if (hex.num === sum && hex.type !== 'desert' && G.robber !== hi) {
-                var amt = b.type === 'city' ? 2 : 1;
-                G.players[b.player].res[hex.type] += amt;
-                log(pName(b.player) + ' +' + amt + ' ' + RES_E[hex.type] + ' (from ' + hex.num + ')');
-                gave = true;
-            }
-        }
-    }
-    if (!gave) log('No buildings on ' + sum + ' — no resources.');
-}
-
-function setupCanvas() {
-    setupCanvasSize();
-    updateVertexPositions();
-    restoreClickHandler();
-    cvs.onmousemove = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        handleHover(mx, my);
-    };
-}
-
-function restoreClickHandler() {
-    cvs.onclick = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        handleClick(mx, my);
-    };
-}
-
-// ---- RENDERING ----
-function render() {
-    if (!ctx) return;
-    var dk = document.body.classList.contains('dark');
-    // Clear
-    ctx.fillStyle = dk ? '#0a1828' : '#a0c8e8';
-    ctx.fillRect(0, 0, CW, CH);
-    // Ocean wave texture
-    ctx.strokeStyle = dk ? 'rgba(40,80,120,.15)' : 'rgba(255,255,255,.2)';
-    ctx.lineWidth = 1;
-    for (var wy = 0; wy < CH; wy += 12) {
-        ctx.beginPath();
-        for (var wx = 0; wx < CW; wx += 4) {
-            var yo = Math.sin(wx * .05 + wy * .08) * 2;
-            if (wx === 0) ctx.moveTo(wx, wy + yo); else ctx.lineTo(wx, wy + yo);
-        }
-        ctx.stroke();
-    }
-    // Island backing (soft land behind hexes)
-    var midX = CW / 2, midY = CH / 2;
-    var islandR = hexSize * 4.2;
-    var ig = ctx.createRadialGradient(midX, midY, islandR * .3, midX, midY, islandR);
-    ig.addColorStop(0, dk ? 'rgba(40,50,30,.6)' : 'rgba(200,210,160,.5)');
-    ig.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = ig;
-    ctx.beginPath(); ctx.arc(midX, midY, islandR, 0, Math.PI * 2); ctx.fill();
-    // Draw hexes
-    for (var hi = 0; hi < G.hexes.length; hi++) drawHex(hi);
-    // Draw edges (roads)
-    for (var ei = 0; ei < G.edges.length; ei++) {
-        var e = G.edges[ei];
-        if (e.player >= 0) {
-            var va = G.verts[e.a], vb = G.verts[e.b];
-            ctx.strokeStyle = e.player === 0 ? '#e8a020' : '#555';
-            ctx.lineWidth = 4;
-            ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(va.x, va.y); ctx.lineTo(vb.x, vb.y); ctx.stroke();
-            ctx.strokeStyle = e.player === 0 ? '#ffd060' : '#888';
-            ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(va.x, va.y); ctx.lineTo(vb.x, vb.y); ctx.stroke();
-        }
-    }
-    // Draw vertices (settlements/cities)
-    for (var vi = 0; vi < G.verts.length; vi++) {
-        var v = G.verts[vi];
-        if (v.building) drawBuilding(v);
-    }
-    // Highlight valid placements
-    if (G.phase === 'setup1' || G.phase === 'setup2' || G.phase === 'build') {
-        if (G.turn === 0) drawValidPlacements();
-    }
-    // Update UI
+// ===== RENDER =====
+function render(){
+    if(!ctx)return;var dk=document.body.classList.contains('dark');
+    ctx.fillStyle=dk?'#0a1828':'#a0c8e8';ctx.fillRect(0,0,CW,CH);
+    ctx.strokeStyle=dk?'rgba(40,80,120,.15)':'rgba(255,255,255,.2)';ctx.lineWidth=1;
+    for(var wy=0;wy<CH;wy+=12){ctx.beginPath();for(var wx=0;wx<CW;wx+=4){var yo=Math.sin(wx*.05+wy*.08)*2;if(wx===0)ctx.moveTo(wx,wy+yo);else ctx.lineTo(wx,wy+yo);}ctx.stroke();}
+    var ig=ctx.createRadialGradient(CW/2,CH/2,hexSize*1.5,CW/2,CH/2,hexSize*4.2);
+    ig.addColorStop(0,dk?'rgba(40,50,30,.6)':'rgba(200,210,160,.5)');ig.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=ig;ctx.beginPath();ctx.arc(CW/2,CH/2,hexSize*4.2,0,Math.PI*2);ctx.fill();
+    for(var hi=0;hi<G.hexes.length;hi++)drawHex(hi);
+    // Roads
+    for(var ei=0;ei<G.edges.length;ei++){var e=G.edges[ei];if(e.player>=0){var va=G.verts[e.a],vb=G.verts[e.b];
+        ctx.strokeStyle=dk?PCOLORS_DARK[e.player]:G.players[e.player].color;ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(va.x,va.y);ctx.lineTo(vb.x,vb.y);ctx.stroke();
+        ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(va.x,va.y);ctx.lineTo(vb.x,vb.y);ctx.stroke();}}
+    // Buildings
+    for(var vi=0;vi<G.verts.length;vi++){var v=G.verts[vi];if(v.building)drawBuilding(v);}
+    if(G.phase==='setup1'||G.phase==='setup2')drawValidPlacements();
     updateUI();
 }
-
-function drawHex(hi) {
-    var h = G.hexes[hi];
-    var c = hexCenter(h.q, h.r);
-    var dk = document.body.classList.contains('dark');
-    // Fill
-    ctx.fillStyle = dk ? darken(RES_C[h.type], .5) : RES_C[h.type];
-    ctx.beginPath();
-    for (var i = 0; i < 6; i++) {
-        var pt = hexCorner(c.x, c.y, i);
-        if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
-    }
-    ctx.closePath(); ctx.fill();
-    // Border
-    ctx.strokeStyle = dk ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.15)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    // Robber
-    if (G.robber === hi) {
-        ctx.fillStyle = 'rgba(0,0,0,.5)';
-        ctx.beginPath(); ctx.arc(c.x, c.y, hexSize * .25, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.font = '700 ' + hexSize * .22 + 'px Nunito'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('🥷', c.x, c.y);
-    }
-    // Number token
-    if (h.num > 0 && G.robber !== hi) {
-        ctx.fillStyle = dk ? '#222' : '#fff';
-        ctx.beginPath(); ctx.arc(c.x, c.y, hexSize * .28, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = h.num === 6 || h.num === 8 ? '#c03030' : '#888';
-        ctx.lineWidth = h.num === 6 || h.num === 8 ? 2 : 1;
-        ctx.stroke();
-        ctx.fillStyle = h.num === 6 || h.num === 8 ? '#c03030' : (dk ? '#ddd' : '#333');
-        ctx.font = '900 ' + hexSize * .24 + 'px Nunito';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(h.num, c.x, c.y);
-        // Dots for probability
-        var dots = probDots(h.num);
-        ctx.fillStyle = h.num === 6 || h.num === 8 ? '#c03030' : '#888';
-        for (var di = 0; di < dots; di++) {
-            ctx.beginPath();
-            ctx.arc(c.x - (dots - 1) * 2.5 + di * 5, c.y + hexSize * .16, 1.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-    // Resource icon
-    if (h.type !== 'desert' && G.robber !== hi) {
-        ctx.font = hexSize * .2 + 'px sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(RES_E[h.type], c.x, c.y - hexSize * .42);
+function drawHex(hi){
+    var h=G.hexes[hi],c=hexCenter(h.q,h.r),dk=document.body.classList.contains('dark');
+    ctx.fillStyle=dk?darken(RES_C[h.type],.5):RES_C[h.type];
+    ctx.beginPath();for(var i=0;i<6;i++){var pt=hexCorner(c.x,c.y,i);if(i===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);}ctx.closePath();ctx.fill();
+    ctx.strokeStyle=dk?'rgba(255,255,255,.1)':'rgba(0,0,0,.15)';ctx.lineWidth=1.5;ctx.stroke();
+    if(G.robber===hi){ctx.fillStyle='rgba(0,0,0,.5)';ctx.beginPath();ctx.arc(c.x,c.y,hexSize*.25,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 '+hexSize*.22+'px Nunito';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🥷',c.x,c.y);}
+    if(h.num>0&&G.robber!==hi){ctx.fillStyle=dk?'#222':'#fff';ctx.beginPath();ctx.arc(c.x,c.y,hexSize*.28,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle=h.num===6||h.num===8?'#c03030':'#888';ctx.lineWidth=h.num===6||h.num===8?2:1;ctx.stroke();
+        ctx.fillStyle=h.num===6||h.num===8?'#c03030':(dk?'#ddd':'#333');ctx.font='900 '+hexSize*.24+'px Nunito';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(h.num,c.x,c.y);
+        var dots=probDots(h.num);ctx.fillStyle=h.num===6||h.num===8?'#c03030':'#888';for(var di=0;di<dots;di++){ctx.beginPath();ctx.arc(c.x-(dots-1)*2.5+di*5,c.y+hexSize*.16,1.5,0,Math.PI*2);ctx.fill();}}
+    if(h.type!=='desert'&&G.robber!==hi){ctx.font=hexSize*.2+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(RES_E[h.type],c.x,c.y-hexSize*.42);}
+}
+function drawBuilding(v){
+    var sz=hexSize*.2,dk=document.body.classList.contains('dark'),col=dk?PCOLORS_DARK[v.player]:G.players[v.player].color;
+    if(v.building==='settlement'){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(v.x,v.y-sz*1.2);ctx.lineTo(v.x+sz,v.y-sz*.3);ctx.lineTo(v.x+sz,v.y+sz*.5);ctx.lineTo(v.x-sz,v.y+sz*.5);ctx.lineTo(v.x-sz,v.y-sz*.3);ctx.closePath();ctx.fill();ctx.strokeStyle='rgba(0,0,0,.3)';ctx.lineWidth=1.5;ctx.stroke();}
+    else if(v.building==='city'){var cs=sz*1.4;ctx.fillStyle=col;ctx.fillRect(v.x-cs,v.y-cs*.3,cs*2,cs*1.1);ctx.fillRect(v.x-cs,v.y-cs,cs*.5,cs*.7);ctx.fillRect(v.x+cs*.5,v.y-cs,cs*.5,cs*.7);ctx.strokeStyle='rgba(0,0,0,.3)';ctx.lineWidth=1.5;ctx.strokeRect(v.x-cs,v.y-cs*.3,cs*2,cs*1.1);}
+}
+function drawValidPlacements(){
+    if(!G.players[G.turn].isBot){var placed=G.verts.filter(function(v){return v.player===G.turn&&v.building==='settlement';}).length;
+        var expected=G.phase==='setup1'?1:2;
+        if(placed<expected){for(var vi=0;vi<G.verts.length;vi++){if(canPlaceSetup(vi)){var v=G.verts[vi];ctx.fillStyle='rgba(255,215,0,.3)';ctx.beginPath();ctx.arc(v.x,v.y,hexSize*.15,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ffd700';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(v.x,v.y,hexSize*.15,0,Math.PI*2);ctx.stroke();}}}
     }
 }
+function darken(hex,f){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'rgb('+~~(r*f)+','+~~(g*f)+','+~~(b*f)+')';}
+function probDots(n){return[0,0,1,2,3,4,5,0,5,4,3,2,1][n]||0;}
 
-function drawBuilding(v) {
-    var sz = hexSize * .2;
-    if (v.building === 'settlement') {
-        // House shape
-        ctx.fillStyle = v.player === 0 ? '#ffd060' : '#666';
-        ctx.beginPath();
-        ctx.moveTo(v.x, v.y - sz * 1.2);
-        ctx.lineTo(v.x + sz, v.y - sz * .3);
-        ctx.lineTo(v.x + sz, v.y + sz * .5);
-        ctx.lineTo(v.x - sz, v.y + sz * .5);
-        ctx.lineTo(v.x - sz, v.y - sz * .3);
-        ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = v.player === 0 ? '#c8a020' : '#444';
-        ctx.lineWidth = 1.5; ctx.stroke();
-    } else if (v.building === 'city') {
-        // Larger castle shape
-        var cs = sz * 1.4;
-        ctx.fillStyle = v.player === 0 ? '#ffd060' : '#666';
-        ctx.fillRect(v.x - cs, v.y - cs * .3, cs * 2, cs * 1.1);
-        // Towers
-        ctx.fillRect(v.x - cs, v.y - cs, cs * .5, cs * .7);
-        ctx.fillRect(v.x + cs * .5, v.y - cs, cs * .5, cs * .7);
-        ctx.strokeStyle = v.player === 0 ? '#c8a020' : '#444';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(v.x - cs, v.y - cs * .3, cs * 2, cs * 1.1);
-    }
+// ===== CLICK =====
+function handleClick(mx,my){if(G.players[G.turn].isBot)return;if(G.phase==='setup1'||G.phase==='setup2')handleSetupClick(mx,my);else if(G.phase==='robber')handleRobberClick(mx,my);}
+function handleSetupClick(mx,my){
+    var placed=G.verts.filter(function(v){return v.player===G.turn&&v.building==='settlement';}).length;
+    var expected=G.phase==='setup1'?1:2;
+    if(placed<expected){var best=findClosestVert(mx,my,hexSize*.3);if(best>=0&&canPlaceSetup(best)){registerBuilding(best,G.turn,'settlement');G.players[G.turn].settlements++;log(G.players[G.turn].name+' placed a settlement.');
+        if(G.phase==='setup2'){for(var hi=0;hi<G.hexes.length;hi++){var hex=G.hexes[hi];if(hex.type==='desert')continue;var hc=hexCenter(hex.q,hex.r);for(var ci=0;ci<6;ci++){var pt=hexCorner(hc.x,hc.y,ci);if(Math.hypot(pt.x-G.verts[best].x,pt.y-G.verts[best].y)<hexSize*.3){G.players[G.turn].res[hex.type]++;break;}}}}
+        render();}}
+    else{var be=findClosestEdge(mx,my,hexSize*.2);if(be>=0){var e=G.edges[be];if(e.player>=0)return;
+        var lastS=-1;for(var vi=G.verts.length-1;vi>=0;vi--)if(G.verts[vi].player===G.turn&&G.verts[vi].building==='settlement'){var sc=0;for(var vj=0;vj<=vi;vj++)if(G.verts[vj].player===G.turn&&G.verts[vj].building)sc++;if(sc===expected){lastS=vi;break;}}
+        if(lastS>=0){var va=G.verts[e.a],vb=G.verts[e.b],sv=G.verts[lastS];if(Math.hypot(va.x-sv.x,va.y-sv.y)<hexSize*.3||Math.hypot(vb.x-sv.x,vb.y-sv.y)<hexSize*.3){e.player=G.turn;G.players[G.turn].roads++;log(G.players[G.turn].name+' placed a road.');G.setupPlacements++;advanceSetup();render();}}}}
 }
-
-function drawValidPlacements() {
-    // Show clickable spots
-    if (G.phase === 'setup1' || G.phase === 'setup2') {
-        // If no settlement placed yet this setup turn
-        var placed = G.verts.filter(function(v) { return v.player === G.turn && v.building === 'settlement'; }).length;
-        var expected = G.phase === 'setup1' ? 1 : 2;
-        if (placed < expected) {
-            // Show valid settlement spots
-            for (var vi = 0; vi < G.verts.length; vi++) {
-                var v = G.verts[vi];
-                if (canPlaceSetup(vi)) {
-                    ctx.fillStyle = 'rgba(255,215,0,.3)';
-                    ctx.beginPath(); ctx.arc(v.x, v.y, hexSize * .15, 0, Math.PI * 2); ctx.fill();
-                    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 1.5;
-                    ctx.beginPath(); ctx.arc(v.x, v.y, hexSize * .15, 0, Math.PI * 2); ctx.stroke();
-                }
-            }
-        } else {
-            // Show valid road spots from last placed settlement
-            var lastSettlement = -1;
-            for (var vi = G.verts.length - 1; vi >= 0; vi--) {
-                if (G.verts[vi].player === G.turn && G.verts[vi].building === 'settlement') { lastSettlement = vi; break; }
-            }
-            if (lastSettlement >= 0) {
-                for (var ei = 0; ei < G.edges.length; ei++) {
-                    var e = G.edges[ei];
-                    if (e.player >= 0) continue;
-                    if (e.a === lastSettlement || e.b === lastSettlement) {
-                        var va = G.verts[e.a], vb = G.verts[e.b];
-                        var mx = (va.x + vb.x) / 2, my = (va.y + vb.y) / 2;
-                        ctx.fillStyle = 'rgba(255,215,0,.3)';
-                        ctx.beginPath(); ctx.arc(mx, my, hexSize * .1, 0, Math.PI * 2); ctx.fill();
-                    }
-                }
-            }
-        }
-    }
-}
-
-function darken(hex, factor) {
-    var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-    return 'rgb(' + ~~(r * factor) + ',' + ~~(g * factor) + ',' + ~~(b * factor) + ')';
-}
-
-function probDots(n) { return [0, 0, 1, 2, 3, 4, 5, 0, 5, 4, 3, 2, 1][n] || 0; }
-
-// ---- CLICK HANDLING ----
-function handleClick(mx, my) {
-    if (G.turn === 1 && G.players[1].isBot) return; // Bot's turn, ignore clicks
-    
-    if (G.phase === 'setup1' || G.phase === 'setup2') {
-        handleSetupClick(mx, my);
-    } else if (G.phase === 'robber') {
-        handleRobberClick(mx, my);
-    }
-}
-
-function handleSetupClick(mx, my) {
-    var placed = G.verts.filter(function(v) { return v.player === G.turn && v.building === 'settlement'; }).length;
-    var expected = G.phase === 'setup1' ? 1 : 2;
-    
-    if (placed < expected) {
-        // Place settlement
-        var best = findClosestVert(mx, my, hexSize * .3);
-        if (best >= 0 && canPlaceSetup(best)) {
-            registerBuilding(best, G.turn, 'settlement');
-            G.players[G.turn].settlements++;
-            log(pName(G.turn) + ' placed a settlement.');
-            // In setup2, give resources from adjacent hexes
-            if (G.phase === 'setup2') {
-                G.verts[best].hexes.forEach(function(hi) {
-                    var h = G.hexes[hi];
-                    if (h.type !== 'desert') G.players[G.turn].res[h.type]++;
-                });
-            }
-            render();
-        }
-    } else {
-        // Place road
-        var bestEdge = findClosestEdge(mx, my, hexSize * .2);
-        if (bestEdge >= 0) {
-            var e = G.edges[bestEdge];
-            if (e.player >= 0) return;
-            // Must connect to last settlement
-            var lastS = -1;
-            for (var vi = G.verts.length - 1; vi >= 0; vi--) {
-                if (G.verts[vi].player === G.turn && G.verts[vi].building === 'settlement') {
-                    // Check if this is the setup settlement (latest one)
-                    var sCount = 0;
-                    for (var vj = 0; vj <= vi; vj++) if (G.verts[vj].player === G.turn && G.verts[vj].building) sCount++;
-                    if (sCount === expected) { lastS = vi; break; }
-                }
-            }
-            if (lastS >= 0 && (e.a === lastS || e.b === lastS)) {
-                e.player = G.turn;
-                G.players[G.turn].roads++;
-                log(pName(G.turn) + ' placed a road.');
-                G.setupPlacements++;
-                advanceSetup();
-                render();
-            }
-        }
-    }
-}
-
-function advanceSetup() {
-    // Setup order: P1 settle+road, P2 settle+road, P2 settle+road, P1 settle+road
-    if (G.setupPlacements === 1) {
-        G.turn = 1;
-        log('🐦‍⬛ Crow\'s turn to place.');
-        if (G.players[1].isBot) setTimeout(botSetup, 600);
-    } else if (G.setupPlacements === 2) {
-        G.phase = 'setup2';
-        // Stay on player 1 (reverse order)
-        log('🐦‍⬛ Crow places second settlement.');
-        if (G.players[1].isBot) setTimeout(botSetup, 600);
-    } else if (G.setupPlacements === 3) {
-        G.turn = 0;
-        log('⚡ Pika places second settlement.');
-    } else if (G.setupPlacements === 4) {
-        G.phase = 'roll';
-        G.turn = 0;
-        log('🎲 Setup complete! Pika rolls first.');
-    }
-    render();
-}
-
-function canPlaceSetup(vi) {
-    var v = G.verts[vi];
-    if (v.building) return false;
-    if (v.hexes.length === 0) return false;
-    // Distance rule: no other building within 1 edge length (pixel distance)
-    var minDist = hexSize * 1.1;
-    for (var ovi = 0; ovi < G.verts.length; ovi++) {
-        if (ovi === vi) continue;
-        if (G.verts[ovi].building) {
-            var d = Math.hypot(G.verts[ovi].x - v.x, G.verts[ovi].y - v.y);
-            if (d < minDist) return false;
-        }
-    }
-    return true;
-}
-
-// ---- MAIN GAME ACTIONS ----
-function rollDice() {
-    if (G.phase !== 'roll') return;
-    if (G.players[G.turn].isBot) return; // bot rolls in botTurn
-    var d1 = 1 + ~~(Math.random() * 6), d2 = 1 + ~~(Math.random() * 6);
-    G.dice = [d1, d2]; G.rolled = true;
-    var sum = d1 + d2;
-    document.getElementById('die1').innerText = d1;
-    document.getElementById('die2').innerText = d2;
-    document.getElementById('die1').classList.add('rolling');
-    document.getElementById('die2').classList.add('rolling');
-    setTimeout(function() { document.getElementById('die1').classList.remove('rolling'); document.getElementById('die2').classList.remove('rolling'); }, 500);
-    document.getElementById('roll-sum').innerText = '= ' + sum;
-    log('🎲 Pika rolled ' + d1 + ' + ' + d2 + ' = ' + sum);
-    
-    if (sum === 7) {
-        // Discard if > 7 cards, then move robber
-        var needDiscard = false;
-        for (var p = 0; p < 2; p++) {
-            var total = totalRes(p);
-            if (total > 7) {
-                // Auto-discard random half for simplicity
-                var discard = ~~(total / 2);
-                for (var d = 0; d < discard; d++) {
-                    var owned = RES.filter(function(r) { return G.players[p].res[r] > 0; });
-                    if (owned.length > 0) {
-                        var r = owned[~~(Math.random() * owned.length)];
-                        G.players[p].res[r]--;
-                    }
-                }
-                log(pName(p) + ' discarded ' + discard + ' cards.');
-            }
-        }
-        G.phase = 'robber';
-        log('🥷 Move the robber! Tap a hex.');
-    } else {
-        // Distribute resources
-        distributeResources(sum);
-        G.phase = 'build';
-    }
-    render();
-}
-
-function handleRobberClick(mx, my) {
-    // Find hex clicked
-    for (var hi = 0; hi < G.hexes.length; hi++) {
-        var h = G.hexes[hi];
-        var c = hexCenter(h.q, h.r);
-        if (Math.hypot(mx - c.x, my - c.y) < hexSize * .6) {
-            if (hi === G.robber) continue; // Can't stay
-            G.robber = hi;
-            log('🥷 Robber moved to ' + RES_E[h.type] + ' ' + h.num);
-            // Steal from opponent if they have a building there
-            var opp = 1 - G.turn;
-            var canSteal = G.buildings.some(function(b) { return b.adjacentHexes.indexOf(hi) >= 0 && b.player === opp; });
-            if (canSteal && totalRes(opp) > 0) {
-                var owned = RES.filter(function(r) { return G.players[opp].res[r] > 0; });
-                if (owned.length > 0) {
-                    var r = owned[~~(Math.random() * owned.length)];
-                    G.players[opp].res[r]--;
-                    G.players[G.turn].res[r]++;
-                    log(pName(G.turn) + ' stole ' + RES_E[r] + ' from ' + pName(opp));
-                }
-            }
-            G.phase = 'build';
-            render();
-            return;
-        }
-    }
-}
-
-function buildRoad() {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    if (!canAfford(G.turn, BUILD_COST.road)) { log('❌ Not enough resources for a road.'); return; }
-    // Check if any valid edge exists
-    var hasValid = G.edges.some(function(e) { return e.player < 0 && isConnected(e.idx, 0); });
-    if (!hasValid) { log('❌ No valid road spots! Build more settlements first.'); return; }
-    log('🛤️ Click an edge to build a road. (Click empty to cancel)');
-    G.phase = 'placeroad';
-    cvs.onclick = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        var ei = findClosestEdge(mx, my, hexSize * .25);
-        if (ei >= 0 && G.edges[ei].player < 0 && isConnected(ei, G.turn)) {
-            pay(G.turn, BUILD_COST.road);
-            G.edges[ei].player = G.turn;
-            G.players[G.turn].roads++;
-            log('⚡ Pika built a road.');
-            checkLongestRoad();
-            G.phase = 'build';
-            restoreClickHandler();
-            checkWin();
-            render();
-        } else {
-            // Clicked nothing valid — cancel
-            cancelPlacement();
-        }
-    };
-    render();
-}
-
-function buildSettlement() {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    if (!canAfford(G.turn, BUILD_COST.settlement)) { log('❌ Not enough resources.'); return; }
-    // Check if any valid vertex exists
-    var hasValid = false;
-    for (var vi = 0; vi < G.verts.length; vi++) {
-        if (canBuildSettlement(vi, G.turn)) { hasValid = true; break; }
-    }
-    if (!hasValid) { log('❌ No valid settlement spots! You need connected roads with open intersections.'); return; }
-    log('🏠 Click a vertex to build. (Click empty to cancel)');
-    G.phase = 'placesettlement';
-    cvs.onclick = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        var vi = findClosestVert(mx, my, hexSize * .3);
-        if (vi >= 0 && canBuildSettlement(vi, G.turn)) {
-            pay(G.turn, BUILD_COST.settlement);
-            registerBuilding(vi, G.turn, 'settlement');
-            G.players[G.turn].settlements++;
-            log('⚡ Pika built a settlement!');
-            G.phase = 'build';
-            restoreClickHandler();
-            checkWin();
-            render();
-        } else {
-            cancelPlacement();
-        }
-    };
-    render();
-}
-
-function buildCity() {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    if (!canAfford(G.turn, BUILD_COST.city)) { log('❌ Not enough resources.'); return; }
-    // Check if player has any settlements to upgrade
-    var hasSettlement = G.verts.some(function(v) { return v.building === 'settlement' && v.player === 0; });
-    if (!hasSettlement) { log('❌ No settlements to upgrade! Build a settlement first.'); return; }
-    log('🏰 Click a settlement to upgrade. (Click empty to cancel)');
-    G.phase = 'placecity';
-    cvs.onclick = function(e) {
-        var rect = cvs.getBoundingClientRect();
-        var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        var vi = findClosestVert(mx, my, hexSize * .3);
-        if (vi >= 0 && G.verts[vi].building === 'settlement' && G.verts[vi].player === G.turn) {
-            pay(G.turn, BUILD_COST.city);
-            registerBuilding(vi, G.turn, 'city');
-            G.players[G.turn].settlements--;
-            G.players[G.turn].cities++;
-            log('⚡ Pika upgraded to a city!');
-            G.phase = 'build';
-            restoreClickHandler();
-            checkWin();
-            render();
-        } else {
-            cancelPlacement();
-        }
-    };
-    render();
-}
-
-function cancelPlacement() {
-    G.phase = 'build';
-    restoreClickHandler();
-    log('↩️ Cancelled placement.');
-    render();
-}
-
-function buyDevCard() {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    if (!canAfford(G.turn, BUILD_COST.devcard)) { log('❌ Not enough resources.'); return; }
-    if (G.devDeck.length === 0) { log('❌ No dev cards left!'); return; }
-    pay(G.turn, BUILD_COST.devcard);
-    var card = G.devDeck.pop();
-    G.players[G.turn].devCards.push(card);
-    if (card === 'vp') {
-        log('⚡ Pika got a Victory Point card! 🎉');
-    } else {
-        log('⚡ Pika bought a dev card: ' + devCardName(card));
-    }
-    checkWin();
-    render();
-}
-
-function playDevCard(idx) {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    var card = G.players[G.turn].devCards[idx];
-    if (card === 'vp') { log('VP cards are auto-counted!'); return; }
-    G.players[G.turn].devCards.splice(idx, 1);
-    
-    if (card === 'knight') {
-        G.players[G.turn].usedKnights++;
-        log('⚡ Pika played a Knight! 🥷 Move the robber.');
-        checkLargestArmy();
-        G.phase = 'robber';
+function advanceSetup(){
+    var si=G.setupPlacements;
+    if(si<G.setupOrder.length){
+        G.turn=G.setupOrder[si];
+        if(si===numPlayers)G.phase='setup2';
+        log(G.players[G.turn].name+'\'s turn to place.');
         render();
-    } else if (card === 'roadbuild') {
-        // Give 2 free roads
-        G.players[G.turn].res.wood += 2;
-        G.players[G.turn].res.brick += 2;
-        log('⚡ Road Building! Got 2 free road resources.');
-        render();
-    } else if (card === 'yearofplenty') {
-        // Give 2 of any resource
-        showYearOfPlenty();
-    } else if (card === 'monopoly') {
-        showMonopoly();
-    }
-}
-
-function endTurn() {
-    if (G.phase !== 'build') return;
-    var nextPlayer = 1 - G.turn;
-    G.turn = nextPlayer;
-    G.phase = 'roll';
-    G.rolled = false;
-    log(pName(G.turn) + '\'s turn' + (G.players[G.turn].isBot ? '...' : ' — roll the dice!'));
-    render();
-    if (G.players[G.turn].isBot) setTimeout(botTurn, 800);
-}
-
-// ---- TRADING ----
-function openTrade() {
-    if (G.phase !== 'build' || G.players[G.turn].isBot) return;
-    var m = document.getElementById('modal');
-    var h = '<h2>🤝 Trade with Bank</h2>';
-    h += '<p>4:1 exchange (or 3:1 if you have a port)</p>';
-    h += '<div class="trade-row">Give: <select id="trade-give">';
-    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + ' (' + G.players[G.turn].res[r] + ')</option>'; });
-    h += '</select></div>';
-    h += '<div class="trade-row">Get: <select id="trade-get">';
-    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + '</option>'; });
-    h += '</select></div>';
-    h += '<button onclick="executeTrade()">Trade 4:1</button> <button class="sec" onclick="closeModal()">Cancel</button>';
-    m.innerHTML = h;
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-function executeTrade() {
-    var give = document.getElementById('trade-give').value;
-    var get = document.getElementById('trade-get').value;
-    if (give === get) { alert('Can\'t trade same resource!'); return; }
-    if (G.players[G.turn].res[give] < 4) { alert('Need 4 ' + give + ' to trade!'); return; }
-    G.players[G.turn].res[give] -= 4;
-    G.players[G.turn].res[get] += 1;
-    log('⚡ Traded 4 ' + RES_E[give] + ' → 1 ' + RES_E[get]);
-    closeModal();
-    render();
-}
-
-function showYearOfPlenty() {
-    var m = document.getElementById('modal');
-    var h = '<h2>🎁 Year of Plenty</h2><p>Pick 2 resources:</p>';
-    h += '<div class="trade-row">1st: <select id="yop1">';
-    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + '</option>'; });
-    h += '</select></div>';
-    h += '<div class="trade-row">2nd: <select id="yop2">';
-    RES.forEach(function(r) { h += '<option value="' + r + '">' + RES_E[r] + ' ' + r + '</option>'; });
-    h += '</select></div>';
-    h += '<button onclick="doYOP()">Take!</button>';
-    m.innerHTML = h;
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-function doYOP() {
-    G.players[G.turn].res[document.getElementById('yop1').value]++;
-    G.players[G.turn].res[document.getElementById('yop2').value]++;
-    log('⚡ Year of Plenty: gained 2 resources!');
-    closeModal(); render();
-}
-
-function showMonopoly() {
-    var m = document.getElementById('modal');
-    var h = '<h2>💰 Monopoly</h2><p>Steal ALL of one resource from Crow:</p>';
-    h += '<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">';
-    RES.forEach(function(r) { h += '<button onclick="doMonopoly(\'' + r + '\')">' + RES_E[r] + ' ' + r + '</button>'; });
-    h += '</div>';
-    m.innerHTML = h;
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-function doMonopoly(r) {
-    var stolen = G.players[1].res[r];
-    G.players[1].res[r] = 0;
-    G.players[G.turn].res[r] += stolen;
-    log('⚡ Monopoly! Stole ' + stolen + ' ' + RES_E[r] + ' from Crow!');
-    closeModal(); render();
-}
-
-function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
-
-// ---- HELPERS ----
-function canAfford(p, cost) {
-    for (var r in cost) if (G.players[p].res[r] < cost[r]) return false;
-    return true;
-}
-function pay(p, cost) { for (var r in cost) G.players[p].res[r] -= cost[r]; }
-function totalRes(p) { var t = 0; RES.forEach(function(r) { t += G.players[p].res[r]; }); return t; }
-function pName(p) { return p === 0 ? '⚡ Pika' : '🐦‍⬛ Crow'; }
-function devCardName(c) { return {knight:'Knight 🥷',vp:'Victory Point 🎉',roadbuild:'Road Building 🛤️',yearofplenty:'Year of Plenty 🎁',monopoly:'Monopoly 💰'}[c] || c; }
-
-function log(msg) {
-    G.log.unshift(msg);
-    if (G.log.length > 50) G.log.pop();
-    var box = document.getElementById('log-box');
-    box.innerHTML = G.log.map(function(l) { return '<div>' + l + '</div>'; }).join('');
-}
-
-function findClosestVert(mx, my, maxDist) {
-    var best = -1, bestD = maxDist;
-    for (var vi = 0; vi < G.verts.length; vi++) {
-        var d = Math.hypot(G.verts[vi].x - mx, G.verts[vi].y - my);
-        if (d < bestD) { bestD = d; best = vi; }
-    }
-    return best;
-}
-
-function findClosestEdge(mx, my, maxDist) {
-    var best = -1, bestD = maxDist;
-    for (var ei = 0; ei < G.edges.length; ei++) {
-        var e = G.edges[ei], va = G.verts[e.a], vb = G.verts[e.b];
-        var cx = (va.x + vb.x) / 2, cy = (va.y + vb.y) / 2;
-        var d = Math.hypot(cx - mx, cy - my);
-        if (d < bestD) { bestD = d; best = ei; }
-    }
-    return best;
-}
-
-function isConnected(ei, p) {
-    var e = G.edges[ei];
-    var va = G.verts[e.a], vb = G.verts[e.b];
-    var threshold = hexSize * 0.3;
-    
-    // Check both endpoints of the proposed road
-    for (var end = 0; end < 2; end++) {
-        var vx = end === 0 ? va.x : vb.x;
-        var vy = end === 0 ? va.y : vb.y;
-        
-        // Does this endpoint have the player's building nearby?
-        for (var bi = 0; bi < G.buildings.length; bi++) {
-            if (G.buildings[bi].player === p) {
-                var bv = G.verts[G.buildings[bi].vertIdx];
-                if (Math.hypot(bv.x - vx, bv.y - vy) < threshold) return true;
-            }
-        }
-        
-        // Does this endpoint connect to the player's existing road?
-        for (var ei2 = 0; ei2 < G.edges.length; ei2++) {
-            if (ei2 === ei || G.edges[ei2].player !== p) continue;
-            var e2a = G.verts[G.edges[ei2].a], e2b = G.verts[G.edges[ei2].b];
-            if (Math.hypot(e2a.x - vx, e2a.y - vy) < threshold) return true;
-            if (Math.hypot(e2b.x - vx, e2b.y - vy) < threshold) return true;
-        }
-    }
-    return false;
-}
-
-function canBuildSettlement(vi, p) {
-    var v = G.verts[vi];
-    if (v.building) return false;
-    // Distance rule: no other building within 1 edge length
-    var minDist = hexSize * 1.1;
-    for (var ovi = 0; ovi < G.verts.length; ovi++) {
-        if (ovi === vi) continue;
-        if (G.verts[ovi].building) {
-            var d = Math.hypot(G.verts[ovi].x - v.x, G.verts[ovi].y - v.y);
-            if (d < minDist) return false;
-        }
-    }
-    // Must be connected by road (not in setup)
-    if (G.phase !== 'setup1' && G.phase !== 'setup2') {
-        var threshold = hexSize * 0.3;
-        var connected = G.edges.some(function(e) {
-            if (e.player !== p) return false;
-            var ea = G.verts[e.a], eb = G.verts[e.b];
-            return Math.hypot(ea.x - v.x, ea.y - v.y) < threshold || Math.hypot(eb.x - v.x, eb.y - v.y) < threshold;
-        });
-        if (!connected) return false;
-    }
-    return true;
-}
-
-function checkLongestRoad() {
-    for (var p = 0; p < 2; p++) {
-        var len = calcLongestRoad(p);
-        G.players[p].longestRoad = false;
-        if (len >= 5) {
-            var otherLen = calcLongestRoad(1 - p);
-            if (len > otherLen) G.players[p].longestRoad = true;
-        }
-    }
-}
-
-function calcLongestRoad(p) {
-    var pEdges = G.edges.filter(function(e) { return e.player === p; });
-    if (pEdges.length === 0) return 0;
-    var best = 0;
-    function dfs(vi, visited, depth) {
-        if (depth > best) best = depth;
-        for (var i = 0; i < pEdges.length; i++) {
-            var e = pEdges[i];
-            if (visited[e.idx]) continue;
-            var next = -1;
-            if (e.a === vi) next = e.b; else if (e.b === vi) next = e.a;
-            if (next < 0) continue;
-            // Can't pass through opponent's building
-            if (G.verts[next].building && G.verts[next].player !== p) continue;
-            visited[e.idx] = true;
-            dfs(next, visited, depth + 1);
-            visited[e.idx] = false;
-        }
-    }
-    // Start DFS from each endpoint
-    pEdges.forEach(function(e) {
-        var vis = {};
-        vis[e.idx] = true;
-        dfs(e.b, vis, 1);
-        vis = {};
-        vis[e.idx] = true;
-        dfs(e.a, vis, 1);
-    });
-    return best;
-}
-
-function checkLargestArmy() {
-    for (var p = 0; p < 2; p++) {
-        G.players[p].largestArmy = false;
-        if (G.players[p].usedKnights >= 3) {
-            var other = G.players[1 - p].usedKnights;
-            if (G.players[p].usedKnights > other) G.players[p].largestArmy = true;
-        }
-    }
-}
-
-function calcVP(p) {
-    var vp = G.players[p].settlements + G.players[p].cities * 2;
-    if (G.players[p].longestRoad) vp += 2;
-    if (G.players[p].largestArmy) vp += 2;
-    vp += G.players[p].devCards.filter(function(c) { return c === 'vp'; }).length;
-    return vp;
-}
-
-function checkWin() {
-    for (var p = 0; p < 2; p++) {
-        G.players[p].vp = calcVP(p);
-        if (G.players[p].vp >= 10) {
-            G.phase = 'gameover';
-            log('🎉 ' + pName(p) + ' WINS with ' + G.players[p].vp + ' Victory Points!');
-            showWinModal(p);
-            return;
-        }
-    }
-}
-
-function showWinModal(p) {
-    var m = document.getElementById('modal');
-    m.innerHTML = '<h2>' + (p === 0 ? '🎉 PIKA WINS! ⚡' : '🐦‍⬛ CROW WINS!') + '</h2>' +
-        '<p>' + pName(p) + ' reached ' + G.players[p].vp + ' Victory Points!</p>' +
-        '<button onclick="closeModal();initGame();">Play Again 🔄</button>';
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-// ---- BOT AI ----
-function botTurn() {
-    if (G.turn !== 1 || G.phase === 'gameover') return;
-    
-    // Roll
-    var d1 = 1 + ~~(Math.random() * 6), d2 = 1 + ~~(Math.random() * 6);
-    G.dice = [d1, d2];
-    var sum = d1 + d2;
-    document.getElementById('die1').innerText = d1;
-    document.getElementById('die2').innerText = d2;
-    document.getElementById('roll-sum').innerText = '= ' + sum;
-    log('🎲 Crow rolled ' + d1 + ' + ' + d2 + ' = ' + sum);
-
-    if (sum === 7) {
-        // Discard
-        for (var p = 0; p < 2; p++) {
-            var total = totalRes(p);
-            if (total > 7) {
-                var discard = ~~(total / 2);
-                for (var d = 0; d < discard; d++) {
-                    var owned = RES.filter(function(r) { return G.players[p].res[r] > 0; });
-                    if (owned.length) { G.players[p].res[owned[~~(Math.random() * owned.length)]]--; }
-                }
-                log(pName(p) + ' discarded ' + discard + ' cards.');
-            }
-        }
-        // Move robber to hurt Pika
-        var bestHex = -1, bestScore = -1;
-        for (var hi = 0; hi < G.hexes.length; hi++) {
-            if (hi === G.robber || G.hexes[hi].type === 'desert') continue;
-            var score = 0;
-            G.buildings.forEach(function(b) {
-                if (b.player === 0 && b.adjacentHexes.indexOf(hi) >= 0) score += probDots(G.hexes[hi].num) + 1;
-            });
-            if (score > bestScore) { bestScore = score; bestHex = hi; }
-        }
-        if (bestHex >= 0) {
-            G.robber = bestHex;
-            log('🥷 Crow moved robber to ' + RES_E[G.hexes[bestHex].type]);
-            // Steal
-            if (totalRes(0) > 0) {
-                var owned = RES.filter(function(r) { return G.players[0].res[r] > 0; });
-                if (owned.length) {
-                    var r = owned[~~(Math.random() * owned.length)];
-                    G.players[0].res[r]--; G.players[1].res[r]++;
-                    log('🐦‍⬛ Crow stole ' + RES_E[r] + '!');
-                }
-            }
-        }
+        if(G.players[G.turn].isBot)setTimeout(botSetup,600);
     } else {
-        // Distribute
-        distributeResources(sum);
-    }
-    render();
-
-    // Bot building logic
-    setTimeout(function() {
-        botBuild();
-        // End turn
-        G.turn = 0;
-        G.phase = 'roll';
-        G.rolled = false;
-        log('⚡ Pika\'s turn — roll the dice!');
-        checkWin();
-        render();
-    }, 600);
-}
-
-function botBuild() {
-    var p = 1;
-    var res = G.players[p].res;
-
-    // ---- STRATEGY: Evaluate what to prioritize ----
-    var myVP = calcVP(p);
-    var oppVP = calcVP(0);
-    var roadLen = calcLongestRoad(p);
-    var oppRoadLen = calcLongestRoad(0);
-
-    // Score all valid settlement spots
-    function scoreSettlementSpot(vi) {
-        var v = G.verts[vi];
-        var score = 0;
-        var types = {};
-        for (var hi = 0; hi < G.hexes.length; hi++) {
-            var hex = G.hexes[hi];
-            if (hex.type === 'desert') continue;
-            var hc = hexCenter(hex.q, hex.r);
-            for (var ci = 0; ci < 6; ci++) {
-                var pt = hexCorner(hc.x, hc.y, ci);
-                if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
-                    score += probDots(hex.num) * 2;
-                    types[hex.type] = (types[hex.type] || 0) + probDots(hex.num);
-                    break;
-                }
-            }
-        }
-        // Diversity bonus
-        score += Object.keys(types).length * 3;
-        // Prefer ore+wheat if we need cities
-        if (types.ore) score += 3;
-        if (types.wheat) score += 2;
-        return score;
-    }
-
-    // Find best settlement spot
-    function findBestSettlement() {
-        var best = -1, bestS = -1;
-        for (var vi = 0; vi < G.verts.length; vi++) {
-            if (canBuildSettlement(vi, p)) {
-                var s = scoreSettlementSpot(vi);
-                if (s > bestS) { bestS = s; best = vi; }
-            }
-        }
-        return best;
-    }
-
-    // Find road that expands toward best future settlement spot
-    function findBestRoad() {
-        var bestEdge = -1, bestScore = -1;
-        for (var ei = 0; ei < G.edges.length; ei++) {
-            if (G.edges[ei].player >= 0 || !isConnected(ei, p)) continue;
-            var e = G.edges[ei];
-            var va = G.verts[e.a], vb = G.verts[e.b];
-            // Score: how good are the settlement spots this road leads to?
-            var score = 0;
-            // Check if either endpoint could become a settlement spot (or lead toward one)
-            for (var vi = 0; vi < G.verts.length; vi++) {
-                if (G.verts[vi].building) continue;
-                var v = G.verts[vi];
-                var dA = Math.hypot(v.x - va.x, v.y - va.y);
-                var dB = Math.hypot(v.x - vb.x, v.y - vb.y);
-                var minD = Math.min(dA, dB);
-                if (minD < hexSize * 3) {
-                    var spotScore = scoreSettlementSpot(vi);
-                    score += spotScore / (1 + minD / hexSize);
-                }
-            }
-            // Bonus for extending longest road
-            score += 2;
-            if (score > bestScore) { bestScore = score; bestEdge = ei; }
-        }
-        return bestEdge;
-    }
-
-    // ---- PHASE 1: Play dev cards strategically ----
-    var playedCard = false;
-    for (var di = G.players[p].devCards.length - 1; di >= 0; di--) {
-        var card = G.players[p].devCards[di];
-        if (card === 'vp') continue; // keep VP cards
-
-        if (card === 'knight') {
-            // Play knight if: chasing largest army OR opponent has good hex to block
-            var shouldPlayKnight = G.players[p].usedKnights < 3 || 
-                (G.players[p].usedKnights >= G.players[0].usedKnights && myVP >= 7);
-            if (shouldPlayKnight) {
-                G.players[p].devCards.splice(di, 1);
-                G.players[p].usedKnights++;
-                checkLargestArmy();
-                // Move robber to hurt opponent most
-                var bestHex = -1, bestHS = -1;
-                for (var hi = 0; hi < G.hexes.length; hi++) {
-                    if (hi === G.robber || G.hexes[hi].type === 'desert') continue;
-                    var hs = 0;
-                    G.buildings.forEach(function(b) {
-                        if (b.player === 0 && b.adjacentHexes.indexOf(hi) >= 0) hs += probDots(G.hexes[hi].num) * (b.type === 'city' ? 3 : 1);
-                    });
-                    // Avoid blocking own buildings
-                    G.buildings.forEach(function(b) {
-                        if (b.player === p && b.adjacentHexes.indexOf(hi) >= 0) hs -= probDots(G.hexes[hi].num) * 2;
-                    });
-                    if (hs > bestHS) { bestHS = hs; bestHex = hi; }
-                }
-                if (bestHex >= 0) G.robber = bestHex;
-                // Steal the resource opponent has most of
-                if (totalRes(0) > 0) {
-                    var maxR = '', maxAmt = 0;
-                    RES.forEach(function(r) { if (G.players[0].res[r] > maxAmt) { maxAmt = G.players[0].res[r]; maxR = r; } });
-                    if (maxR) { G.players[0].res[maxR]--; G.players[p].res[maxR]++; }
-                }
-                log('🐦‍⬛ Crow played Knight! 🥷');
-                playedCard = true;
-                break;
-            }
-        } else if (card === 'roadbuild') {
-            // Play if we need roads for longest road or expansion
-            if (roadLen >= 3 || findBestSettlement() < 0) {
-                G.players[p].devCards.splice(di, 1);
-                for (var rb = 0; rb < 2; rb++) {
-                    var re = findBestRoad();
-                    if (re >= 0) { G.edges[re].player = p; G.players[p].roads++; }
-                }
-                checkLongestRoad();
-                log('🐦‍⬛ Crow played Road Building! 🛤️');
-                playedCard = true;
-                break;
-            }
-        } else if (card === 'yearofplenty') {
-            // Get resources we need most for next build
-            G.players[p].devCards.splice(di, 1);
-            var need = [];
-            if (canAlmostAfford(p, BUILD_COST.city)) need = getMissing(p, BUILD_COST.city);
-            else if (canAlmostAfford(p, BUILD_COST.settlement)) need = getMissing(p, BUILD_COST.settlement);
-            else need = ['ore', 'wheat'];
-            G.players[p].res[need[0] || 'ore']++;
-            G.players[p].res[need[1] || 'wheat']++;
-            log('🐦‍⬛ Crow played Year of Plenty! 🎁');
-            playedCard = true;
-            break;
-        } else if (card === 'monopoly') {
-            // Steal the resource opponent has most of
-            G.players[p].devCards.splice(di, 1);
-            var maxR = '', maxAmt = 0;
-            RES.forEach(function(r) { if (G.players[0].res[r] > maxAmt) { maxAmt = G.players[0].res[r]; maxR = r; } });
-            if (maxR && maxAmt >= 2) {
-                var stolen = G.players[0].res[maxR];
-                G.players[0].res[maxR] = 0;
-                G.players[p].res[maxR] += stolen;
-                log('🐦‍⬛ Crow played Monopoly! Stole ' + stolen + ' ' + RES_E[maxR] + '! 💰');
-            }
-            playedCard = true;
-            break;
-        }
-    }
-
-    // ---- PHASE 2: Trading (4:1 with bank if it helps) ----
-    // Trade excess resources toward what we need
-    for (var attempts = 0; attempts < 3; attempts++) {
-        var targetCost = null;
-        if (canAlmostAfford(p, BUILD_COST.city)) targetCost = BUILD_COST.city;
-        else if (canAlmostAfford(p, BUILD_COST.settlement)) targetCost = BUILD_COST.settlement;
-        else if (canAlmostAfford(p, BUILD_COST.devcard)) targetCost = BUILD_COST.devcard;
-        else if (canAlmostAfford(p, BUILD_COST.road)) targetCost = BUILD_COST.road;
-        if (!targetCost) break;
-
-        var missing = getMissing(p, targetCost);
-        if (missing.length === 0) break;
-
-        // Find resource we have 4+ excess of
-        var traded = false;
-        RES.forEach(function(r) {
-            if (traded) return;
-            var needed = targetCost[r] || 0;
-            if (res[r] >= needed + 4) {
-                res[r] -= 4;
-                res[missing[0]]++;
-                log('🐦‍⬛ Crow traded 4 ' + RES_E[r] + ' → 1 ' + RES_E[missing[0]]);
-                traded = true;
-            }
-        });
-        if (!traded) break;
-    }
-
-    // ---- PHASE 3: Build (prioritized) ----
-    // Priority: City > Settlement > Road toward expansion > Dev card
-
-    // Try city first (best VP per resource)
-    if (canAfford(p, BUILD_COST.city)) {
-        var bestCity = -1, bestCS = -1;
-        for (var vi = 0; vi < G.verts.length; vi++) {
-            if (G.verts[vi].player === p && G.verts[vi].building === 'settlement') {
-                var s = scoreSettlementSpot(vi);
-                if (s > bestCS) { bestCS = s; bestCity = vi; }
-            }
-        }
-        if (bestCity >= 0) {
-            pay(p, BUILD_COST.city);
-            registerBuilding(bestCity, p, 'city');
-            G.players[p].settlements--; G.players[p].cities++;
-            log('🐦‍⬛ Crow upgraded to a city! 🏰');
-        }
-    }
-
-    // Try settlement
-    if (canAfford(p, BUILD_COST.settlement)) {
-        var bestS = findBestSettlement();
-        if (bestS >= 0) {
-            pay(p, BUILD_COST.settlement);
-            registerBuilding(bestS, p, 'settlement');
-            G.players[p].settlements++;
-            log('🐦‍⬛ Crow built a settlement! 🏠');
-        }
-    }
-
-    // Build roads (up to 2 per turn for expansion)
-    for (var rr = 0; rr < 2; rr++) {
-        if (!canAfford(p, BUILD_COST.road)) break;
-        var bestR = findBestRoad();
-        if (bestR >= 0) {
-            pay(p, BUILD_COST.road);
-            G.edges[bestR].player = p;
-            G.players[p].roads++;
-            log('🐦‍⬛ Crow built a road. 🛤️');
-        } else break;
-    }
-
-    // Buy dev card if close to largest army or have spare resources
-    if (canAfford(p, BUILD_COST.devcard) && G.devDeck.length > 0) {
-        var wantDev = G.players[p].usedKnights >= 2 || // close to largest army
-            (totalRes(p) >= 8) || // lots of resources, diversify
-            (myVP >= 7); // close to winning, VP cards help
-        if (wantDev) {
-            pay(p, BUILD_COST.devcard);
-            var card = G.devDeck.pop();
-            G.players[p].devCards.push(card);
-            if (card === 'knight') {
-                // Auto-play immediately if beneficial
-                G.players[p].devCards.pop();
-                G.players[p].usedKnights++;
-                checkLargestArmy();
-                log('🐦‍⬛ Crow played a Knight! 🥷');
-            } else {
-                log('🐦‍⬛ Crow bought a dev card.');
-            }
-        }
-    }
-
-    checkLongestRoad();
-    checkLargestArmy();
-}
-
-// Helper: can almost afford (missing 1-2 resources)
-function canAlmostAfford(p, cost) {
-    var missing = 0;
-    for (var r in cost) missing += Math.max(0, cost[r] - G.players[p].res[r]);
-    return missing > 0 && missing <= 2;
-}
-
-// Helper: get list of missing resources for a cost
-function getMissing(p, cost) {
-    var m = [];
-    for (var r in cost) {
-        var need = cost[r] - G.players[p].res[r];
-        for (var i = 0; i < need; i++) m.push(r);
-    }
-    return m;
-}
-
-function botSetup() {
-    if (G.turn !== 1) return;
-    // Score ALL valid vertices by production value + diversity + resource balance
-    var bestV = -1, bestScore = -1;
-    for (var vi = 0; vi < G.verts.length; vi++) {
-        if (!canPlaceSetup(vi)) continue;
-        var v = G.verts[vi];
-        var score = 0;
-        var types = {};
-        // Check all hexes by distance
-        for (var hi = 0; hi < G.hexes.length; hi++) {
-            var hex = G.hexes[hi];
-            if (hex.type === 'desert') continue;
-            var hc = hexCenter(hex.q, hex.r);
-            for (var ci = 0; ci < 6; ci++) {
-                var pt = hexCorner(hc.x, hc.y, ci);
-                if (Math.hypot(pt.x - v.x, pt.y - v.y) < hexSize * 0.3) {
-                    var dots = probDots(hex.num);
-                    score += dots * 2;
-                    types[hex.type] = (types[hex.type] || 0) + dots;
-                    // 6 and 8 are the best numbers
-                    if (hex.num === 6 || hex.num === 8) score += 3;
-                    break;
-                }
-            }
-        }
-        // Diversity bonus (touching different resource types)
-        score += Object.keys(types).length * 4;
-        // Ore and wheat enable cities — high value
-        if (types.ore) score += 3;
-        if (types.wheat) score += 3;
-        // Brick and wood enable roads/settlements — early game value
-        if (types.brick) score += 2;
-        if (types.wood) score += 2;
-        // In setup2, prefer spots that fill gaps from first settlement
-        if (G.phase === 'setup2') {
-            RES.forEach(function(r) {
-                if (!types[r] && G.players[1].res[r] === 0) score += 3; // fills a gap
-            });
-        }
-        if (score > bestScore) { bestScore = score; bestV = vi; }
-    }
-    if (bestV >= 0) {
-        registerBuilding(bestV, 1, 'settlement');
-        G.players[1].settlements++;
-        log('🐦‍⬛ Crow placed a settlement.');
-        if (G.phase === 'setup2') {
-            // Give starting resources from adjacent hexes
-            for (var hi = 0; hi < G.hexes.length; hi++) {
-                var hex = G.hexes[hi];
-                if (hex.type === 'desert') continue;
-                var hc = hexCenter(hex.q, hex.r);
-                for (var ci = 0; ci < 6; ci++) {
-                    var pt = hexCorner(hc.x, hc.y, ci);
-                    if (Math.hypot(pt.x - G.verts[bestV].x, pt.y - G.verts[bestV].y) < hexSize * 0.3) {
-                        G.players[1].res[hex.type]++;
-                        break;
-                    }
-                }
-            }
-        }
-        render();
-        // Place road toward best expansion direction
-        setTimeout(function() {
-            var bestEdge = -1, bestES = -1;
-            for (var ei = 0; ei < G.edges.length; ei++) {
-                var e = G.edges[ei];
-                if (e.player >= 0) continue;
-                var va = G.verts[e.a], vb = G.verts[e.b];
-                // Check if either end is near our settlement
-                var dA = Math.hypot(va.x - G.verts[bestV].x, va.y - G.verts[bestV].y);
-                var dB = Math.hypot(vb.x - G.verts[bestV].x, vb.y - G.verts[bestV].y);
-                if (dA > hexSize * 0.3 && dB > hexSize * 0.3) continue;
-                // Score: direction toward center of board is better
-                var farEnd = dA < dB ? vb : va;
-                var distToCenter = Math.hypot(farEnd.x - CW / 2, farEnd.y - CH / 2);
-                var es = 100 - distToCenter; // closer to center = better
-                if (es > bestES) { bestES = es; bestEdge = ei; }
-            }
-            if (bestEdge >= 0) {
-                G.edges[bestEdge].player = 1;
-                G.players[1].roads++;
-                log('🐦‍⬛ Crow placed a road.');
-                G.setupPlacements++;
-                advanceSetup();
-                render();
-            }
-        }, 500);
+        G.phase='roll';G.turn=0;
+        log('🎲 Setup complete! '+G.players[0].name+' rolls first.');
+        render();if(G.players[0].isBot)setTimeout(botTurn,600);
     }
 }
+function canPlaceSetup(vi){var v=G.verts[vi];if(v.building)return false;if(v.hexes.length===0)return false;var md=hexSize*1.1;for(var i=0;i<G.verts.length;i++){if(i===vi)continue;if(G.verts[i].building&&Math.hypot(G.verts[i].x-v.x,G.verts[i].y-v.y)<md)return false;}return true;}
 
-// ---- HOVER ----
-function handleHover(mx, my) {
-    var tip = document.getElementById('tooltip');
-    // Check hexes
-    for (var hi = 0; hi < G.hexes.length; hi++) {
-        var h = G.hexes[hi], c = hexCenter(h.q, h.r);
-        if (Math.hypot(mx - c.x, my - c.y) < hexSize * .5) {
-            tip.style.display = 'block';
-            tip.style.left = (mx + 10) + 'px';
-            tip.style.top = (my - 20) + 'px';
-            tip.innerText = RES_E[h.type] + ' ' + h.type + (h.num ? ' (' + h.num + ')' : '') + (G.robber === hi ? ' 🥷' : '');
-            return;
-        }
+// ===== GAME ACTIONS =====
+function rollDice(){
+    if(G.phase!=='roll'||G.players[G.turn].isBot)return;
+    var d1=1+~~(Math.random()*6),d2=1+~~(Math.random()*6);G.dice=[d1,d2];var sum=d1+d2;
+    document.getElementById('die1').innerText=d1;document.getElementById('die2').innerText=d2;
+    document.getElementById('die1').classList.add('rolling');document.getElementById('die2').classList.add('rolling');
+    setTimeout(function(){document.getElementById('die1').classList.remove('rolling');document.getElementById('die2').classList.remove('rolling');},500);
+    document.getElementById('roll-sum').innerText='= '+sum;
+    log('🎲 '+G.players[G.turn].name+' rolled '+d1+'+'+d2+'='+sum);
+    if(sum===7){for(var p=0;p<numPlayers;p++){var tot=totalRes(p);if(tot>7){var disc=~~(tot/2);for(var d=0;d<disc;d++){var ow=RES.filter(function(r){return G.players[p].res[r]>0;});if(ow.length)G.players[p].res[ow[~~(Math.random()*ow.length)]]--;}log(G.players[p].name+' discarded '+disc);}}G.phase='robber';log('🥷 Move the robber!');}
+    else{distributeResources(sum);G.phase='build';}render();
+}
+function handleRobberClick(mx,my){
+    for(var hi=0;hi<G.hexes.length;hi++){var h=G.hexes[hi],c=hexCenter(h.q,h.r);
+        if(Math.hypot(mx-c.x,my-c.y)<hexSize*.6){if(hi===G.robber)continue;G.robber=hi;log('🥷 Robber moved to '+RES_E[h.type]+' '+h.num);
+            // Steal from an opponent on that hex
+            var victims=[];G.buildings.forEach(function(b){if(b.player!==G.turn&&b.adjacentHexes.indexOf(hi)>=0&&totalRes(b.player)>0&&victims.indexOf(b.player)<0)victims.push(b.player);});
+            if(victims.length>0){var opp=victims[~~(Math.random()*victims.length)];var ow=RES.filter(function(r){return G.players[opp].res[r]>0;});if(ow.length){var r=ow[~~(Math.random()*ow.length)];G.players[opp].res[r]--;G.players[G.turn].res[r]++;log(G.players[G.turn].name+' stole '+RES_E[r]+' from '+G.players[opp].name);}}
+            G.phase='build';render();return;}}
+}
+function buildRoad(){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn;if(!canAfford(cp,BUILD_COST.road)){log('❌ Not enough.');return;}
+    var hv=G.edges.some(function(e){return e.player<0&&isConnected(e.idx,cp);});if(!hv){log('❌ No valid road spots.');return;}
+    log('🛤️ Click edge. (click empty=cancel)');G.phase='placeroad';
+    cvs.onclick=function(e){var r=cvs.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;var ei=findClosestEdge(mx,my,hexSize*.25);
+        if(ei>=0&&G.edges[ei].player<0&&isConnected(ei,cp)){pay(cp,BUILD_COST.road);G.edges[ei].player=cp;G.players[cp].roads++;log(G.players[cp].name+' built a road.');checkLongestRoad();G.phase='build';restoreClickHandler();checkWin();render();}else cancelPlacement();};render();}
+function buildSettlement(){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn;if(!canAfford(cp,BUILD_COST.settlement)){log('❌ Not enough.');return;}
+    var hv=false;for(var vi=0;vi<G.verts.length;vi++)if(canBuildSettlement(vi,cp)){hv=true;break;}if(!hv){log('❌ No valid spots.');return;}
+    log('🏠 Click vertex. (click empty=cancel)');G.phase='placesettlement';
+    cvs.onclick=function(e){var r=cvs.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;var vi=findClosestVert(mx,my,hexSize*.3);
+        if(vi>=0&&canBuildSettlement(vi,cp)){pay(cp,BUILD_COST.settlement);registerBuilding(vi,cp,'settlement');G.players[cp].settlements++;log(G.players[cp].name+' built a settlement!');G.phase='build';restoreClickHandler();checkWin();render();}else cancelPlacement();};render();}
+function buildCity(){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn;if(!canAfford(cp,BUILD_COST.city)){log('❌ Not enough.');return;}
+    var hv=G.verts.some(function(v){return v.building==='settlement'&&v.player===cp;});if(!hv){log('❌ No settlements to upgrade.');return;}
+    log('🏰 Click settlement. (click empty=cancel)');G.phase='placecity';
+    cvs.onclick=function(e){var r=cvs.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;var vi=findClosestVert(mx,my,hexSize*.3);
+        if(vi>=0&&G.verts[vi].building==='settlement'&&G.verts[vi].player===cp){pay(cp,BUILD_COST.city);registerBuilding(vi,cp,'city');G.players[cp].settlements--;G.players[cp].cities++;log(G.players[cp].name+' upgraded to city!');G.phase='build';restoreClickHandler();checkWin();render();}else cancelPlacement();};render();}
+function buyDevCard(){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn;if(!canAfford(cp,BUILD_COST.devcard)){log('❌ Not enough.');return;}if(G.devDeck.length===0){log('❌ No cards left.');return;}
+    pay(cp,BUILD_COST.devcard);var card=G.devDeck.pop();G.players[cp].devCards.push(card);log(G.players[cp].name+' bought '+devCardName(card));checkWin();render();}
+function playDevCard(idx){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn,card=G.players[cp].devCards[idx];
+    if(card==='vp'){log('VP cards auto-count!');return;}G.players[cp].devCards.splice(idx,1);
+    if(card==='knight'){G.players[cp].usedKnights++;checkLargestArmy();G.phase='robber';log(G.players[cp].name+' played Knight! 🥷');render();}
+    else if(card==='roadbuild'){G.players[cp].res.wood+=2;G.players[cp].res.brick+=2;log(G.players[cp].name+' Road Building! 🛤️');render();}
+    else if(card==='yearofplenty'){showYearOfPlenty();}
+    else if(card==='monopoly'){showMonopoly();}}
+function cancelPlacement(){G.phase='build';restoreClickHandler();log('↩️ Cancelled.');render();}
+function endTurn(){if(G.phase!=='build')return;G.turn=(G.turn+1)%numPlayers;G.phase='roll';
+    log(G.players[G.turn].name+'\'s turn.');render();if(G.players[G.turn].isBot)setTimeout(botTurn,600);}
+
+// ===== TRADE =====
+function openTrade(){if(G.phase!=='build'||G.players[G.turn].isBot)return;var cp=G.turn,m=document.getElementById('modal');
+    var h='<h2>🤝 Trade 4:1</h2><div class="trade-row">Give: <select id="trade-give">';
+    RES.forEach(function(r){h+='<option value="'+r+'">'+RES_E[r]+' '+r+' ('+G.players[cp].res[r]+')</option>';});
+    h+='</select></div><div class="trade-row">Get: <select id="trade-get">';
+    RES.forEach(function(r){h+='<option value="'+r+'">'+RES_E[r]+' '+r+'</option>';});
+    h+='</select></div><button onclick="executeTrade()">Trade</button> <button class="sec" onclick="closeModal()">Cancel</button>';
+    m.innerHTML=h;document.getElementById('modal-overlay').classList.add('active');}
+function executeTrade(){var cp=G.turn,g=document.getElementById('trade-give').value,gt=document.getElementById('trade-get').value;
+    if(g===gt){alert('Same resource!');return;}if(G.players[cp].res[g]<4){alert('Need 4!');return;}
+    G.players[cp].res[g]-=4;G.players[cp].res[gt]++;log(G.players[cp].name+' traded 4 '+RES_E[g]+'→1 '+RES_E[gt]);closeModal();render();}
+function showYearOfPlenty(){var m=document.getElementById('modal');m.innerHTML='<h2>🎁 Year of Plenty</h2><div class="trade-row">1st: <select id="yop1">'+RES.map(function(r){return'<option value="'+r+'">'+RES_E[r]+'</option>';}).join('')+'</select></div><div class="trade-row">2nd: <select id="yop2">'+RES.map(function(r){return'<option value="'+r+'">'+RES_E[r]+'</option>';}).join('')+'</select></div><button onclick="doYOP()">Take!</button>';document.getElementById('modal-overlay').classList.add('active');}
+function doYOP(){G.players[G.turn].res[document.getElementById('yop1').value]++;G.players[G.turn].res[document.getElementById('yop2').value]++;log(G.players[G.turn].name+' Year of Plenty!');closeModal();render();}
+function showMonopoly(){var m=document.getElementById('modal');m.innerHTML='<h2>💰 Monopoly</h2><p>Steal ALL of one resource:</p><div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">'+RES.map(function(r){return'<button onclick="doMonopoly(\''+r+'\')">'+RES_E[r]+' '+r+'</button>';}).join('')+'</div>';document.getElementById('modal-overlay').classList.add('active');}
+function doMonopoly(r){var cp=G.turn,stolen=0;for(var p=0;p<numPlayers;p++){if(p===cp)continue;stolen+=G.players[p].res[r];G.players[p].res[r]=0;}G.players[cp].res[r]+=stolen;log(G.players[cp].name+' Monopoly! +'+stolen+' '+RES_E[r]);closeModal();render();}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('active');}
+
+// ===== HELPERS =====
+function canAfford(p,cost){for(var r in cost)if(G.players[p].res[r]<cost[r])return false;return true;}
+function canAlmostAfford(p,cost){var m=0;for(var r in cost)m+=Math.max(0,cost[r]-G.players[p].res[r]);return m>0&&m<=2;}
+function getMissing(p,cost){var m=[];for(var r in cost){var n=cost[r]-G.players[p].res[r];for(var i=0;i<n;i++)m.push(r);}return m;}
+function pay(p,cost){for(var r in cost)G.players[p].res[r]-=cost[r];}
+function totalRes(p){var t=0;RES.forEach(function(r){t+=G.players[p].res[r];});return t;}
+function pName(p){return G.players[p]?G.players[p].name:'?';}
+function devCardName(c){return{knight:'Knight 🥷',vp:'VP 🎉',roadbuild:'Road Building 🛤️',yearofplenty:'Year of Plenty 🎁',monopoly:'Monopoly 💰'}[c]||c;}
+function log(msg){G.log.unshift(msg);if(G.log.length>60)G.log.pop();var b=document.getElementById('log-box');if(b)b.innerHTML=G.log.map(function(l){return'<div>'+l+'</div>';}).join('');}
+function findClosestVert(mx,my,md){var b=-1,bd=md;for(var vi=0;vi<G.verts.length;vi++){var d=Math.hypot(G.verts[vi].x-mx,G.verts[vi].y-my);if(d<bd){bd=d;b=vi;}}return b;}
+function findClosestEdge(mx,my,md){var b=-1,bd=md;for(var ei=0;ei<G.edges.length;ei++){var e=G.edges[ei],va=G.verts[e.a],vb=G.verts[e.b],cx=(va.x+vb.x)/2,cy=(va.y+vb.y)/2,d=Math.hypot(cx-mx,cy-my);if(d<bd){bd=d;b=ei;}}return b;}
+function isConnected(ei,p){var e=G.edges[ei],va=G.verts[e.a],vb=G.verts[e.b],th=hexSize*.3;
+    for(var end=0;end<2;end++){var vx=end===0?va.x:vb.x,vy=end===0?va.y:vb.y;
+        for(var bi=0;bi<G.buildings.length;bi++){if(G.buildings[bi].player===p){var bv=G.verts[G.buildings[bi].vertIdx];if(Math.hypot(bv.x-vx,bv.y-vy)<th)return true;}}
+        for(var ei2=0;ei2<G.edges.length;ei2++){if(ei2===ei||G.edges[ei2].player!==p)continue;var e2a=G.verts[G.edges[ei2].a],e2b=G.verts[G.edges[ei2].b];if(Math.hypot(e2a.x-vx,e2a.y-vy)<th||Math.hypot(e2b.x-vx,e2b.y-vy)<th)return true;}}return false;}
+function canBuildSettlement(vi,p){var v=G.verts[vi];if(v.building)return false;var md=hexSize*1.1;for(var i=0;i<G.verts.length;i++){if(i===vi)continue;if(G.verts[i].building&&Math.hypot(G.verts[i].x-v.x,G.verts[i].y-v.y)<md)return false;}
+    if(G.phase!=='setup1'&&G.phase!=='setup2'){var th=hexSize*.3,conn=G.edges.some(function(e){if(e.player!==p)return false;var ea=G.verts[e.a],eb=G.verts[e.b];return Math.hypot(ea.x-v.x,ea.y-v.y)<th||Math.hypot(eb.x-v.x,eb.y-v.y)<th;});if(!conn)return false;}return true;}
+function checkLongestRoad(){for(var p=0;p<numPlayers;p++)G.players[p].longestRoad=false;var best=-1,bestP=-1;for(var p=0;p<numPlayers;p++){var l=calcLongestRoad(p);if(l>=5&&l>best){best=l;bestP=p;}}if(bestP>=0)G.players[bestP].longestRoad=true;}
+function calcLongestRoad(p){var pEdges=G.edges.filter(function(e){return e.player===p;});if(pEdges.length===0)return 0;var best=0;
+    function dfs(vi,vis,depth){if(depth>best)best=depth;for(var i=0;i<pEdges.length;i++){var e=pEdges[i];if(vis[e.idx])continue;var next=-1;if(e.a===vi)next=e.b;else if(e.b===vi)next=e.a;if(next<0)continue;if(G.verts[next].building&&G.verts[next].player!==p)continue;vis[e.idx]=true;dfs(next,vis,depth+1);vis[e.idx]=false;}}
+    pEdges.forEach(function(e){var v={};v[e.idx]=true;dfs(e.b,v,1);v={};v[e.idx]=true;dfs(e.a,v,1);});return best;}
+function checkLargestArmy(){for(var p=0;p<numPlayers;p++)G.players[p].largestArmy=false;var best=-1,bestP=-1;for(var p=0;p<numPlayers;p++){if(G.players[p].usedKnights>=3&&G.players[p].usedKnights>best){best=G.players[p].usedKnights;bestP=p;}}if(bestP>=0)G.players[bestP].largestArmy=true;}
+function calcVP(p){var vp=G.players[p].settlements+G.players[p].cities*2;if(G.players[p].longestRoad)vp+=2;if(G.players[p].largestArmy)vp+=2;vp+=G.players[p].devCards.filter(function(c){return c==='vp';}).length;return vp;}
+function checkWin(){for(var p=0;p<numPlayers;p++){G.players[p].vp=calcVP(p);if(G.players[p].vp>=10){G.phase='gameover';log('🎉 '+G.players[p].name+' WINS! '+G.players[p].vp+' VP!');showWinModal(p);return;}}}
+function showWinModal(p){var m=document.getElementById('modal');m.innerHTML='<h2>🎉 '+G.players[p].name+' WINS!</h2><p>'+G.players[p].vp+' Victory Points!</p><button onclick="closeModal();document.getElementById(\'start-screen\').style.display=\'\';document.getElementById(\'game-wrap\').style.display=\'none\';">New Game</button>';document.getElementById('modal-overlay').classList.add('active');}
+function handleHover(mx,my){var tip=document.getElementById('tooltip');for(var hi=0;hi<G.hexes.length;hi++){var h=G.hexes[hi],c=hexCenter(h.q,h.r);if(Math.hypot(mx-c.x,my-c.y)<hexSize*.5){tip.style.display='block';tip.style.left=(mx+10)+'px';tip.style.top=(my-20)+'px';tip.innerText=RES_E[h.type]+' '+h.type+(h.num?' ('+h.num+')':'')+(G.robber===hi?' 🥷':'');return;}}tip.style.display='none';}
+
+// ===== UI UPDATE — ALWAYS SHOWS ALL PLAYERS =====
+function updateUI(){
+    var pp=document.getElementById('player-panels');
+    var h='';
+    for(var p=0;p<numPlayers;p++){
+        var pl=G.players[p];pl.vp=calcVP(p);var dk=document.body.classList.contains('dark');
+        var col=dk?PCOLORS_DARK[p]:pl.color;var isTurn=G.turn===p;
+        h+='<div class="pp'+(isTurn?' active-turn':'')+'" style="border-left:4px solid '+col+';">';
+        h+='<div class="pp-head"><span class="pp-name" style="color:'+col+';">'+pl.name+(pl.isBot?' 🤖':'')+' </span>';
+        h+='<div class="pp-badges">';
+        if(pl.longestRoad)h+='<span class="pp-badge">🛤️ Road</span>';
+        if(pl.largestArmy)h+='<span class="pp-badge">🥷 Army</span>';
+        h+='</div>';
+        h+='<span class="pp-vp">'+pl.vp+'/10 VP</span></div>';
+        h+='<div class="pp-res">';
+        RES.forEach(function(r){h+='<span class="pp-ri">'+RES_E[r]+pl.res[r]+'</span>';});
+        h+='<span class="pp-ri" style="color:#aaa;">🃏'+pl.devCards.length+'</span>';
+        h+='<span class="pp-ri" style="color:#aaa;">🛤️'+pl.roads+'</span>';
+        h+='<span class="pp-ri" style="color:#aaa;">🥷'+pl.usedKnights+'</span>';
+        h+='</div></div>';
     }
-    tip.style.display = 'none';
+    pp.innerHTML=h;
+    // Actions for current human
+    var cp=G.turn,isH=!G.players[cp].isBot;
+    var ag=document.getElementById('act-grid');
+    document.getElementById('act-title').innerText='🎮 '+G.players[cp].name+'\'s Turn';
+    var inB=G.phase==='build'&&isH,inR=G.phase==='roll'&&isH;
+    var inP=(G.phase==='placeroad'||G.phase==='placesettlement'||G.phase==='placecity')&&isH;
+    if(inP){var w=G.phase==='placeroad'?'🛤️ Road':G.phase==='placesettlement'?'🏠 Settlement':'🏰 City';ag.innerHTML='<button class="act-btn" style="grid-column:1/-1;" disabled><span class="ae">👆</span>Place '+w+'</button><button class="act-btn" onclick="cancelPlacement()" style="grid-column:1/-1;color:#c05030;"><span class="ae">❌</span>Cancel</button>';}
+    else{ag.innerHTML='<button class="act-btn" onclick="rollDice()" '+(inR?'':'disabled')+'><span class="ae">🎲</span>Roll</button>'+
+        '<button class="act-btn" onclick="buildRoad()" '+(inB&&canAfford(cp,BUILD_COST.road)?'':'disabled')+'><span class="ae">🛤️</span>Road</button>'+
+        '<button class="act-btn" onclick="buildSettlement()" '+(inB&&canAfford(cp,BUILD_COST.settlement)?'':'disabled')+'><span class="ae">🏠</span>Settle</button>'+
+        '<button class="act-btn" onclick="buildCity()" '+(inB&&canAfford(cp,BUILD_COST.city)?'':'disabled')+'><span class="ae">🏰</span>City</button>'+
+        '<button class="act-btn" onclick="buyDevCard()" '+(inB&&canAfford(cp,BUILD_COST.devcard)?'':'disabled')+'><span class="ae">🃏</span>Dev Card</button>'+
+        '<button class="act-btn" onclick="openTrade()" '+(inB?'':'disabled')+'><span class="ae">🤝</span>Trade</button>'+
+        '<button class="act-btn" onclick="endTurn()" '+(inB?'':'disabled')+'><span class="ae">⏭️</span>End Turn</button>';}
+    // Dev cards
+    var dp=document.getElementById('dev-panel'),dc=document.getElementById('dev-cards');
+    if(isH&&G.players[cp].devCards.length>0){dp.style.display='';dc.innerHTML=G.players[cp].devCards.map(function(c,i){return'<div class="dev-card" onclick="playDevCard('+i+')">'+devCardName(c)+'</div>';}).join('');}else dp.style.display='none';
 }
 
-// ---- UI UPDATE ----
-function updateUI() {
-    var cp = G.turn;
-    var isHuman = !G.players[cp].isBot;
-    // Resources - show current player's
-    var rb = document.getElementById('res-bar');
-    rb.innerHTML = '<div style="font-size:.55rem;font-weight:900;color:var(--accent);margin-right:4px;">' + pName(cp) + ':</div>' +
-        RES.map(function(r) {
-            return '<div class="res-item"><span class="ri">' + RES_E[r] + '</span>' + G.players[cp].res[r] + '</div>';
-        }).join('');
-    // Actions
-    var ag = document.getElementById('act-grid');
-    var inBuild = G.phase === 'build' && isHuman;
-    var inRoll = G.phase === 'roll' && isHuman;
-    var inPlacing = (G.phase === 'placeroad' || G.phase === 'placesettlement' || G.phase === 'placecity') && isHuman;
-    
-    if (inPlacing) {
-        var what = G.phase === 'placeroad' ? '🛤️ Road' : G.phase === 'placesettlement' ? '🏠 Settlement' : '🏰 City';
-        ag.innerHTML = '<button class="act-btn" style="grid-column:1/-1;border-color:var(--accent);background:rgba(212,136,58,.08);" disabled><span class="ae">👆</span>Click the board to place ' + what + '</button>' +
-            '<button class="act-btn" onclick="cancelPlacement()" style="grid-column:1/-1;border-color:#c05030;color:#c05030;"><span class="ae">❌</span>Cancel</button>';
-    } else {
-        ag.innerHTML = '<button class="act-btn" onclick="rollDice()" ' + (inRoll ? '' : 'disabled') + '><span class="ae">🎲</span>Roll</button>' +
-            '<button class="act-btn" onclick="buildRoad()" ' + (inBuild && canAfford(cp, BUILD_COST.road) ? '' : 'disabled') + '><span class="ae">🛤️</span>Road<br><span style="font-size:.5rem;color:#aaa;">🪵🧱</span></button>' +
-            '<button class="act-btn" onclick="buildSettlement()" ' + (inBuild && canAfford(cp, BUILD_COST.settlement) ? '' : 'disabled') + '><span class="ae">🏠</span>Settle<br><span style="font-size:.5rem;color:#aaa;">🪵🧱🐑🌾</span></button>' +
-            '<button class="act-btn" onclick="buildCity()" ' + (inBuild && canAfford(cp, BUILD_COST.city) ? '' : 'disabled') + '><span class="ae">🏰</span>City<br><span style="font-size:.5rem;color:#aaa;">⛰️⛰️⛰️🌾🌾</span></button>' +
-            '<button class="act-btn" onclick="buyDevCard()" ' + (inBuild && canAfford(cp, BUILD_COST.devcard) ? '' : 'disabled') + '><span class="ae">🃏</span>Dev Card<br><span style="font-size:.5rem;color:#aaa;">⛰️🐑🌾</span></button>' +
-            '<button class="act-btn" onclick="openTrade()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">🤝</span>Trade</button>' +
-            '<button class="act-btn" onclick="endTurn()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">⏭️</span>End Turn</button>';
-    }
-    // Dev cards for current player
-    var dp = document.getElementById('dev-panel');
-    var dc = document.getElementById('dev-cards');
-    if (G.players[cp].devCards.length > 0 && isHuman) {
-        dp.style.display = '';
-        dc.innerHTML = G.players[cp].devCards.map(function(c, i) {
-            return '<div class="dev-card" onclick="playDevCard(' + i + ')">' + devCardName(c) + '</div>';
-        }).join('');
-    } else { dp.style.display = 'none'; }
-    // Scores
-    for (var p = 0; p < 2; p++) {
-        G.players[p].vp = calcVP(p);
-        document.getElementById('vp-p' + (p + 1)).innerText = G.players[p].vp;
-        document.getElementById('score-p' + (p + 1)).className = 'score-item' + (G.turn === p ? ' active' : '');
-    }
-    // VP Detail breakdown
-    for (var p = 0; p < 2; p++) {
-        var det = document.getElementById('vp-detail-p' + (p + 1));
-        if (det) {
-            det.innerHTML =
-                '<div class="vp-row"><span class="vp-label">🏠 Settlements</span><span class="vp-val">' + G.players[p].settlements + ' × 1 = ' + G.players[p].settlements + '</span></div>' +
-                '<div class="vp-row"><span class="vp-label">🏰 Cities</span><span class="vp-val">' + G.players[p].cities + ' × 2 = ' + (G.players[p].cities * 2) + '</span></div>' +
-                '<div class="vp-row"><span class="vp-label">🛤️ Longest Road</span><span class="vp-val">' + (G.players[p].longestRoad ? '✅ 2' : '—') + '</span></div>' +
-                '<div class="vp-row"><span class="vp-label">🥷 Largest Army</span><span class="vp-val">' + (G.players[p].largestArmy ? '✅ 2' : '— (' + G.players[p].usedKnights + ' knights)') + '</span></div>' +
-                '<div class="vp-row"><span class="vp-label">🎉 VP Cards</span><span class="vp-val">' + G.players[p].devCards.filter(function(c) { return c === 'vp'; }).length + '</span></div>';
-        }
-        var tot = document.getElementById('vp-total-p' + (p + 1));
-        if (tot) tot.innerText = G.players[p].vp + ' / 10 VP';
-    }
-    // Special cards
-    var roadLen0 = calcLongestRoad(0), roadLen1 = calcLongestRoad(1);
-    var scRoad = document.getElementById('sc-road');
-    var scRoadVal = document.getElementById('sc-road-val');
-    scRoad.className = 'special-card' + (G.players[0].longestRoad ? ' owned-p1' : G.players[1].longestRoad ? ' owned-p2' : '');
-    scRoadVal.innerText = G.players[0].longestRoad ? '⚡ Pika (+2VP) • ' + roadLen0 : G.players[1].longestRoad ? '🐦‍⬛ Crow (+2VP) • ' + roadLen1 : '⚡' + roadLen0 + ' / 🐦‍⬛' + roadLen1;
-
-    var scArmy = document.getElementById('sc-army');
-    var scArmyVal = document.getElementById('sc-army-val');
-    scArmy.className = 'special-card' + (G.players[0].largestArmy ? ' owned-p1' : G.players[1].largestArmy ? ' owned-p2' : '');
-    scArmyVal.innerText = G.players[0].largestArmy ? '⚡ Pika (+2VP) • ' + G.players[0].usedKnights + '🥷' : G.players[1].largestArmy ? '🐦‍⬛ Crow (+2VP) • ' + G.players[1].usedKnights + '🥷' : '⚡' + G.players[0].usedKnights + ' / 🐦‍⬛' + G.players[1].usedKnights;
+// ===== BOT AI =====
+function botTurn(){if(G.players[G.turn].isBot===false||G.phase==='gameover')return;var p=G.turn;
+    var d1=1+~~(Math.random()*6),d2=1+~~(Math.random()*6);G.dice=[d1,d2];var sum=d1+d2;
+    document.getElementById('die1').innerText=d1;document.getElementById('die2').innerText=d2;document.getElementById('roll-sum').innerText='= '+sum;
+    log('🎲 '+G.players[p].name+' rolled '+d1+'+'+d2+'='+sum);
+    if(sum===7){for(var pp=0;pp<numPlayers;pp++){var tot=totalRes(pp);if(tot>7){var disc=~~(tot/2);for(var d=0;d<disc;d++){var ow=RES.filter(function(r){return G.players[pp].res[r]>0;});if(ow.length)G.players[pp].res[ow[~~(Math.random()*ow.length)]]--;}}}
+        var bH=-1,bS=-1;for(var hi=0;hi<G.hexes.length;hi++){if(hi===G.robber||G.hexes[hi].type==='desert')continue;var sc=0;G.buildings.forEach(function(b){if(b.player!==p&&b.adjacentHexes.indexOf(hi)>=0)sc+=probDots(G.hexes[hi].num)*(b.type==='city'?3:1);});G.buildings.forEach(function(b){if(b.player===p&&b.adjacentHexes.indexOf(hi)>=0)sc-=probDots(G.hexes[hi].num)*2;});if(sc>bS){bS=sc;bH=hi;}}
+        if(bH>=0){G.robber=bH;var victims=[];G.buildings.forEach(function(b){if(b.player!==p&&b.adjacentHexes.indexOf(bH)>=0&&totalRes(b.player)>0&&victims.indexOf(b.player)<0)victims.push(b.player);});
+            if(victims.length>0){var opp=victims[0];var maxR='',maxA=0;RES.forEach(function(r){if(G.players[opp].res[r]>maxA){maxA=G.players[opp].res[r];maxR=r;}});if(maxR){G.players[opp].res[maxR]--;G.players[p].res[maxR]++;}}}
+    }else distributeResources(sum);
+    render();setTimeout(function(){botBuild(p);G.turn=(G.turn+1)%numPlayers;G.phase='roll';checkWin();log(G.players[G.turn].name+'\'s turn.');render();if(G.players[G.turn].isBot)setTimeout(botTurn,600);},500);
+}
+function scoreSpot(vi){var v=G.verts[vi],sc=0,types={};
+    for(var hi=0;hi<G.hexes.length;hi++){var hex=G.hexes[hi];if(hex.type==='desert')continue;var hc=hexCenter(hex.q,hex.r);
+        for(var ci=0;ci<6;ci++){var pt=hexCorner(hc.x,hc.y,ci);if(Math.hypot(pt.x-v.x,pt.y-v.y)<hexSize*.3){sc+=probDots(hex.num)*2;types[hex.type]=(types[hex.type]||0)+probDots(hex.num);if(hex.num===6||hex.num===8)sc+=3;break;}}}
+    sc+=Object.keys(types).length*4;if(types.ore)sc+=3;if(types.wheat)sc+=3;return sc;}
+function botBuild(p){
+    // Play dev cards
+    for(var di=G.players[p].devCards.length-1;di>=0;di--){var c=G.players[p].devCards[di];if(c==='vp')continue;
+        if(c==='knight'){G.players[p].devCards.splice(di,1);G.players[p].usedKnights++;checkLargestArmy();var bH=-1,bS=-1;for(var hi=0;hi<G.hexes.length;hi++){if(hi===G.robber||G.hexes[hi].type==='desert')continue;var sc=0;G.buildings.forEach(function(b){if(b.player!==p&&b.adjacentHexes.indexOf(hi)>=0)sc+=probDots(G.hexes[hi].num)*(b.type==='city'?3:1);});if(sc>bS){bS=sc;bH=hi;}}if(bH>=0)G.robber=bH;log(G.players[p].name+' Knight! 🥷');break;}
+        if(c==='roadbuild'){G.players[p].devCards.splice(di,1);for(var rb=0;rb<2;rb++){var be=findBotRoad(p);if(be>=0){G.edges[be].player=p;G.players[p].roads++;}}checkLongestRoad();log(G.players[p].name+' Road Building! 🛤️');break;}
+        if(c==='yearofplenty'){G.players[p].devCards.splice(di,1);var need=getMissing(p,canAlmostAfford(p,BUILD_COST.city)?BUILD_COST.city:BUILD_COST.settlement);G.players[p].res[need[0]||'ore']++;G.players[p].res[need[1]||'wheat']++;log(G.players[p].name+' Year of Plenty! 🎁');break;}
+        if(c==='monopoly'){G.players[p].devCards.splice(di,1);var maxR='',maxA=0;for(var op=0;op<numPlayers;op++){if(op===p)continue;RES.forEach(function(r){if(G.players[op].res[r]>maxA){maxA=G.players[op].res[r];maxR=r;}});}if(maxR&&maxA>=2){var stolen=0;for(var op=0;op<numPlayers;op++){if(op===p)continue;stolen+=G.players[op].res[maxR];G.players[op].res[maxR]=0;}G.players[p].res[maxR]+=stolen;log(G.players[p].name+' Monopoly! +'+stolen+' '+RES_E[maxR]);}break;}}
+    // Trade
+    for(var at=0;at<3;at++){var tc=null;if(canAlmostAfford(p,BUILD_COST.city))tc=BUILD_COST.city;else if(canAlmostAfford(p,BUILD_COST.settlement))tc=BUILD_COST.settlement;else if(canAlmostAfford(p,BUILD_COST.devcard))tc=BUILD_COST.devcard;if(!tc)break;var miss=getMissing(p,tc);if(!miss.length)break;var traded=false;RES.forEach(function(r){if(traded)return;var needed=tc[r]||0;if(G.players[p].res[r]>=needed+4){G.players[p].res[r]-=4;G.players[p].res[miss[0]]++;traded=true;}});if(!traded)break;}
+    // City
+    if(canAfford(p,BUILD_COST.city)){var bC=-1,bCS=-1;for(var vi=0;vi<G.verts.length;vi++){if(G.verts[vi].player===p&&G.verts[vi].building==='settlement'){var s=scoreSpot(vi);if(s>bCS){bCS=s;bC=vi;}}}if(bC>=0){pay(p,BUILD_COST.city);registerBuilding(bC,p,'city');G.players[p].settlements--;G.players[p].cities++;log(G.players[p].name+' city! 🏰');}}
+    // Settlement
+    if(canAfford(p,BUILD_COST.settlement)){var bS2=-1,bSS=-1;for(var vi=0;vi<G.verts.length;vi++){if(canBuildSettlement(vi,p)){var s=scoreSpot(vi);if(s>bSS){bSS=s;bS2=vi;}}}if(bS2>=0){pay(p,BUILD_COST.settlement);registerBuilding(bS2,p,'settlement');G.players[p].settlements++;log(G.players[p].name+' settlement! 🏠');}}
+    // Roads
+    for(var rr=0;rr<2;rr++){if(!canAfford(p,BUILD_COST.road))break;var be=findBotRoad(p);if(be>=0){pay(p,BUILD_COST.road);G.edges[be].player=p;G.players[p].roads++;log(G.players[p].name+' road. 🛤️');}else break;}
+    // Dev card
+    if(canAfford(p,BUILD_COST.devcard)&&G.devDeck.length>0&&(G.players[p].usedKnights>=2||totalRes(p)>=8||calcVP(p)>=7)){pay(p,BUILD_COST.devcard);var card=G.devDeck.pop();G.players[p].devCards.push(card);if(card==='knight'){G.players[p].devCards.pop();G.players[p].usedKnights++;checkLargestArmy();log(G.players[p].name+' Knight! 🥷');}else log(G.players[p].name+' bought dev card.');}
+    checkLongestRoad();checkLargestArmy();
+}
+function findBotRoad(p){var bE=-1,bS=-1;for(var ei=0;ei<G.edges.length;ei++){if(G.edges[ei].player>=0||!isConnected(ei,p))continue;var va=G.verts[G.edges[ei].a],vb=G.verts[G.edges[ei].b],sc=0;
+    for(var vi=0;vi<G.verts.length;vi++){if(G.verts[vi].building)continue;var v=G.verts[vi],d=Math.min(Math.hypot(v.x-va.x,v.y-va.y),Math.hypot(v.x-vb.x,v.y-vb.y));if(d<hexSize*3)sc+=scoreSpot(vi)/(1+d/hexSize);}sc+=2;if(sc>bS){bS=sc;bE=ei;}}return bE;}
+function botSetup(){if(!G.players[G.turn].isBot)return;var p=G.turn;
+    var bV=-1,bS=-1;for(var vi=0;vi<G.verts.length;vi++){if(!canPlaceSetup(vi))continue;var s=scoreSpot(vi);if(G.phase==='setup2'){RES.forEach(function(r){var has=false;for(var hi=0;hi<G.hexes.length;hi++){var hex=G.hexes[hi];if(hex.type!==r)continue;var hc=hexCenter(hex.q,hex.r);for(var ci=0;ci<6;ci++){var pt=hexCorner(hc.x,hc.y,ci);if(Math.hypot(pt.x-G.verts[vi].x,pt.y-G.verts[vi].y)<hexSize*.3){has=true;break;}}if(has)break;}if(has&&G.players[p].res[r]===0)s+=3;});}if(s>bS){bS=s;bV=vi;}}
+    if(bV>=0){registerBuilding(bV,p,'settlement');G.players[p].settlements++;log(G.players[p].name+' settlement.');
+        if(G.phase==='setup2'){for(var hi=0;hi<G.hexes.length;hi++){var hex=G.hexes[hi];if(hex.type==='desert')continue;var hc=hexCenter(hex.q,hex.r);for(var ci=0;ci<6;ci++){var pt=hexCorner(hc.x,hc.y,ci);if(Math.hypot(pt.x-G.verts[bV].x,pt.y-G.verts[bV].y)<hexSize*.3){G.players[p].res[hex.type]++;break;}}}}
+        render();setTimeout(function(){var bE=-1,bES=-1;for(var ei=0;ei<G.edges.length;ei++){var e=G.edges[ei];if(e.player>=0)continue;var va=G.verts[e.a],vb=G.verts[e.b];var dA=Math.hypot(va.x-G.verts[bV].x,va.y-G.verts[bV].y),dB=Math.hypot(vb.x-G.verts[bV].x,vb.y-G.verts[bV].y);if(dA>hexSize*.3&&dB>hexSize*.3)continue;var far=dA<dB?vb:va;var es=100-Math.hypot(far.x-CW/2,far.y-CH/2);if(es>bES){bES=es;bE=ei;}}
+            if(bE>=0){G.edges[bE].player=p;G.players[p].roads++;log(G.players[p].name+' road.');G.setupPlacements++;advanceSetup();render();}},500);}
 }
 
-
-// ---- RULES MODAL ----
-function showRules() {
-    var m = document.getElementById('modal');
-    m.innerHTML = '<h2>📖 Pika-tan Rules</h2>' +
-        '<p style="text-align:left;line-height:1.8;max-height:50vh;overflow-y:auto;font-size:.6rem;">' +
-        '<b>🎯 Goal:</b> First to 10 Victory Points wins!<br><br>' +
-        '<b>🏠 VP Sources:</b> Settlement = 1 VP, City = 2 VP, Longest Road (5+) = 2 VP, Largest Army (3+ Knights) = 2 VP, VP Dev Cards = 1 VP each.<br><br>' +
-        '<b>🎲 Turn Flow:</b> Roll dice → collect resources from matching hex numbers → build/trade → end turn.<br><br>' +
-        '<b>📦 Resources:</b> 🪵 Wood, 🧱 Brick, 🐑 Sheep, ⛰️ Ore, 🌾 Wheat.<br><br>' +
-        '<b>🏗️ Building Costs:</b><br>' +
-        '• Road: 🪵 + 🧱<br>' +
-        '• Settlement: 🪵 + 🧱 + 🐑 + 🌾<br>' +
-        '• City: ⛰️⛰️⛰️ + 🌾🌾<br>' +
-        '• Dev Card: ⛰️ + 🐑 + 🌾<br><br>' +
-        '<b>7️⃣ Rolling a 7:</b> Players with 8+ cards discard half. Move the robber to block a hex and steal a card.<br><br>' +
-        '<b>🥷 Robber:</b> Blocks resource production on its hex. Move it when you roll 7 or play a Knight.<br><br>' +
-        '<b>🃏 Dev Cards:</b> Knight (move robber), Road Building (2 free roads), Year of Plenty (2 free resources), Monopoly (steal all of one resource), VP (auto-counted).<br><br>' +
-        '<b>🤝 Trading:</b> Exchange 4 of one resource for 1 of any other at the bank.<br><br>' +
-        '<b>📏 Distance Rule:</b> Settlements must be at least 2 edges apart.' +
-        '</p>' +
-        '<button onclick="closeModal()">Got it! 🎮</button>';
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-function toggleDark() { document.body.classList.toggle('dark'); render(); }
-
-// ---- START ----
-// Game starts when player picks a mode from start screen
-window.onresize = function() { if (cvs) { setupCanvas(); render(); } };
+// ===== RULES & THEME =====
+function showRules(){var m=document.getElementById('modal');m.innerHTML='<h2>📖 Pika-tan Rules</h2><p style="text-align:left;line-height:1.7;max-height:50vh;overflow-y:auto;font-size:.55rem;"><b>🎯 Goal:</b> First to 10 VP!<br><br><b>VP:</b> Settlement=1, City=2, Longest Road(5+)=2, Largest Army(3+ Knights)=2, VP Cards=1 each<br><br><b>Turn:</b> Roll → collect resources → build/trade → end turn<br><br><b>Resources:</b> 🪵Wood 🧱Brick 🐑Sheep ⛰️Ore 🌾Wheat<br><br><b>Costs:</b><br>Road: 🪵🧱<br>Settlement: 🪵🧱🐑🌾<br>City: ⛰️⛰️⛰️🌾🌾<br>Dev Card: ⛰️🐑🌾<br><br><b>7:</b> Discard half if 8+ cards, move robber, steal<br><br><b>Dev Cards:</b><br>🥷Knight ×14 — move robber, 3+=Largest Army(2VP)<br>🎉VP ×5 — 1VP each, auto-counted<br>🛤️Road Building ×2 — 2 free roads<br>🎁Year of Plenty ×2 — take 2 resources<br>💰Monopoly ×2 — steal all of 1 resource type<br><br><b>📏 Distance:</b> Settlements 2+ edges apart</p><button onclick="closeModal()">Got it!</button>';document.getElementById('modal-overlay').classList.add('active');}
+function toggleDark(){document.body.classList.toggle('dark');if(ctx)render();}
+window.onresize=function(){if(cvs){setupCanvas();render();}};
 </script>
 </body>
 </html>
