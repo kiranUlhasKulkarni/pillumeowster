@@ -196,7 +196,9 @@ function initGame() {
         var n = 0;
         if (t !== 'desert') { n = nums[ni]; ni++; }
         else { G.robber = i; }
-        G.hexes.push({ q: HEX_LAYOUT[i].q, r: HEX_LAYOUT[i].r, type: t, num: n, idx: i });
+        G.hexes.push({ q: HEX_LAYOUT[i].q, r: HEX_LAYOUT[i].r, type: t, num: n, idx: i,
+            slots: [{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null},{p:-1,b:null}] // p=player, b=building type
+        });
     }
     // Generate vertices and edges
     generateGraph();
@@ -258,34 +260,23 @@ function hexCorner(cx, cy, i) {
 }
 
 // ---- GRAPH: VERTICES & EDGES ----
+// Called ONCE at init — builds topology only
 function generateGraph() {
-    // Save existing building data
-    var savedBuildings = {};
-    var savedEdges = {};
-    if (G.verts.length > 0) {
-        for (var vi = 0; vi < G.verts.length; vi++) {
-            var v = G.verts[vi];
-            if (v.building) {
-                // Key by old position rounded
-                var k = Math.round(v.x) + ',' + Math.round(v.y);
-                savedBuildings[k] = { building: v.building, player: v.player };
-            }
-        }
-    }
-    if (G.edges.length > 0) {
-        for (var ei = 0; ei < G.edges.length; ei++) {
-            var e = G.edges[ei];
-            if (e.player >= 0) {
-                var va = G.verts[e.a], vb = G.verts[e.b];
-                var k = Math.round(Math.min(va.x,vb.x)) + ',' + Math.round(Math.min(va.y,vb.y)) + '-' + Math.round(Math.max(va.x,vb.x)) + ',' + Math.round(Math.max(va.y,vb.y));
-                savedEdges[k] = e.player;
-            }
-        }
-    }
-
     var vertMap = {};
     G.verts = [];
     G.edges = [];
+
+    // Use abstract hex-corner identity for dedup (not pixel coords)
+    // Each corner is identified by its set of adjacent hex indices
+    function cornerKey(hexIdx, cornerIdx) {
+        // Get the 3 hexes that share this corner
+        // For a flat-top hex, corner i is shared with specific neighbors
+        return hexIdx + ':' + cornerIdx;
+    }
+
+    // Build using abstract positions first, convert to pixels at render time
+    // For dedup: use pixel coords from a reference canvas size
+    setupCanvasSize();
 
     function vKey(x, y) { return Math.round(x * 2) + ',' + Math.round(y * 2); }
 
@@ -297,19 +288,10 @@ function generateGraph() {
             return vertMap[k];
         }
         var vi = G.verts.length;
-        var vert = { x: x, y: y, hexes: [hexIdx], building: null, player: -1, idx: vi };
-        // Restore building data
-        var posKey = Math.round(x) + ',' + Math.round(y);
-        if (savedBuildings[posKey]) {
-            vert.building = savedBuildings[posKey].building;
-            vert.player = savedBuildings[posKey].player;
-        }
-        G.verts.push(vert);
+        G.verts.push({ x: x, y: y, hexes: [hexIdx], building: null, player: -1, idx: vi });
         vertMap[k] = vi;
         return vi;
     }
-
-    setupCanvasSize();
 
     for (var hi = 0; hi < G.hexes.length; hi++) {
         var h = G.hexes[hi];
@@ -324,13 +306,29 @@ function generateGraph() {
             var a = corners[ci], b = corners[(ci + 1) % 6];
             var ek = Math.min(a, b) + '-' + Math.max(a, b);
             var exists = G.edges.some(function(e) { return e.key === ek; });
-            if (!exists) {
-                var edge = { a: a, b: b, key: ek, player: -1, idx: G.edges.length };
-                // Restore road data
-                var va = G.verts[a], vb = G.verts[b];
-                var edgeKey = Math.round(Math.min(va.x,vb.x)) + ',' + Math.round(Math.min(va.y,vb.y)) + '-' + Math.round(Math.max(va.x,vb.x)) + ',' + Math.round(Math.max(va.y,vb.y));
-                if (savedEdges[edgeKey] !== undefined) edge.player = savedEdges[edgeKey];
-                G.edges.push(edge);
+            if (!exists) G.edges.push({ a: a, b: b, key: ek, player: -1, idx: G.edges.length });
+        }
+    }
+}
+
+// Called on resize — updates pixel coordinates without touching buildings/roads
+function updateVertexPositions() {
+    setupCanvasSize();
+    var vertMap = {};
+    function vKey(x, y) { return Math.round(x * 2) + ',' + Math.round(y * 2); }
+
+    for (var hi = 0; hi < G.hexes.length; hi++) {
+        var h = G.hexes[hi];
+        var c = hexCenter(h.q, h.r);
+        for (var ci = 0; ci < 6; ci++) {
+            var pt = hexCorner(c.x, c.y, ci);
+            var k = vKey(pt.x, pt.y);
+            if (!vertMap[k]) {
+                // Find matching vertex in h.corners[ci]
+                var vi = h.corners[ci];
+                G.verts[vi].x = pt.x;
+                G.verts[vi].y = pt.y;
+                vertMap[k] = true;
             }
         }
     }
@@ -349,12 +347,45 @@ function setupCanvasSize() {
     hexSize = Math.min(CW / 10.5, CH / 8.5);
 }
 
+// Called whenever a building is placed or upgraded on a vertex
+// Updates ALL adjacent hexes' slot arrays
+function updateHexSlots(vertIdx, player, buildingType) {
+    var v = G.verts[vertIdx];
+    v.building = buildingType;
+    v.player = player;
+    // For every hex this vertex touches, find which corner it is and update the slot
+    for (var hi = 0; hi < v.hexes.length; hi++) {
+        var hexIdx = v.hexes[hi];
+        var hex = G.hexes[hexIdx];
+        for (var ci = 0; ci < 6; ci++) {
+            if (hex.corners[ci] === vertIdx) {
+                hex.slots[ci] = { p: player, b: buildingType };
+                break;
+            }
+        }
+    }
+}
+
+// Distribute resources for a given dice sum — uses hex.slots directly
+function distributeResources(sum) {
+    for (var hi = 0; hi < G.hexes.length; hi++) {
+        var hex = G.hexes[hi];
+        if (hex.num !== sum || G.robber === hi || hex.type === 'desert') continue;
+        for (var ci = 0; ci < 6; ci++) {
+            var slot = hex.slots[ci];
+            if (slot.b && slot.p >= 0) {
+                var amt = slot.b === 'city' ? 2 : 1;
+                G.players[slot.p].res[hex.type] += amt;
+                log(pName(slot.p) + ' got ' + amt + '× ' + RES_E[hex.type] + ' from ' + slot.b + ' on ' + hex.num);
+            }
+        }
+    }
+}
+
 function setupCanvas() {
     setupCanvasSize();
-    // Recalc vertex positions
-    generateGraph();
+    updateVertexPositions();
     restoreClickHandler();
-    // Tooltip
     cvs.onmousemove = function(e) {
         var rect = cvs.getBoundingClientRect();
         var mx = e.clientX - rect.left, my = e.clientY - rect.top;
@@ -569,8 +600,7 @@ function handleSetupClick(mx, my) {
         // Place settlement
         var best = findClosestVert(mx, my, hexSize * .3);
         if (best >= 0 && canPlaceSetup(best)) {
-            G.verts[best].building = 'settlement';
-            G.verts[best].player = G.turn;
+            updateHexSlots(best, G.turn, 'settlement');
             G.players[G.turn].settlements++;
             log(pName(G.turn) + ' placed a settlement.');
             // In setup2, give resources from adjacent hexes
@@ -683,18 +713,7 @@ function rollDice() {
         log('🥷 Move the robber! Tap a hex.');
     } else {
         // Distribute resources
-        for (var hi = 0; hi < G.hexes.length; hi++) {
-            if (G.hexes[hi].num === sum && G.robber !== hi) {
-                G.hexes[hi].corners.forEach(function(vi) {
-                    var v = G.verts[vi];
-                    if (v.building && v.player >= 0) {
-                        var amt = v.building === 'city' ? 2 : 1;
-                        G.players[v.player].res[G.hexes[hi].type] += amt;
-                        log(pName(v.player) + ' got ' + amt + '× ' + RES_E[G.hexes[hi].type] + ' from ' + v.building);
-                    }
-                });
-            }
-        }
+        distributeResources(sum);
         G.phase = 'build';
     }
     render();
@@ -711,7 +730,7 @@ function handleRobberClick(mx, my) {
             log('🥷 Robber moved to ' + RES_E[h.type] + ' ' + h.num);
             // Steal from opponent if they have a building there
             var opp = 1 - G.turn;
-            var canSteal = h.corners && h.corners.some(function(vi) { return G.verts[vi].player === opp && G.verts[vi].building; });
+            var canSteal = h.slots && h.slots.some(function(s) { return s.p === opp && s.b; });
             if (canSteal && totalRes(opp) > 0) {
                 var owned = RES.filter(function(r) { return G.players[opp].res[r] > 0; });
                 if (owned.length > 0) {
@@ -763,8 +782,7 @@ function buildSettlement() {
         var vi = findClosestVert(mx, my, hexSize * .3);
         if (vi >= 0 && canBuildSettlement(vi, 0)) {
             pay(0, BUILD_COST.settlement);
-            G.verts[vi].building = 'settlement';
-            G.verts[vi].player = 0;
+            updateHexSlots(vi, 0, 'settlement');
             G.players[0].settlements++;
             log('⚡ Pika built a settlement!');
             G.phase = 'build';
@@ -787,7 +805,7 @@ function buildCity() {
         var vi = findClosestVert(mx, my, hexSize * .3);
         if (vi >= 0 && G.verts[vi].building === 'settlement' && G.verts[vi].player === 0) {
             pay(0, BUILD_COST.city);
-            G.verts[vi].building = 'city';
+            updateHexSlots(vi, 0, 'city');
             G.players[0].settlements--;
             G.players[0].cities++;
             log('⚡ Pika upgraded to a city!');
@@ -1103,8 +1121,8 @@ function botTurn() {
         for (var hi = 0; hi < G.hexes.length; hi++) {
             if (hi === G.robber || G.hexes[hi].type === 'desert') continue;
             var score = 0;
-            if (G.hexes[hi].corners) G.hexes[hi].corners.forEach(function(vi) {
-                if (G.verts[vi].player === 0 && G.verts[vi].building) score += probDots(G.hexes[hi].num) + 1;
+            if (G.hexes[hi].slots) G.hexes[hi].slots.forEach(function(s) {
+                if (s.p === 0 && s.b) score += probDots(G.hexes[hi].num) + 1;
             });
             if (score > bestScore) { bestScore = score; bestHex = hi; }
         }
@@ -1123,18 +1141,7 @@ function botTurn() {
         }
     } else {
         // Distribute
-        for (var hi = 0; hi < G.hexes.length; hi++) {
-            if (G.hexes[hi].num === sum && G.robber !== hi) {
-                G.hexes[hi].corners.forEach(function(vi) {
-                    var v = G.verts[vi];
-                    if (v.building && v.player >= 0) {
-                        var amt = v.building === 'city' ? 2 : 1;
-                        G.players[v.player].res[G.hexes[hi].type] += amt;
-                        log(pName(v.player) + ' got ' + amt + '× ' + RES_E[G.hexes[hi].type] + ' from ' + v.building);
-                    }
-                });
-            }
-        }
+        distributeResources(sum);
     }
     render();
 
@@ -1158,7 +1165,7 @@ function botBuild() {
         for (var vi = 0; vi < G.verts.length; vi++) {
             if (G.verts[vi].player === p && G.verts[vi].building === 'settlement') {
                 pay(p, BUILD_COST.city);
-                G.verts[vi].building = 'city';
+                updateHexSlots(vi, p, 'city');
                 G.players[p].settlements--; G.players[p].cities++;
                 log('🐦‍⬛ Crow upgraded to a city!');
                 break;
@@ -1170,7 +1177,7 @@ function botBuild() {
         for (var vi = 0; vi < G.verts.length; vi++) {
             if (canBuildSettlement(vi, p)) {
                 pay(p, BUILD_COST.settlement);
-                G.verts[vi].building = 'settlement'; G.verts[vi].player = p;
+                updateHexSlots(vi, p, 'settlement');
                 G.players[p].settlements++;
                 log('🐦‍⬛ Crow built a settlement!');
                 break;
@@ -1221,8 +1228,7 @@ function botSetup() {
         if (score > bestScore) { bestScore = score; bestV = vi; }
     }
     if (bestV >= 0) {
-        G.verts[bestV].building = 'settlement';
-        G.verts[bestV].player = 1;
+        updateHexSlots(bestV, 1, 'settlement');
         G.players[1].settlements++;
         log('🐦‍⬛ Crow placed a settlement.');
         if (G.phase === 'setup2') {
