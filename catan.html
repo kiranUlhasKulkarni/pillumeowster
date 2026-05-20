@@ -690,13 +690,14 @@ function canPlaceSetup(vi) {
     var v = G.verts[vi];
     if (v.building) return false;
     if (v.hexes.length === 0) return false;
-    // Distance rule: no adjacent vertex has a building
-    for (var ei = 0; ei < G.edges.length; ei++) {
-        var e = G.edges[ei];
-        var neighbor = -1;
-        if (e.a === vi) neighbor = e.b;
-        else if (e.b === vi) neighbor = e.a;
-        if (neighbor >= 0 && G.verts[neighbor].building) return false;
+    // Distance rule: no other building within 1 edge length (pixel distance)
+    var minDist = hexSize * 1.1;
+    for (var ovi = 0; ovi < G.verts.length; ovi++) {
+        if (ovi === vi) continue;
+        if (G.verts[ovi].building) {
+            var d = Math.hypot(G.verts[ovi].x - v.x, G.verts[ovi].y - v.y);
+            if (d < minDist) return false;
+        }
     }
     return true;
 }
@@ -774,7 +775,10 @@ function handleRobberClick(mx, my) {
 function buildRoad() {
     if (G.phase !== 'build' || G.turn !== 0) return;
     if (!canAfford(0, BUILD_COST.road)) { log('❌ Not enough resources for a road.'); return; }
-    log('🛤️ Click an edge to build a road.');
+    // Check if any valid edge exists
+    var hasValid = G.edges.some(function(e) { return e.player < 0 && isConnected(e.idx, 0); });
+    if (!hasValid) { log('❌ No valid road spots! Build more settlements first.'); return; }
+    log('🛤️ Click an edge to build a road. (Click empty to cancel)');
     G.phase = 'placeroad';
     cvs.onclick = function(e) {
         var rect = cvs.getBoundingClientRect();
@@ -790,6 +794,9 @@ function buildRoad() {
             restoreClickHandler();
             checkWin();
             render();
+        } else {
+            // Clicked nothing valid — cancel
+            cancelPlacement();
         }
     };
     render();
@@ -798,7 +805,13 @@ function buildRoad() {
 function buildSettlement() {
     if (G.phase !== 'build' || G.turn !== 0) return;
     if (!canAfford(0, BUILD_COST.settlement)) { log('❌ Not enough resources.'); return; }
-    log('🏠 Click a vertex to build a settlement.');
+    // Check if any valid vertex exists
+    var hasValid = false;
+    for (var vi = 0; vi < G.verts.length; vi++) {
+        if (canBuildSettlement(vi, 0)) { hasValid = true; break; }
+    }
+    if (!hasValid) { log('❌ No valid settlement spots! You need connected roads with open intersections.'); return; }
+    log('🏠 Click a vertex to build. (Click empty to cancel)');
     G.phase = 'placesettlement';
     cvs.onclick = function(e) {
         var rect = cvs.getBoundingClientRect();
@@ -813,6 +826,8 @@ function buildSettlement() {
             restoreClickHandler();
             checkWin();
             render();
+        } else {
+            cancelPlacement();
         }
     };
     render();
@@ -821,7 +836,10 @@ function buildSettlement() {
 function buildCity() {
     if (G.phase !== 'build' || G.turn !== 0) return;
     if (!canAfford(0, BUILD_COST.city)) { log('❌ Not enough resources.'); return; }
-    log('🏰 Click a settlement to upgrade to city.');
+    // Check if player has any settlements to upgrade
+    var hasSettlement = G.verts.some(function(v) { return v.building === 'settlement' && v.player === 0; });
+    if (!hasSettlement) { log('❌ No settlements to upgrade! Build a settlement first.'); return; }
+    log('🏰 Click a settlement to upgrade. (Click empty to cancel)');
     G.phase = 'placecity';
     cvs.onclick = function(e) {
         var rect = cvs.getBoundingClientRect();
@@ -837,8 +855,17 @@ function buildCity() {
             restoreClickHandler();
             checkWin();
             render();
+        } else {
+            cancelPlacement();
         }
     };
+    render();
+}
+
+function cancelPlacement() {
+    G.phase = 'build';
+    restoreClickHandler();
+    log('↩️ Cancelled placement.');
     render();
 }
 
@@ -1003,14 +1030,28 @@ function findClosestEdge(mx, my, maxDist) {
 
 function isConnected(ei, p) {
     var e = G.edges[ei];
-    // Connected if either endpoint has player's building or road
+    var va = G.verts[e.a], vb = G.verts[e.b];
+    var threshold = hexSize * 0.3;
+    
+    // Check both endpoints of the proposed road
     for (var end = 0; end < 2; end++) {
-        var vi = end === 0 ? e.a : e.b;
-        if (G.verts[vi].player === p && G.verts[vi].building) return true;
+        var vx = end === 0 ? va.x : vb.x;
+        var vy = end === 0 ? va.y : vb.y;
+        
+        // Does this endpoint have the player's building nearby?
+        for (var bi = 0; bi < G.buildings.length; bi++) {
+            if (G.buildings[bi].player === p) {
+                var bv = G.verts[G.buildings[bi].vertIdx];
+                if (Math.hypot(bv.x - vx, bv.y - vy) < threshold) return true;
+            }
+        }
+        
+        // Does this endpoint connect to the player's existing road?
         for (var ei2 = 0; ei2 < G.edges.length; ei2++) {
-            if (ei2 === ei) continue;
-            var e2 = G.edges[ei2];
-            if (e2.player === p && (e2.a === vi || e2.b === vi)) return true;
+            if (ei2 === ei || G.edges[ei2].player !== p) continue;
+            var e2a = G.verts[G.edges[ei2].a], e2b = G.verts[G.edges[ei2].b];
+            if (Math.hypot(e2a.x - vx, e2a.y - vy) < threshold) return true;
+            if (Math.hypot(e2b.x - vx, e2b.y - vy) < threshold) return true;
         }
     }
     return false;
@@ -1019,16 +1060,23 @@ function isConnected(ei, p) {
 function canBuildSettlement(vi, p) {
     var v = G.verts[vi];
     if (v.building) return false;
-    // Distance rule
-    for (var ei = 0; ei < G.edges.length; ei++) {
-        var e = G.edges[ei];
-        var nb = -1;
-        if (e.a === vi) nb = e.b; else if (e.b === vi) nb = e.a;
-        if (nb >= 0 && G.verts[nb].building) return false;
+    // Distance rule: no other building within 1 edge length
+    var minDist = hexSize * 1.1;
+    for (var ovi = 0; ovi < G.verts.length; ovi++) {
+        if (ovi === vi) continue;
+        if (G.verts[ovi].building) {
+            var d = Math.hypot(G.verts[ovi].x - v.x, G.verts[ovi].y - v.y);
+            if (d < minDist) return false;
+        }
     }
     // Must be connected by road (not in setup)
     if (G.phase !== 'setup1' && G.phase !== 'setup2') {
-        var connected = G.edges.some(function(e) { return e.player === p && (e.a === vi || e.b === vi); });
+        var threshold = hexSize * 0.3;
+        var connected = G.edges.some(function(e) {
+            if (e.player !== p) return false;
+            var ea = G.verts[e.a], eb = G.verts[e.b];
+            return Math.hypot(ea.x - v.x, ea.y - v.y) < threshold || Math.hypot(eb.x - v.x, eb.y - v.y) < threshold;
+        });
         if (!connected) return false;
     }
     return true;
@@ -1308,13 +1356,21 @@ function updateUI() {
     var ag = document.getElementById('act-grid');
     var inBuild = G.phase === 'build' && G.turn === 0;
     var inRoll = G.phase === 'roll' && G.turn === 0;
-    ag.innerHTML = '<button class="act-btn" onclick="rollDice()" ' + (inRoll ? '' : 'disabled') + '><span class="ae">🎲</span>Roll</button>' +
-        '<button class="act-btn" onclick="buildRoad()" ' + (inBuild && canAfford(0, BUILD_COST.road) ? '' : 'disabled') + '><span class="ae">🛤️</span>Road<br><span style="font-size:.5rem;color:#aaa;">🪵🧱</span></button>' +
-        '<button class="act-btn" onclick="buildSettlement()" ' + (inBuild && canAfford(0, BUILD_COST.settlement) ? '' : 'disabled') + '><span class="ae">🏠</span>Settle<br><span style="font-size:.5rem;color:#aaa;">🪵🧱🐑🌾</span></button>' +
-        '<button class="act-btn" onclick="buildCity()" ' + (inBuild && canAfford(0, BUILD_COST.city) ? '' : 'disabled') + '><span class="ae">🏰</span>City<br><span style="font-size:.5rem;color:#aaa;">⛰️⛰️⛰️🌾🌾</span></button>' +
-        '<button class="act-btn" onclick="buyDevCard()" ' + (inBuild && canAfford(0, BUILD_COST.devcard) ? '' : 'disabled') + '><span class="ae">🃏</span>Dev Card<br><span style="font-size:.5rem;color:#aaa;">⛰️🐑🌾</span></button>' +
-        '<button class="act-btn" onclick="openTrade()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">🤝</span>Trade</button>' +
-        '<button class="act-btn" onclick="endTurn()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">⏭️</span>End Turn</button>';
+    var inPlacing = (G.phase === 'placeroad' || G.phase === 'placesettlement' || G.phase === 'placecity') && G.turn === 0;
+    
+    if (inPlacing) {
+        var what = G.phase === 'placeroad' ? '🛤️ Road' : G.phase === 'placesettlement' ? '🏠 Settlement' : '🏰 City';
+        ag.innerHTML = '<button class="act-btn" style="grid-column:1/-1;border-color:var(--accent);background:rgba(212,136,58,.08);" disabled><span class="ae">👆</span>Click the board to place ' + what + '</button>' +
+            '<button class="act-btn" onclick="cancelPlacement()" style="grid-column:1/-1;border-color:#c05030;color:#c05030;"><span class="ae">❌</span>Cancel</button>';
+    } else {
+        ag.innerHTML = '<button class="act-btn" onclick="rollDice()" ' + (inRoll ? '' : 'disabled') + '><span class="ae">🎲</span>Roll</button>' +
+            '<button class="act-btn" onclick="buildRoad()" ' + (inBuild && canAfford(0, BUILD_COST.road) ? '' : 'disabled') + '><span class="ae">🛤️</span>Road<br><span style="font-size:.5rem;color:#aaa;">🪵🧱</span></button>' +
+            '<button class="act-btn" onclick="buildSettlement()" ' + (inBuild && canAfford(0, BUILD_COST.settlement) ? '' : 'disabled') + '><span class="ae">🏠</span>Settle<br><span style="font-size:.5rem;color:#aaa;">🪵🧱🐑🌾</span></button>' +
+            '<button class="act-btn" onclick="buildCity()" ' + (inBuild && canAfford(0, BUILD_COST.city) ? '' : 'disabled') + '><span class="ae">🏰</span>City<br><span style="font-size:.5rem;color:#aaa;">⛰️⛰️⛰️🌾🌾</span></button>' +
+            '<button class="act-btn" onclick="buyDevCard()" ' + (inBuild && canAfford(0, BUILD_COST.devcard) ? '' : 'disabled') + '><span class="ae">🃏</span>Dev Card<br><span style="font-size:.5rem;color:#aaa;">⛰️🐑🌾</span></button>' +
+            '<button class="act-btn" onclick="openTrade()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">🤝</span>Trade</button>' +
+            '<button class="act-btn" onclick="endTurn()" ' + (inBuild ? '' : 'disabled') + '><span class="ae">⏭️</span>End Turn</button>';
+    }
     // Dev cards
     var dp = document.getElementById('dev-panel');
     var dc = document.getElementById('dev-cards');
